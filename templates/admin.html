@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – RIASEC · Jain University</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:#080d1a;color:#e2e8f0;min-height:100vh}
+
+/* ═══ LOGIN ═══ */
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(102,126,234,0.12) 0%,transparent 70%)}
+.login-card{background:#0d1530;border:1px solid #1e2d50;border-radius:22px;padding:44px 40px;
+  width:100%;max-width:380px;box-shadow:0 24px 60px rgba(0,0,0,0.5);position:relative;overflow:hidden}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#667eea,#956afa,#764ba2)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo-icon{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#667eea,#764ba2);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:22px;font-weight:800;color:#fff}
+.login-logo h2{font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.3px}
+.login-logo p{font-size:11px;color:#475569;margin-top:3px;text-transform:uppercase;letter-spacing:0.8px}
+.login-input{width:100%;background:#070c1a;border:1.5px solid #1e2d50;border-radius:10px;
+  padding:12px 15px;color:#e2e8f0;font-size:14px;font-family:'Poppins',sans-serif;outline:none;
+  margin-bottom:12px;transition:all 0.2s;font-weight:500}
+.login-input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.12)}
+.login-input::placeholder{color:#334155;font-weight:400}
+.login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;
+  border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:'Poppins',sans-serif;transition:all 0.2s}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(102,126,234,0.4)}
+.login-err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171;
+  border-radius:8px;padding:10px 13px;font-size:12px;font-weight:600;margin-bottom:12px;display:none}
+.login-err.show{display:block}
+.back-link{display:block;text-align:center;margin-top:16px;color:#475569;font-size:12px;
+  text-decoration:none;transition:color 0.2s}
+.back-link:hover{color:#667eea}
+
+/* ═══ LAYOUT ═══ */
+#dashboard{display:none;min-height:100vh}
+.layout{display:flex;min-height:100vh}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{width:220px;flex-shrink:0;background:#0d1530;border-right:1px solid #1a2540;
+  padding:24px 14px;position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column;z-index:10;overflow-y:auto}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px;padding:0 4px}
+.sb-logo-img{height:28px;object-fit:contain}
+.sb-logo-fallback{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:800;flex-shrink:0}
+.sb-logo-text{font-size:13px;font-weight:700;color:#fff;line-height:1.2}
+.sb-logo-sub{font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:0.8px;display:block}
+.sb-section{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:1px;
+  padding:0 8px;margin:16px 0 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;
+  color:#475569;font-size:13px;font-weight:600;margin-bottom:2px;transition:all 0.18s;
+  text-decoration:none;border:none;background:none;font-family:'Poppins',sans-serif;width:100%;text-align:left}
+.nav-item:hover{background:#1a2540;color:#94a3b8}
+.nav-item.active{background:linear-gradient(135deg,rgba(102,126,234,0.2),rgba(118,75,162,0.15));
+  color:#818cf8;border:1px solid rgba(102,126,234,0.2)}
+.nav-icon{width:20px;text-align:center;font-size:15px;flex-shrink:0}
+.sb-spacer{flex:1}
+
+/* ═══ MAIN ═══ */
+.main{margin-left:220px;padding:28px 32px;flex:1;min-height:100vh}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:20px 16px}}
+
+/* ═══ TOPBAR ═══ */
+.main-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.main-topbar h1{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.3px}
+.topbar-actions{display:flex;gap:10px;flex-wrap:wrap}
+.action-btn{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;
+  font-family:'Poppins',sans-serif;transition:all 0.18s;border:1px solid}
+.btn-refresh{background:rgba(102,126,234,0.12);border-color:rgba(102,126,234,0.3);color:#818cf8}
+.btn-refresh:hover{background:rgba(102,126,234,0.22)}
+.btn-csv{background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.3);color:#34d399}
+.btn-csv:hover{background:rgba(16,185,129,0.22)}
+.btn-logout{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.2);color:#f87171}
+.btn-logout:hover{background:rgba(239,68,68,0.18)}
+
+/* ═══ STAT CARDS ═══ */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:#0d1530;border:1px solid #1a2540;border-radius:16px;padding:20px 22px}
+.stat-val{font-size:34px;font-weight:800;background:linear-gradient(135deg,#667eea,#956afa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
+.stat-lbl{font-size:11px;color:#334155;margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.stat-sub{font-size:11px;color:#475569;margin-top:2px}
+
+/* ═══ SECTION CARD ═══ */
+.sec-card{background:#0d1530;border:1px solid #1a2540;border-radius:16px;padding:22px;margin-bottom:18px}
+.sec-card h3{font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px}
+
+/* ═══ DIST BARS ═══ */
+.dist-row{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:10px;cursor:pointer;margin-bottom:4px;transition:background 0.18s}
+.dist-row:hover{background:#1a2540}
+.dist-label{width:145px;font-size:13px;color:#e2e8f0;font-weight:600;flex-shrink:0;display:flex;align-items:center;gap:7px}
+.dist-bar-bg{flex:1;height:8px;background:#0a1020;border-radius:10px;overflow:hidden}
+.dist-bar{height:100%;border-radius:10px;transition:width 0.9s ease}
+.dist-count{width:30px;text-align:right;font-size:13px;font-weight:800;color:#818cf8}
+
+/* ═══ FILTER TABS ═══ */
+.tab-bar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;background:#0a1020;padding:4px;border-radius:11px}
+.tab{background:transparent;border:none;color:#475569;padding:8px 12px;border-radius:8px;cursor:pointer;
+  font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;transition:all 0.18s;white-space:nowrap}
+.tab:hover{color:#94a3b8;background:#1a2540}
+.tab.active{background:#1e2d50;color:#818cf8}
+
+/* ═══ DOWNLOAD ROW ═══ */
+.dl-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px;
+  padding:16px;background:#0a1020;border-radius:12px;border:1px solid #1a2540}
+.dl-group{display:flex;flex-direction:column;gap:5px}
+.dl-label{font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px}
+.dl-input{background:#0d1530;border:1.5px solid #1e2d50;border-radius:8px;padding:8px 12px;
+  color:#e2e8f0;font-size:13px;font-family:'Poppins',sans-serif;outline:none;transition:border-color 0.18s}
+.dl-input:focus{border-color:#667eea}
+.dl-select{background:#0d1530;border:1.5px solid #1e2d50;border-radius:8px;padding:8px 12px;
+  color:#e2e8f0;font-size:13px;font-family:'Poppins',sans-serif;outline:none;cursor:pointer}
+
+/* ═══ TABLE ═══ */
+.table-wrap{overflow-x:auto;border-radius:12px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:#070c1a;color:#475569;font-size:10px;padding:11px 12px;text-align:left;
+  font-weight:700;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;position:sticky;top:0;z-index:2}
+.data-table td{padding:11px 12px;border-bottom:1px solid rgba(26,37,64,0.8);color:#cbd5e1;vertical-align:middle}
+.data-table tr{cursor:pointer}
+.data-table tr:hover td{background:rgba(102,126,234,0.06)}
+.data-table tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;
+  margin:1px;background:rgba(102,126,234,0.12);color:#818cf8;border:1px solid rgba(102,126,234,0.18)}
+.badge-t1{background:rgba(255,215,0,0.12);color:#fbbf24;border-color:rgba(255,215,0,0.25)}
+.schol-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;
+  font-size:10px;font-weight:700;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25)}
+.table-footer{font-size:11px;color:#334155;margin-top:10px;padding:0 4px}
+
+/* ═══ PROFILE MODAL ═══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(5,8,20,0.88);z-index:500;
+  display:none;align-items:flex-start;justify-content:center;padding:24px 16px;
+  overflow-y:auto;backdrop-filter:blur(12px)}
+.modal-overlay.open{display:flex}
+.profile-modal{background:#0d1530;border:1px solid #1e2d50;border-radius:22px;width:100%;
+  max-width:600px;box-shadow:0 32px 80px rgba(0,0,0,0.6);position:relative;
+  animation:modalIn 0.25s ease;margin:auto;flex-shrink:0}
+@keyframes modalIn{from{transform:translateY(20px) scale(0.95);opacity:0}to{transform:none;opacity:1}}
+
+/* Modal close */
+.modal-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);border-radius:50%;width:30px;height:30px;
+  cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;
+  color:#e2e8f0;transition:all 0.18s;z-index:2}
+.modal-close:hover{background:rgba(255,255,255,0.14)}
+
+/* Modal header */
+.pm-header{background:linear-gradient(145deg,#0b1120,#192b47);border-radius:22px 22px 0 0;
+  padding:28px 28px 22px;position:relative}
+.pm-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);
+  display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;
+  color:#fff;margin-bottom:12px}
+.pm-name{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.3px;margin-bottom:2px}
+.pm-email{font-size:12px;color:rgba(255,255,255,0.38)}
+.pm-top-traits{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.pm-trait-pill{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;
+  border:1.5px solid transparent;font-size:11px;font-weight:700}
+
+/* Modal body */
+.pm-body{padding:22px 28px 28px}
+.pm-section{margin-bottom:20px}
+.pm-section-h{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;
+  letter-spacing:0.8px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #1a2540}
+
+/* Info grid */
+.pm-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.pm-info-grid{grid-template-columns:1fr}}
+.pm-info-item{background:#070c1a;border-radius:10px;padding:12px 14px;border:1px solid #1a2540}
+.pm-info-label{font-size:10px;color:#334155;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px}
+.pm-info-val{font-size:13px;color:#e2e8f0;font-weight:600;word-break:break-all}
+
+/* Score bars */
+.score-bars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:380px){.score-bars-grid{grid-template-columns:1fr 1fr}}
+.score-bar-item{background:#070c1a;border-radius:10px;padding:10px 8px;text-align:center;border:1px solid #1a2540}
+.sbi-code{font-size:18px;font-weight:800;line-height:1}
+.sbi-name{font-size:9px;color:#475569;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin:3px 0 7px}
+.sbi-bar-bg{height:4px;background:#1e2d50;border-radius:10px;overflow:hidden;margin-bottom:5px}
+.sbi-bar-fill{height:100%;border-radius:10px}
+.sbi-val{font-size:11px;font-weight:800}
+
+/* Degree card */
+.pm-degree-card{background:rgba(102,126,234,0.06);border:1.5px solid rgba(102,126,234,0.2);border-radius:12px;padding:14px 16px}
+.pm-degree-tag{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#667eea,#764ba2);
+  color:#fff;font-size:9px;font-weight:700;padding:2px 9px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
+.pm-degree-title{font-size:14px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:3px}
+.pm-degree-uni{font-size:11px;color:rgba(255,255,255,0.35)}
+.pm-degree-path{font-size:11px;color:#818cf8;margin-top:6px;line-height:1.5}
+
+/* Scholarship */
+.pm-schol-block{background:rgba(16,185,129,0.05);border:1.5px solid rgba(16,185,129,0.2);
+  border-radius:12px;padding:14px 16px;margin-top:12px}
+.pm-schol-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pm-schol-h span{font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:0.5px}
+.pm-schol-pct{font-size:32px;font-weight:800;color:#34d399;line-height:1}
+.pm-schol-sub{font-size:11px;color:rgba(52,211,153,0.55);margin-top:2px}
+
+/* Modal actions */
+.pm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.pm-action-btn{padding:9px 18px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;
+  font-family:'Poppins',sans-serif;transition:all 0.18s;border:1px solid;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.pm-btn-email{background:rgba(102,126,234,0.12);border-color:rgba(102,126,234,0.3);color:#818cf8}
+.pm-btn-email:hover{background:rgba(102,126,234,0.22)}
+.pm-btn-dl{background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.3);color:#34d399}
+.pm-btn-dl:hover{background:rgba(16,185,129,0.22)}
+
+/* ═══ TRAIT ANALYSIS ═══ */
+.ta-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px}
+.ta-stat{background:#0a1020;border:1px solid #1a2540;border-radius:12px;padding:16px;text-align:center}
+.ta-stat-icon{font-size:22px;margin-bottom:6px}
+.ta-stat-val{font-size:26px;font-weight:800;line-height:1}
+.ta-stat-lbl{font-size:10px;color:#475569;margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px}
+.ta-stat-sub{font-size:10px;color:#334155;margin-top:2px}
+.top-scorer-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#070c1a;
+  border-radius:9px;margin-bottom:6px;cursor:pointer;transition:background 0.15s}
+.top-scorer-row:hover{background:#0a1020}
+.ts-rank{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:#818cf8;background:rgba(102,126,234,0.15);flex-shrink:0}
+.ts-name{flex:1;font-size:13px;font-weight:600;color:#e2e8f0}
+.ts-email{font-size:10px;color:#475569;margin-top:1px}
+.ts-score{font-size:14px;font-weight:800}
+
+/* ═══ SCHOLARSHIPS TAB ═══ */
+.schol-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:18px}
+.schol-badge-big{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;
+  border-radius:20px;font-size:11px;font-weight:700;border:1px solid}
+
+/* ═══ MISC ═══ */
+.empty-state{text-align:center;padding:40px;color:#334155;font-size:13px}
+.loading-shimmer{animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%,100%{opacity:0.5}50%{opacity:1}}
+.error-banner{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;
+  padding:16px 20px;color:#f87171;font-size:13px;font-weight:600;margin-bottom:18px;display:none;line-height:1.6}
+.error-banner.show{display:block}
+.error-banner code{background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;font-size:11px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     LOGIN
+════════════════════════════════════════ -->
+<div id="loginPage" class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🔐</div>
+      <h2>Admin Portal</h2>
+      <p>Jain University · RIASEC</p>
+    </div>
+    <div class="login-err" id="loginErr">Invalid credentials. Please try again.</div>
+    <input class="login-input" type="text" id="aUser" placeholder="Username" autocomplete="username">
+    <input class="login-input" type="password" id="aPass" placeholder="Password" autocomplete="current-password">
+    <button class="login-btn" onclick="adminLogin()">Login to Dashboard</button>
+    <a href="/entry" class="back-link">← Back to Survey</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DASHBOARD
+════════════════════════════════════════ -->
+<div id="dashboard">
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sb-logo">
+        <img class="sb-logo-img" src="/static/images/logo.png" alt="Jain"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="sb-logo-fallback" style="display:none">J</div>
+        <div>
+          <span class="sb-logo-text">Jain University</span>
+          <span class="sb-logo-sub">RIASEC Admin</span>
+        </div>
+      </div>
+
+      <div class="sb-section">Navigation</div>
+      <button class="nav-item active" onclick="showSection('overview')" id="nav-overview">
+        <span class="nav-icon">📊</span>Overview
+      </button>
+      <button class="nav-item" onclick="showSection('responses')" id="nav-responses">
+        <span class="nav-icon">📋</span>All Responses
+      </button>
+      <button class="nav-item" onclick="showSection('traits')" id="nav-traits">
+        <span class="nav-icon">🎯</span>Trait Analysis
+      </button>
+      <button class="nav-item" onclick="showSection('scholarships')" id="nav-scholarships">
+        <span class="nav-icon">🎓</span>Scholarships
+      </button>
+
+      <div class="sb-spacer"></div>
+      <a href="/entry" class="nav-item"><span class="nav-icon">🏠</span>Back to Survey</a>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+      <div class="main-topbar">
+        <h1 id="main-title">Overview</h1>
+        <div class="topbar-actions">
+          <button class="action-btn btn-refresh" onclick="loadData()">↻ Refresh</button>
+          <button class="action-btn btn-csv" onclick="downloadAllCSV()">⬇ Export All CSV</button>
+          <button class="action-btn btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+      <div class="error-banner" id="errorBanner"></div>
+
+      <!-- ─────────── OVERVIEW ─────────── -->
+      <div id="sec-overview">
+        <div class="stat-grid" id="stat-grid">
+          <div class="stat-card"><div class="stat-val loading-shimmer">—</div><div class="stat-lbl">Total Responses</div></div>
+          <div class="stat-card"><div class="stat-val loading-shimmer">—</div><div class="stat-lbl">Scholarships</div></div>
+          <div class="stat-card"><div class="stat-val loading-shimmer">—</div><div class="stat-lbl">Top Trait</div></div>
+          <div class="stat-card"><div class="stat-val loading-shimmer" style="font-size:18px;padding-top:8px">—</div><div class="stat-lbl">Latest Test</div></div>
+        </div>
+        <div class="sec-card">
+          <h3>Trait Distribution — click a bar to filter responses</h3>
+          <div id="trait-dist"><div class="empty-state loading-shimmer">Loading data…</div></div>
+        </div>
+        <div class="sec-card">
+          <h3>Degree Popularity</h3>
+          <div id="degree-dist"><div class="empty-state loading-shimmer">Loading…</div></div>
+        </div>
+      </div>
+
+      <!-- ─────────── ALL RESPONSES ─────────── -->
+      <div id="sec-responses" style="display:none">
+        <div class="sec-card">
+          <!-- Trait filter -->
+          <div class="tab-bar" id="filter-tabs">
+            <button class="tab active" onclick="setTraitFilter('all')">All</button>
+            <button class="tab" onclick="setTraitFilter('R')">🔧 R</button>
+            <button class="tab" onclick="setTraitFilter('I')">🔬 I</button>
+            <button class="tab" onclick="setTraitFilter('A')">🎨 A</button>
+            <button class="tab" onclick="setTraitFilter('S')">🤝 S</button>
+            <button class="tab" onclick="setTraitFilter('E')">🚀 E</button>
+            <button class="tab" onclick="setTraitFilter('C')">📊 C</button>
+          </div>
+
+          <!-- Download filters -->
+          <div class="dl-row">
+            <div class="dl-group">
+              <div class="dl-label">From Date</div>
+              <input type="date" class="dl-input" id="dl-from">
+            </div>
+            <div class="dl-group">
+              <div class="dl-label">To Date</div>
+              <input type="date" class="dl-input" id="dl-to">
+            </div>
+            <div class="dl-group">
+              <div class="dl-label">Degree</div>
+              <select class="dl-select" id="dl-degree">
+                <option value="all">All Degrees</option>
+                <option value="creative-tech">Creative Technology & Design</option>
+                <option value="data-ai">Data Analytics & AI</option>
+                <option value="corporate-mgmt">Corporate Mgmt & Lean Six Sigma</option>
+                <option value="sports-science">High Performance Sports</option>
+              </select>
+            </div>
+            <div class="dl-group">
+              <div class="dl-label">Scholarship</div>
+              <select class="dl-select" id="dl-schol">
+                <option value="all">All</option>
+                <option value="yes">Scholarship Only</option>
+                <option value="no">No Scholarship</option>
+              </select>
+            </div>
+            <button class="action-btn btn-csv" onclick="downloadFiltered()" style="align-self:flex-end">
+              ⬇ Download Filtered
+            </button>
+          </div>
+
+          <!-- Table -->
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>#1 Trait</th>
+                  <th>#2 Trait</th>
+                  <th>#3 Trait</th>
+                  <th>R</th><th>I</th><th>A</th><th>S</th><th>E</th><th>C</th>
+                  <th>Best Degree</th>
+                  <th>Scholarship</th>
+                  <th>Test Date</th>
+                </tr>
+              </thead>
+              <tbody id="resp-body">
+                <tr><td colspan="16" class="empty-state loading-shimmer">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer" id="resp-footer"></div>
+        </div>
+      </div>
+
+      <!-- ─────────── TRAIT ANALYSIS ─────────── -->
+      <div id="sec-traits" style="display:none">
+        <div class="ta-stat-grid" id="ta-stat-grid"></div>
+        <div class="sec-card">
+          <h3>Top 3 Scorers per Trait — click a row to view student profile</h3>
+          <div id="top-scorers"></div>
+        </div>
+      </div>
+
+      <!-- ─────────── SCHOLARSHIPS ─────────── -->
+      <div id="sec-scholarships" style="display:none">
+        <div class="schol-stat-grid" id="schol-stats"></div>
+        <div class="sec-card">
+          <h3>Scholarship Recipients — click to view full profile</h3>
+          <!-- Degree filter for scholarships -->
+          <div class="tab-bar" id="schol-filter-tabs" style="margin-bottom:16px">
+            <button class="tab active" onclick="setScholFilter('all')">All Degrees</button>
+            <button class="tab" onclick="setScholFilter('creative-tech')">Creative Tech</button>
+            <button class="tab" onclick="setScholFilter('data-ai')">Data & AI</button>
+            <button class="tab" onclick="setScholFilter('corporate-mgmt')">Corporate Mgmt</button>
+            <button class="tab" onclick="setScholFilter('sports-science')">Sports Science</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th><th>Name</th><th>Email</th><th>Phone</th>
+                  <th>#1 Trait</th><th>#2 Trait</th><th>#3 Trait</th>
+                  <th>Best Degree</th><th>Scholarship %</th><th>Test Date</th>
+                </tr>
+              </thead>
+              <tbody id="schol-body">
+                <tr><td colspan="10" class="empty-state loading-shimmer">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer" id="schol-footer"></div>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     STUDENT PROFILE MODAL
+════════════════════════════════════════ -->
+<div class="modal-overlay" id="profileModal" onclick="closeBgClick(event)">
+  <div class="profile-modal">
+    <button class="modal-close" onclick="closeProfile()">✕</button>
+    <div id="pm-header-slot"></div>
+    <div class="pm-body" id="pm-body-slot"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════ */
+const TRAIT_INFO = {
+  R:{name:"Realistic",    icon:"🔧", color:"#e17055", bg:"rgba(225,112,85,0.12)"},
+  I:{name:"Investigative",icon:"🔬", color:"#0984e3", bg:"rgba(9,132,227,0.12)"},
+  A:{name:"Artistic",     icon:"🎨", color:"#956afa", bg:"rgba(149,106,250,0.12)"},
+  S:{name:"Social",       icon:"🤝", color:"#00b894", bg:"rgba(0,184,148,0.12)"},
+  E:{name:"Enterprising", icon:"🚀", color:"#f39c12", bg:"rgba(243,156,18,0.12)"},
+  C:{name:"Conventional", icon:"📊", color:"#636e72", bg:"rgba(99,110,114,0.12)"}
+};
+
+// Weighted scoring — same matrix as base.html
+const MATCH_WEIGHTS = [[15,10,5],[10,7,3],[5,3,1]];
+
+const COURSES = {
+  'creative-tech':{
+    title:"BS (Hons) in Creative Technology and Design",
+    short:"Creative Tech & Design",
+    matchTraits:['A','I','S'], color:"#956afa",
+    pathway:"Master's in Creative Technology and Design — UCAM University, Spain"
+  },
+  'data-ai':{
+    title:"BS (Hons) in Data Analytics and Applied Artificial Intelligence",
+    short:"Data Analytics & AI",
+    matchTraits:['I','C','R'], color:"#0984e3",
+    pathway:"Master's in Data Analytics and Applied AI — UCAM University, Spain"
+  },
+  'corporate-mgmt':{
+    title:"MS in Corporate Management and Lean Six Sigma",
+    short:"Corporate Mgmt & LSS",
+    matchTraits:['E','C','I'], color:"#f39c12",
+    pathway:"PG Certificate in Business Excellence — UCAM University, Spain"
+  },
+  'sports-science':{
+    title:"MS in High Performance Sports: Strength and Conditioning",
+    short:"High Performance Sports",
+    matchTraits:['R','I','S'], color:"#00b894",
+    pathway:"PG Certificate in High Performance Sports — UCAM University, Spain"
+  }
+};
+
+const MAX_PT = {R:7,I:7,A:7,S:7,E:7,C:7};
+const CREDS = {u:'admin', p:'admin@2023'};
+
+let allData = [];
+let activeTraitFilter = 'all';
+let activeScholFilter = 'all';
+let activeSection = 'overview';
+
+/* ──────────────────────────────────────
+   HELPERS
+────────────────────────────────────── */
+function calcScholarship(row) {
+  const top3 = getTop3(row);
+  const top1 = top3[0];
+  if (!top1) return null;
+  const raw = Number(row[top1]) || 0;
+  const max = MAX_PT[top1] || 7;
+  return Math.min(100, Math.max(40, Math.round(40 + (raw / max) * 60)));
+}
+
+function calcBestDegree(row) {
+  const top3 = getTop3(row);
+  if (!top3.length) return null;
+  let best = null, bestScore = -1;
+  Object.entries(COURSES).forEach(([id, c]) => {
+    let score = 0;
+    top3.forEach((sT, sR) => {
+      c.matchTraits.forEach((cT, cR) => {
+        if (sT === cT) score += MATCH_WEIGHTS[sR][cR];
+      });
+    });
+    if (score > bestScore) { bestScore = score; best = id; }
+  });
+  return best;
+}
+
+function getTop3(row) {
+  // top3_codes is like "I, A, S" stored in sheet
+  return (row.top3_codes || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 3);
+}
+
+function enrichAll() {
+  allData.forEach(r => {
+    r._top3 = getTop3(r);
+    r._scholarship = calcScholarship(r);
+    r._bestDegree  = calcBestDegree(r);
+  });
+}
+
+function fmtDate(ts) {
+  if (!ts) return '—';
+  try { return new Date(ts).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'}); }
+  catch { return ts || '—'; }
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function csvQ(s) { return `"${String(s||'').replace(/"/g,'""')}"`; }
+function today() { return new Date().toISOString().slice(0,10); }
+function showErr(msg) { const b=document.getElementById('errorBanner'); b.innerHTML=msg; b.classList.add('show'); }
+function hideErr() { document.getElementById('errorBanner').classList.remove('show'); }
+
+/* ──────────────────────────────────────
+   LOGIN / LOGOUT
+────────────────────────────────────── */
+function adminLogin() {
+  const u = document.getElementById('aUser').value.trim();
+  const p = document.getElementById('aPass').value.trim();
+  if (u === CREDS.u && p === CREDS.p) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadData();
+  } else {
+    const e = document.getElementById('loginErr');
+    e.classList.add('show');
+    setTimeout(() => e.classList.remove('show'), 3000);
+  }
+}
+function logout() {
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginPage').style.display !== 'none') adminLogin();
+  if (e.key === 'Escape') closeProfile();
+});
+
+/* ──────────────────────────────────────
+   DATA LOADING
+────────────────────────────────────── */
+async function loadData() {
+  hideErr();
+  try {
+    const res = await fetch('/api/admin-data', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({password:'admin@2023'})
+    });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error || `HTTP ${res.status}`); }
+    const data = await res.json();
+    allData = (data.rows || []).filter(r => r.name && r.name.trim());
+    enrichAll();
+    renderAll();
+  } catch(e) {
+    showErr(`Failed to load data.<br>Make sure the Google Sheet is publicly readable ("Anyone with the link can view").<br><code>${e.message}</code>`);
+  }
+}
+
+function renderAll() {
+  renderOverview();
+  renderResponses();
+  if (activeSection === 'traits') renderTraits();
+  if (activeSection === 'scholarships') renderScholarships();
+}
+
+/* ──────────────────────────────────────
+   SECTION SWITCHING
+────────────────────────────────────── */
+function showSection(sec) {
+  activeSection = sec;
+  const secs = ['overview','responses','traits','scholarships'];
+  secs.forEach(s => {
+    document.getElementById('sec-'+s).style.display = s === sec ? 'block' : 'none';
+    document.getElementById('nav-'+s).classList.toggle('active', s === sec);
+  });
+  const titles = {overview:'Overview', responses:'All Responses', traits:'Trait Analysis', scholarships:'Scholarships'};
+  document.getElementById('main-title').textContent = titles[sec] || sec;
+  if (sec === 'traits') renderTraits();
+  if (sec === 'scholarships') renderScholarships();
+}
+
+/* ──────────────────────────────────────
+   OVERVIEW
+────────────────────────────────────── */
+function renderOverview() {
+  const total = allData.length;
+  const scholCount = allData.filter(r => r._scholarship !== null).length;
+
+  // Trait counts (#1 trait)
+  const tc = {R:0,I:0,A:0,S:0,E:0,C:0};
+  allData.forEach(d => { const t = d._top3[0]; if (t && tc[t] !== undefined) tc[t]++; });
+  const topEntry = Object.entries(tc).sort((a,b) => b[1]-a[1])[0] || ['—',0];
+
+  const latest = allData.length ? fmtDate(allData[allData.length-1].timestamp) : '—';
+
+  document.getElementById('stat-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Total Responses</div></div>
+    <div class="stat-card"><div class="stat-val">${scholCount}</div><div class="stat-lbl">Scholarships</div></div>
+    <div class="stat-card"><div class="stat-val">${TRAIT_INFO[topEntry[0]]?TRAIT_INFO[topEntry[0]].icon+' '+topEntry[0]:'—'}</div><div class="stat-lbl">Top Trait</div><div class="stat-sub">${TRAIT_INFO[topEntry[0]]?.name||''}</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:18px;padding-top:8px">${latest}</div><div class="stat-lbl">Latest Test</div></div>`;
+
+  // Trait bars
+  const max = Math.max(...Object.values(tc), 1);
+  document.getElementById('trait-dist').innerHTML = Object.entries(tc)
+    .sort((a,b) => b[1]-a[1])
+    .map(([t,c]) => `
+      <div class="dist-row" onclick="showSection('responses');setTraitFilter('${t}')">
+        <div class="dist-label">${TRAIT_INFO[t].icon} ${TRAIT_INFO[t].name}</div>
+        <div class="dist-bar-bg"><div class="dist-bar" style="width:${(c/max)*100}%;background:${TRAIT_INFO[t].color}"></div></div>
+        <div class="dist-count">${c}</div>
+      </div>`).join('') || '<div class="empty-state">No data yet</div>';
+
+  // Degree bars
+  const dc = {};
+  allData.forEach(d => { if (d._bestDegree) dc[d._bestDegree] = (dc[d._bestDegree]||0)+1; });
+  const degMax = Math.max(...Object.values(dc), 1);
+  document.getElementById('degree-dist').innerHTML = Object.entries(dc)
+    .sort((a,b) => b[1]-a[1])
+    .map(([id,c]) => {
+      const co = COURSES[id]; if (!co) return '';
+      return `<div class="dist-row">
+        <div class="dist-label" style="width:200px;color:${co.color}">${co.short}</div>
+        <div class="dist-bar-bg"><div class="dist-bar" style="width:${(c/degMax)*100}%;background:${co.color}"></div></div>
+        <div class="dist-count">${c}</div>
+      </div>`;
+    }).join('') || '<div class="empty-state">No data yet</div>';
+}
+
+/* ──────────────────────────────────────
+   RESPONSES TABLE
+────────────────────────────────────── */
+function getFilteredData() {
+  let d = [...allData];
+  if (activeTraitFilter !== 'all') d = d.filter(r => r._top3[0] === activeTraitFilter);
+  return d;
+}
+
+function setTraitFilter(f) {
+  activeTraitFilter = f;
+  document.querySelectorAll('#filter-tabs .tab').forEach((t,i) => {
+    const vals = ['all','R','I','A','S','E','C'];
+    t.classList.toggle('active', vals[i] === f);
+  });
+  renderResponses();
+  if (activeSection !== 'responses') showSection('responses');
+}
+
+function renderResponses() {
+  const data = getFilteredData();
+  const tbody = document.getElementById('resp-body');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="16" class="empty-state">No responses found.</td></tr>`;
+    document.getElementById('resp-footer').textContent = '';
+    return;
+  }
+  tbody.innerHTML = data.map((d, i) => {
+    const top3 = d._top3;
+    const deg  = d._bestDegree ? COURSES[d._bestDegree] : null;
+    const sp   = d._scholarship;
+
+    const traitCell = (t, rank) => {
+      if (!t || !TRAIT_INFO[t]) return '<td>—</td>';
+      return `<td><span class="badge ${rank===0?'badge-t1':''}" style="color:${TRAIT_INFO[t].color};border-color:${TRAIT_INFO[t].color}44">${TRAIT_INFO[t].icon} ${t}</span></td>`;
+    };
+
+    return `<tr onclick="openProfile(${i})">
+      <td style="color:#334155">${i+1}</td>
+      <td style="font-weight:700;color:#f1f5f9">${esc(d.name)}</td>
+      <td style="color:#475569">${esc(d.email)}</td>
+      <td style="color:#475569">${esc(d.phone)}</td>
+      ${traitCell(top3[0],0)}${traitCell(top3[1],1)}${traitCell(top3[2],2)}
+      <td>${d.R}</td><td>${d.I}</td><td>${d.A}</td><td>${d.S}</td><td>${d.E}</td><td>${d.C}</td>
+      <td>${deg ? `<span style="font-size:10px;font-weight:700;color:${deg.color}">${deg.short}</span>` : '—'}</td>
+      <td>${sp !== null ? `<span class="schol-chip">🎓 ${sp}%</span>` : '<span style="color:#334155;font-size:11px">—</span>'}</td>
+      <td style="color:#334155;white-space:nowrap">${fmtDate(d.timestamp)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('resp-footer').textContent = `Showing ${data.length} of ${allData.length} students`;
+}
+
+/* ──────────────────────────────────────
+   TRAIT ANALYSIS
+────────────────────────────────────── */
+function renderTraits() {
+  const tc = {R:0,I:0,A:0,S:0,E:0,C:0};
+  const totals = {R:0,I:0,A:0,S:0,E:0,C:0};
+  allData.forEach(d => {
+    const t = d._top3[0]; if (t && tc[t] !== undefined) tc[t]++;
+    Object.keys(totals).forEach(k => { totals[k] += Number(d[k])||0; });
+  });
+  const n = allData.length || 1;
+
+  document.getElementById('ta-stat-grid').innerHTML = Object.entries(TRAIT_INFO).map(([t,info]) => `
+    <div class="ta-stat">
+      <div class="ta-stat-icon">${info.icon}</div>
+      <div class="ta-stat-val" style="color:${info.color}">${tc[t]}</div>
+      <div class="ta-stat-lbl">${info.name}</div>
+      <div class="ta-stat-sub">Avg ${(totals[t]/n).toFixed(1)} pts</div>
+    </div>`).join('');
+
+  document.getElementById('top-scorers').innerHTML = Object.entries(TRAIT_INFO).map(([t,info]) => {
+    const sorted = [...allData].sort((a,b) => Number(b[t])-Number(a[t])).slice(0,3);
+    return `<div style="margin-bottom:22px">
+      <p style="font-size:12px;font-weight:700;color:${info.color};text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">${info.icon} ${info.name}</p>
+      ${sorted.length ? sorted.map((d,i) => {
+        const idx = allData.indexOf(d);
+        return `<div class="top-scorer-row" onclick="openProfile(${idx})">
+          <div class="ts-rank">${i+1}</div>
+          <div style="flex:1"><div class="ts-name">${esc(d.name)}</div><div class="ts-email">${esc(d.email)}</div></div>
+          <div class="ts-score" style="color:${info.color}">${d[t]}/${MAX_PT[t]}</div>
+        </div>`;
+      }).join('') : '<div style="color:#334155;font-size:12px;padding:8px">No data yet</div>'}
+    </div>`;
+  }).join('');
+}
+
+/* ──────────────────────────────────────
+   SCHOLARSHIPS TAB
+────────────────────────────────────── */
+function setScholFilter(f) {
+  activeScholFilter = f;
+  document.querySelectorAll('#schol-filter-tabs .tab').forEach((t,i) => {
+    const vals = ['all','creative-tech','data-ai','corporate-mgmt','sports-science'];
+    t.classList.toggle('active', vals[i] === f);
+  });
+  renderScholarships();
+}
+
+function renderScholarships() {
+  let data = allData.filter(r => r._scholarship !== null);
+  if (activeScholFilter !== 'all') data = data.filter(r => r._bestDegree === activeScholFilter);
+
+  // Stats
+  const avg = data.length ? Math.round(data.reduce((s,d) => s+(d._scholarship||0),0)/data.length) : 0;
+  document.getElementById('schol-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${data.length}</div><div class="stat-lbl">Scholarship Students</div></div>
+    <div class="stat-card"><div class="stat-val">${avg}%</div><div class="stat-lbl">Average Scholarship</div></div>
+    <div class="stat-card"><div class="stat-val">${data.filter(d=>d._scholarship>=70).length}</div><div class="stat-lbl">≥70% Scholarship</div></div>
+    <div class="stat-card"><div class="stat-val">${data.filter(d=>d._scholarship>=90).length}</div><div class="stat-lbl">≥90% Scholarship</div></div>`;
+
+  const tbody = document.getElementById('schol-body');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="10" class="empty-state">No scholarship data yet.</td></tr>`;
+    document.getElementById('schol-footer').textContent = '';
+    return;
+  }
+
+  const sorted = [...data].sort((a,b) => (b._scholarship||0)-(a._scholarship||0));
+  tbody.innerHTML = sorted.map((d, i) => {
+    const top3 = d._top3;
+    const deg  = d._bestDegree ? COURSES[d._bestDegree] : null;
+    const sp   = d._scholarship;
+    const idx  = allData.indexOf(d);
+    const spColor = sp>=80?'#34d399':sp>=60?'#fbbf24':'#f87171';
+
+    const traitBadge = (t, rank) => {
+      if (!t || !TRAIT_INFO[t]) return '';
+      return `<span class="badge ${rank===0?'badge-t1':''}" style="color:${TRAIT_INFO[t].color};border-color:${TRAIT_INFO[t].color}44">${TRAIT_INFO[t].icon} ${t}</span>`;
+    };
+
+    return `<tr onclick="openProfile(${idx})">
+      <td style="color:#334155">${i+1}</td>
+      <td style="font-weight:700;color:#f1f5f9">${esc(d.name)}</td>
+      <td style="color:#475569">${esc(d.email)}</td>
+      <td style="color:#475569">${esc(d.phone)}</td>
+      <td>${traitBadge(top3[0],0)}</td>
+      <td>${traitBadge(top3[1],1)}</td>
+      <td>${traitBadge(top3[2],2)}</td>
+      <td>${deg ? `<span style="font-size:10px;font-weight:700;color:${deg.color}">${deg.short}</span>` : '—'}</td>
+      <td><span class="schol-badge-big" style="color:${spColor};background:${spColor}18;border-color:${spColor}44">🎓 ${sp}%</span></td>
+      <td style="color:#334155;white-space:nowrap">${fmtDate(d.timestamp)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('schol-footer').textContent = `${sorted.length} scholarship student${sorted.length!==1?'s':''}`;
+}
+
+/* ──────────────────────────────────────
+   STUDENT PROFILE MODAL
+────────────────────────────────────── */
+function openProfile(idx) {
+  const d = allData[idx];
+  if (!d) return;
+
+  const top3    = d._top3;
+  const scores  = {R:Number(d.R)||0,I:Number(d.I)||0,A:Number(d.A)||0,S:Number(d.S)||0,E:Number(d.E)||0,C:Number(d.C)||0};
+  const deg     = d._bestDegree ? COURSES[d._bestDegree] : null;
+  const sp      = d._scholarship;
+  const initials = (d.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  const pLabels = ['#1 Primary','#2 Secondary','#3 Tertiary'];
+
+  /* ── Header ── */
+  document.getElementById('pm-header-slot').innerHTML = `
+    <div class="pm-header">
+      <div class="pm-avatar">${initials}</div>
+      <div class="pm-name">${esc(d.name)}</div>
+      <div class="pm-email">${esc(d.email)}</div>
+      <div class="pm-top-traits">
+        ${top3.map((t,i) => {
+          const info = TRAIT_INFO[t]; if (!info) return '';
+          return `<div class="pm-trait-pill" style="background:${info.bg};border-color:${info.color}44;color:${info.color}">
+            <span>${info.icon}</span>
+            <span>${info.name}</span>
+            <span style="opacity:0.65;font-size:10px">${pLabels[i]}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+
+  /* ── Score bars HTML ── */
+  const scoreBars = Object.entries(TRAIT_INFO).map(([t, info]) => {
+    const sc  = scores[t];
+    const max = MAX_PT[t] || 7;
+    const pct = Math.round((sc / max) * 100);
+    const isTop = top3.includes(t);
+    return `<div class="score-bar-item" style="${isTop ? `border-color:${info.color}44;background:${info.bg}` : ''}">
+      <div class="sbi-code" style="color:${info.color}">${info.icon} ${t}</div>
+      <div class="sbi-name">${info.name}</div>
+      <div class="sbi-bar-bg"><div class="sbi-bar-fill" style="width:${pct}%;background:${info.color}"></div></div>
+      <div class="sbi-val" style="color:${info.color}">${sc}/${max}</div>
+    </div>`;
+  }).join('');
+
+  /* ── Body ── */
+  document.getElementById('pm-body-slot').innerHTML = `
+
+    <!-- Contact info -->
+    <div class="pm-section">
+      <div class="pm-section-h">Contact Information</div>
+      <div class="pm-info-grid">
+        <div class="pm-info-item">
+          <div class="pm-info-label">Full Name</div>
+          <div class="pm-info-val">${esc(d.name)}</div>
+        </div>
+        <div class="pm-info-item">
+          <div class="pm-info-label">Email Address</div>
+          <div class="pm-info-val">${esc(d.email)}</div>
+        </div>
+        <div class="pm-info-item">
+          <div class="pm-info-label">Mobile Number</div>
+          <div class="pm-info-val">${esc(d.phone || 'Not provided')}</div>
+        </div>
+        <div class="pm-info-item">
+          <div class="pm-info-label">Test Date</div>
+          <div class="pm-info-val">${fmtDate(d.timestamp)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scores -->
+    <div class="pm-section">
+      <div class="pm-section-h">RIASEC Score Breakdown</div>
+      <div class="score-bars-grid">${scoreBars}</div>
+    </div>
+
+    <!-- Chosen Degree -->
+    <div class="pm-section">
+      <div class="pm-section-h">Recommended & Chosen Degree</div>
+      ${deg ? `
+        <div class="pm-degree-card">
+          <div class="pm-degree-tag">Best Match</div>
+          <div class="pm-degree-title">${deg.title}</div>
+          <div class="pm-degree-uni">JAIN (Deemed-to-be University)</div>
+          <div class="pm-degree-path">→ ${deg.pathway}</div>
+        </div>` : '<div style="color:#475569;font-size:13px">No degree calculated.</div>'}
+      ${sp !== null ? `
+        <div class="pm-schol-block">
+          <div class="pm-schol-h"><span>🎓</span><span>School of Global Studies Scholarship</span></div>
+          <div class="pm-schol-pct">${sp}%</div>
+          <div class="pm-schol-sub">on tuition fees — JAIN School of Global Studies</div>
+        </div>` : ''}
+    </div>
+
+    <!-- Actions -->
+    <div class="pm-section">
+      <div class="pm-actions">
+        <a href="mailto:${esc(d.email)}" class="pm-action-btn pm-btn-email">✉ Email Student</a>
+        <button class="pm-action-btn pm-btn-dl" onclick="downloadStudentProfile(${idx})">⬇ Download Profile</button>
+      </div>
+    </div>`;
+
+  document.getElementById('profileModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProfile() {
+  document.getElementById('profileModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeBgClick(e) { if (e.target === document.getElementById('profileModal')) closeProfile(); }
+
+/* ──────────────────────────────────────
+   CSV DOWNLOADS
+────────────────────────────────────── */
+function buildCSV(data) {
+  const headers = ['Name','Email','Phone','Test Date','#1 Trait','#2 Trait','#3 Trait','R','I','A','S','E','C','Best Degree','Scholarship %'];
+  const rows = data.map(d => {
+    const top3 = d._top3;
+    const deg  = d._bestDegree ? COURSES[d._bestDegree]?.short : '';
+    return [
+      csvQ(d.name), csvQ(d.email), csvQ(d.phone), csvQ(fmtDate(d.timestamp)),
+      csvQ(top3[0]||''), csvQ(top3[1]||''), csvQ(top3[2]||''),
+      d.R, d.I, d.A, d.S, d.E, d.C,
+      csvQ(deg||''),
+      d._scholarship !== null ? d._scholarship+'%' : ''
+    ].join(',');
+  });
+  return [headers.join(','), ...rows].join('\n');
+}
+
+function triggerCSV(content, filename) {
+  const blob = new Blob([content], {type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+function downloadAllCSV() {
+  triggerCSV(buildCSV(allData), `jain-riasec-all-${today()}.csv`);
+}
+
+function downloadFiltered() {
+  let data = [...allData];
+
+  const from  = document.getElementById('dl-from').value;
+  const to    = document.getElementById('dl-to').value;
+  const deg   = document.getElementById('dl-degree').value;
+  const schol = document.getElementById('dl-schol').value;
+
+  if (from) data = data.filter(d => { try { return new Date(d.timestamp) >= new Date(from); } catch { return true; }});
+  if (to)   data = data.filter(d => { try { return new Date(d.timestamp) <= new Date(to+' 23:59:59'); } catch { return true; }});
+  if (deg   !== 'all') data = data.filter(d => d._bestDegree === deg);
+  if (schol === 'yes') data = data.filter(d => d._scholarship !== null);
+  if (schol === 'no')  data = data.filter(d => d._scholarship === null);
+
+  if (!data.length) { alert('No records match the selected filters.'); return; }
+  triggerCSV(buildCSV(data), `jain-riasec-filtered-${today()}.csv`);
+}
+
+function downloadStudentProfile(idx) {
+  const d = allData[idx]; if (!d) return;
+  const top3 = d._top3;
+  const deg  = d._bestDegree ? COURSES[d._bestDegree] : null;
+  const sp   = d._scholarship;
+  const lines = [
+    'JAIN (Deemed-to-be University) — RIASEC Student Profile',
+    '='.repeat(52), '',
+    `Name        : ${d.name}`,
+    `Email       : ${d.email}`,
+    `Phone       : ${d.phone || '—'}`,
+    `Test Date   : ${fmtDate(d.timestamp)}`, '',
+    'TOP 3 TRAITS:',
+    ...top3.map((t,i) => `  ${i+1}. ${TRAIT_INFO[t]?.name||t} (${t}) — Score: ${d[t]}/${MAX_PT[t]}`), '',
+    'RIASEC SCORES:',
+    ...['R','I','A','S','E','C'].map(t => `  ${t} (${TRAIT_INFO[t].name}): ${d[t]}/${MAX_PT[t]}`), '',
+    'RECOMMENDED DEGREE:',
+    `  ${deg ? deg.title : 'Not calculated'}`,
+    deg ? `  Pathway: ${deg.pathway}` : '',
+    '',
+    'SCHOLARSHIP:',
+    `  ${sp !== null ? sp+'% on tuition fees — JAIN School of Global Studies' : 'Not eligible / not calculated'}`
+  ];
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `profile-${(d.name||'student').replace(/\s+/g,'-')}-${today()}.txt`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+{% block title %}Welcome – RIASEC · JAIN (Deemed-to-be University){% endblock %}
+{% block topbar_nav %}{% endblock %}
+{% block mobile_nav %}{% endblock %}
+
+{% block head %}
+<style>
+.entry-page{
+  display:flex;align-items:center;justify-content:center;
+  min-height:calc(100vh - 60px);padding:20px 14px
+}
+
+/* ── CARD ── */
+.entry-card{
+  display:flex;width:100%;max-width:860px;background:#fff;
+  border-radius:22px;border:1px solid var(--line);
+  box-shadow:0 24px 64px rgba(15,22,35,0.11),0 2px 8px rgba(15,22,35,0.04);
+  overflow:hidden;position:relative
+}
+.entry-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--grad);z-index:1
+}
+
+/* ── LEFT PANEL ── */
+.ev{
+  width:290px;flex-shrink:0;
+  background:linear-gradient(160deg,#0b1120 0%,#1a2b4a 55%,#0a2540 100%);
+  padding:44px 30px;display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden
+}
+.ev-orb{position:absolute;border-radius:50%;filter:blur(52px);pointer-events:none}
+.ev-orb1{width:200px;height:200px;background:rgba(37,99,235,0.22);top:-60px;right:-50px}
+.ev-orb2{width:140px;height:140px;background:rgba(124,58,237,0.18);bottom:-10px;left:-30px}
+
+/* Logo */
+.ev-logo-row{display:flex;align-items:center;gap:9px;margin-bottom:24px;position:relative;z-index:1}
+.ev-logo-img{height:34px;width:auto;object-fit:contain;filter:brightness(0) invert(1)}
+.ev-logo-fallback{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700}
+.ev-logo-name{font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);line-height:1.4}
+
+.ev-tag{display:inline-flex;align-items:center;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:4px 12px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.9px;margin-bottom:18px;width:fit-content;position:relative;z-index:1}
+.ev-title{font-family:'DM Serif Display',serif;font-size:25px;font-weight:400;color:#fff;line-height:1.28;letter-spacing:-0.3px;margin-bottom:9px;position:relative;z-index:1}
+.ev-sub{font-size:13px;color:rgba(255,255,255,0.42);line-height:1.72;margin-bottom:28px;position:relative;z-index:1}
+.ev-stats{display:flex;border:1px solid rgba(255,255,255,0.1);border-radius:13px;overflow:hidden;position:relative;z-index:1}
+.ev-stat{flex:1;padding:14px 7px;text-align:center;position:relative}
+.ev-stat+.ev-stat::before{content:'';position:absolute;left:0;top:22%;bottom:22%;width:1px;background:rgba(255,255,255,0.1)}
+.ev-stat-num{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;line-height:1}
+.ev-stat-lbl{font-size:9px;color:rgba(255,255,255,0.38);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px}
+
+/* ── RIGHT FORM ── */
+.ef{flex:1;padding:44px 40px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+@media(max-width:640px){.ef{padding:28px 20px}}
+
+.ef-eyebrow{font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.ef-title{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;color:var(--ink);letter-spacing:-0.3px;margin-bottom:3px}
+.ef-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+
+/* ── TAB SWITCHER ── */
+.tab-switch{display:flex;background:#f1f5f9;padding:3px;border-radius:10px;margin-bottom:20px;gap:0}
+.tsw{flex:1;padding:9px 10px;border:none;background:transparent;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all 0.18s;text-align:center;white-space:nowrap}
+.tsw.active{background:#fff;color:var(--accent);font-weight:600;box-shadow:0 1px 6px rgba(0,0,0,0.08)}
+
+/* ── CAROUSEL ── */
+.carousel-outer{overflow:hidden;width:100%}
+.carousel-track{display:flex;transition:transform 0.36s cubic-bezier(0.4,0,0.2,1)}
+.slide{min-width:100%;flex-shrink:0;padding:0 1px}/* 1px prevents edge clipping */
+
+.progress-bar{height:3px;background:#f1f5f9;border-radius:10px;margin-bottom:16px;overflow:hidden}
+.progress-fill{height:100%;background:var(--grad);border-radius:10px;transition:width 0.35s ease}
+
+.slide-head{text-align:center;margin-bottom:14px}
+.slide-step-lbl{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px}
+.slide-head-lbl{font-size:13px;color:var(--muted);font-weight:500;margin-top:3px}
+
+.step-dots{display:flex;gap:5px;justify-content:center;margin-bottom:14px}
+.step-dot{height:5px;border-radius:10px;background:var(--line);transition:all 0.28s;width:5px}
+.step-dot.active{background:var(--accent);width:18px}
+
+.nav-row{display:flex;gap:8px;margin-top:12px}
+.nav-row .btn{flex:1}
+
+/* Ready slide */
+.ready-chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:10px}
+.ready-chip{font-size:11px;padding:5px 12px;border-radius:20px;font-weight:500;border:1px solid}
+
+/* ── LOGIN ── */
+.not-found-box{background:rgba(220,53,69,0.05);border:1px solid rgba(220,53,69,0.15);border-radius:10px;padding:11px 13px;font-size:12px;color:#dc3545;font-weight:500;display:none;margin-top:10px;line-height:1.6}
+.login-divider{text-align:center;font-size:12px;color:var(--muted);margin:14px 0;position:relative}
+.login-divider::before,.login-divider::after{content:'';position:absolute;top:50%;width:calc(50% - 18px);height:1px;background:var(--line)}
+.login-divider::before{left:0}.login-divider::after{right:0}
+
+/* ── RESPONSIVE ── */
+@media(max-width:780px){
+  .entry-card{flex-direction:column;max-width:440px}
+  .ev{width:100%;padding:26px 22px;min-height:auto}
+  .ev-orb{display:none}
+  .ev-sub{display:none}
+  .ev-stats{max-width:220px}
+  .ef{padding:26px 22px}
+}
+@media(max-width:460px){
+  .ev{padding:20px 16px}
+  .ev-title{font-size:20px}
+  .ef{padding:20px 16px}
+  .ef-title{font-size:20px}
+}
+
+/* Phone row fix */
+.phone-row{display:flex;gap:8px;align-items:stretch}
+.flag-select{width:130px;flex-shrink:0;padding:10px 8px}
+.phone-row .input:last-child{flex:1;min-width:0}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="entry-page">
+<div class="entry-card">
+
+  <!-- LEFT PANEL -->
+  <div class="ev">
+    <div class="ev-orb ev-orb1"></div>
+    <div class="ev-orb ev-orb2"></div>
+
+    <!-- Logo -->
+    
+
+    <div class="ev-tag">Career Assessment</div>
+    <div class="ev-title">RIASEC Personality Test</div>
+    <div class="ev-sub">Discover your personality type and find the programme that truly fits you.</div>
+    <div class="ev-stats">
+      <div class="ev-stat">
+        <div class="ev-stat-num">42</div>
+        <div class="ev-stat-lbl">Questions</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-num">6</div>
+        <div class="ev-stat-lbl">Traits</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-num">7m</div>
+        <div class="ev-stat-lbl">Duration</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT FORM -->
+  <div class="ef">
+    <div class="ef-eyebrow">Welcome</div>
+    <div class="ef-title">Get Started</div>
+    <div class="ef-sub">Login to see your results or register as a new user.</div>
+
+    <!-- Tab Switcher -->
+    <div class="tab-switch">
+      <button class="tsw active" onclick="switchTab('login')" id="tab-login-btn">Login</button>
+      <button class="tsw" onclick="switchTab('new')" id="tab-new-btn">New User</button>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert" id="entry-alert"></div>
+
+    <!-- ── LOGIN TAB ── -->
+    <div id="tab-login">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input class="input" type="email" id="login-email"
+               placeholder="your@email.com" autocomplete="email">
+        <small class="hint">Enter the email you used when taking the survey</small>
+      </div>
+      <button class="btn" onclick="doLogin()" id="login-btn">Login &amp; View Results</button>
+      <div class="not-found-box" id="not-found">
+        No account found for this email. Please register as a new user or check your email.
+      </div>
+      <div class="login-divider">or</div>
+      <button class="btn btn-ghost" onclick="switchTab('new')">Register as New User</button>
+    </div>
+
+    <!-- ── NEW USER TAB ── -->
+    <div id="tab-new" style="display:none">
+      <div class="progress-bar">
+        <div class="progress-fill" id="prog-fill" style="width:25%"></div>
+      </div>
+      <div class="step-dots" id="step-dots"></div>
+
+      <div class="carousel-outer">
+        <div class="carousel-track" id="reg-track">
+
+          <!-- Slide 1: Name -->
+          <div class="slide">
+            <div class="slide-head">
+              <div class="slide-step-lbl">Step 1 of 3</div>
+              <div class="slide-head-lbl">What's your full name?</div>
+            </div>
+            <div class="form-group">
+              <label>Full Name</label>
+              <input class="input" type="text" id="r-name"
+                     placeholder="e.g. Arjun Sharma" autocomplete="name">
+              <small class="hint">As per your admission records</small>
+            </div>
+          </div>
+
+          <!-- Slide 2: Mobile -->
+          <div class="slide">
+            <div class="slide-head">
+              <div class="slide-step-lbl">Step 2 of 3</div>
+              <div class="slide-head-lbl">Your mobile number</div>
+            </div>
+            <div class="form-group">
+              <label>Mobile Number</label>
+              <div class="phone-row">
+                <select class="input flag-select" id="r-country">
+                  <option value="+91">🇮🇳 +91</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+44">🇬🇧 +44</option>
+                  <option value="+61">🇦🇺 +61</option>
+                  <option value="+971">🇦🇪 +971</option>
+                  <option value="+65">🇸🇬 +65</option>
+                  <option value="+60">🇲🇾 +60</option>
+                  <option value="+49">🇩🇪 +49</option>
+                  <option value="+33">🇫🇷 +33</option>
+                  <option value="+81">🇯🇵 +81</option>
+                  <option value="+86">🇨🇳 +86</option>
+                </select>
+                <input class="input" type="tel" id="r-phone"
+                       placeholder="10-digit number" maxlength="10" inputmode="numeric">
+              </div>
+              <small class="hint">For admission coordination only</small>
+            </div>
+          </div>
+
+          <!-- Slide 3: Email -->
+          <div class="slide">
+            <div class="slide-head">
+              <div class="slide-step-lbl">Step 3 of 3</div>
+              <div class="slide-head-lbl">Your email address</div>
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input class="input" type="email" id="r-email"
+                     placeholder="your@email.com" autocomplete="email">
+              <small class="hint">Your results will be emailed here</small>
+            </div>
+          </div>
+
+          <!-- Slide 4: Ready -->
+          <div class="slide">
+            <div style="text-align:center;padding:4px 0 12px">
+              <div style="font-size:48px;margin-bottom:12px">🚀</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:21px;color:var(--ink);margin-bottom:7px">
+                You're all set!
+              </div>
+              <p id="ready-name" style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px">
+                42 Yes/No questions · 5–7 minutes · Answer honestly!
+              </p>
+              <div class="ready-chips">
+                <span class="ready-chip" style="background:rgba(37,99,235,0.07);color:var(--accent);border-color:rgba(37,99,235,0.2)">42 Questions</span>
+                <span class="ready-chip" style="background:rgba(22,163,74,0.07);color:#16a34a;border-color:rgba(22,163,74,0.15)">5–7 Min</span>
+                <span class="ready-chip" style="background:rgba(124,58,237,0.07);color:#7c3aed;border-color:rgba(124,58,237,0.15)">Yes / No</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /carousel -->
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" id="prev-btn" onclick="prevSlide()" style="display:none;flex:0 0 auto;width:90px">← Back</button>
+        <button class="btn" id="next-btn" onclick="nextSlide()">Next →</button>
+      </div>
+    </div><!-- /tab-new -->
+
+  </div><!-- /ef -->
+</div><!-- /entry-card -->
+</div><!-- /entry-page -->
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* ── TAB SWITCHER ── */
+function switchTab(tab){
+  document.getElementById('tab-login').style.display = tab==='login'?'block':'none';
+  document.getElementById('tab-new').style.display   = tab==='new'?'block':'none';
+  document.getElementById('tab-login-btn').classList.toggle('active', tab==='login');
+  document.getElementById('tab-new-btn').classList.toggle('active',  tab==='new');
+  document.getElementById('entry-alert').className = 'alert';
+  document.getElementById('not-found').style.display = 'none';
+  if(tab==='new'){ curSlide=0; updateCarousel(); }
+}
+
+function showAlert(msg, type='error'){
+  const a=document.getElementById('entry-alert');
+  a.textContent=msg;
+  a.className=`alert alert-${type} show`;
+  setTimeout(()=>a.className='alert', 4500);
+}
+
+/* ── LOGIN ── */
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    showAlert('Please enter a valid email address'); return;
+  }
+  const btn=document.getElementById('login-btn');
+  btn.textContent='Searching…'; btn.disabled=true;
+  showLoad('Looking up your profile…');
+  try{
+    const res=await fetch('/api/lookup-email',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email})
+    });
+    const data=await res.json();
+    hideLoad(); btn.textContent='Login & View Results'; btn.disabled=false;
+    if(data.found){
+      const u=data.user;
+      const top3=(u.top3_codes||'').split(', ').filter(Boolean);
+      saveUser({
+        name: u.name, email: u.email, phone: u.phone,
+        scores:{R:+u.R, I:+u.I, A:+u.A, S:+u.S, E:+u.E, C:+u.C},
+        top3, timestamp: u.timestamp
+      });
+      window.location.href='/home';
+    }else{
+      document.getElementById('not-found').style.display='block';
+    }
+  }catch(e){
+    hideLoad(); btn.textContent='Login & View Results'; btn.disabled=false;
+    showAlert('Network error. Please try again.');
+  }
+}
+
+/* ── CAROUSEL ── */
+const TS=4;
+let curSlide=0;
+
+function initDots(){
+  const d=document.getElementById('step-dots');
+  d.innerHTML='';
+  for(let i=0;i<TS;i++){
+    const dot=document.createElement('div');
+    dot.className='step-dot'+(i===0?' active':'');
+    d.appendChild(dot);
+  }
+}
+
+function updateCarousel(){
+  document.getElementById('reg-track').style.transform=`translateX(-${curSlide*100}%)`;
+  document.querySelectorAll('.step-dot').forEach((d,i)=>d.classList.toggle('active',i===curSlide));
+  document.getElementById('prog-fill').style.width=`${((curSlide+1)/TS)*100}%`;
+
+  const prev=document.getElementById('prev-btn');
+  const next=document.getElementById('next-btn');
+
+  prev.style.display=curSlide>0?'flex':'none';
+
+  if(curSlide===TS-1){
+    next.textContent='Start My Survey 🚀';
+    next.onclick=startSurvey;
+  }else{
+    next.textContent='Next →';
+    next.onclick=nextSlide;
+  }
+}
+
+function nextSlide(){
+  if(!validateSlide()) return;
+  if(curSlide===2){
+    const n=document.getElementById('r-name').value.trim();
+    document.getElementById('ready-name').innerHTML=
+      `Hey <strong>${n}</strong>! You're about to take 42 quick Yes/No questions.<br>Answer honestly for the most accurate results.`;
+  }
+  if(curSlide<TS-1){ curSlide++; updateCarousel(); }
+}
+
+function prevSlide(){
+  if(curSlide>0){ curSlide--; updateCarousel(); }
+}
+
+function validateSlide(){
+  const errMap={
+    0: ()=> document.getElementById('r-name').value.trim().length<2 ? 'Please enter your full name (at least 2 characters)' : null,
+    1: ()=> !/^\d{7,15}$/.test(document.getElementById('r-phone').value.trim()) ? 'Please enter a valid phone number (7–15 digits)' : null,
+    2: ()=> !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('r-email').value.trim()) ? 'Please enter a valid email address' : null,
+  };
+  const fn=errMap[curSlide];
+  if(fn){ const msg=fn(); if(msg){ showAlert(msg); return false; } }
+  return true;
+}
+
+function startSurvey(){
+  const name=document.getElementById('r-name').value.trim();
+  const phone=document.getElementById('r-country').value+document.getElementById('r-phone').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  if(!name||!email){ showAlert('Please complete all steps first'); curSlide=0; updateCarousel(); return; }
+  saveUser({name, phone, email, timestamp:new Date().toISOString()});
+  window.location.href='/survey';
+}
+
+/* ── INIT ── */
+initDots();
+updateCarousel();
+
+// Redirect if already logged in
+const _u=getUser();
+if(_u&&_u.name&&_u.scores){ window.location.href='/home'; }
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const loginVisible=document.getElementById('tab-login').style.display!=='none';
+    if(loginVisible) doLogin();
+    else if(curSlide===TS-1) startSurvey();
+    else nextSlide();
+  }
+});
+</script>
+{% endblock %}

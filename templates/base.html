@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}RIASEC – Jain University{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0f1623;--ink2:#374151;--muted:#6b7280;--line:#e5e7eb;
+  --bg:#f7f8fc;--white:#ffffff;
+  --accent:#2563eb;--accent2:#7c3aed;
+  --grad:linear-gradient(135deg,#2563eb,#7c3aed);
+  --radius:14px;
+  --shadow:0 2px 16px rgba(15,22,35,0.07),0 1px 3px rgba(15,22,35,0.04);
+  --shadow-lg:0 12px 40px rgba(15,22,35,0.13),0 3px 10px rgba(15,22,35,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:60px;
+  background:rgba(255,255,255,0.97);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line);z-index:300;
+  display:flex;align-items:center;padding:0 24px;gap:0
+}
+.topbar-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.topbar-logo img{height:32px;width:auto;object-fit:contain}
+.topbar-logo-fallback{width:32px;height:32px;border-radius:8px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700}
+.topbar-logo-text{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-0.2px;line-height:1.2}
+.topbar-logo-sub{font-size:10px;color:var(--muted);display:block;font-weight:400}
+.topbar-spacer{flex:1}
+.topbar-nav{display:flex;align-items:center;gap:2px}
+.nav-link{padding:7px 11px;border-radius:8px;font-size:13px;font-weight:500;color:var(--muted);
+  text-decoration:none;transition:all 0.15s;border:none;background:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.nav-link:hover{background:#f1f5f9;color:var(--ink)}
+.nav-link.active{background:rgba(37,99,235,0.08);color:var(--accent)}
+.nav-divider{width:1px;height:18px;background:var(--line);margin:0 4px}
+.nav-user-chip{display:flex;align-items:center;gap:7px;padding:4px 12px 4px 4px;border-radius:40px;background:#f8fafc;border:1px solid var(--line)}
+.nav-avatar{width:26px;height:26px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0}
+.nav-user-name{font-size:12px;font-weight:600;color:var(--ink2)}
+
+/* Hamburger */
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;border-radius:8px;background:none;border:none;margin-left:6px}
+.hamburger span{display:block;width:20px;height:2px;background:var(--ink2);border-radius:2px;transition:all 0.28s}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+/* Mobile drawer */
+.mobile-drawer{
+  position:fixed;top:60px;left:0;right:0;background:rgba(255,255,255,0.99);
+  backdrop-filter:blur(20px);border-bottom:1px solid var(--line);z-index:299;
+  padding:10px 18px 18px;display:none;flex-direction:column;gap:3px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.07)
+}
+.mobile-drawer.open{display:flex}
+.mobile-nav-link{padding:11px 14px;border-radius:10px;font-size:14px;font-weight:500;color:var(--ink2);
+  text-decoration:none;display:flex;align-items:center;gap:10px;border:none;background:none;
+  cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;text-align:left;transition:background 0.15s}
+.mobile-nav-link:hover{background:#f8fafc}
+.mobile-nav-link.active{background:rgba(37,99,235,0.07);color:var(--accent)}
+.drawer-divider{height:1px;background:var(--line);margin:7px 0}
+
+/* ── MAIN ── */
+.main-content{position:relative;z-index:1;padding-top:60px;min-height:100vh}
+
+/* ── FORMS ── */
+.form-group{margin-bottom:15px}
+.form-group label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px;letter-spacing:0.4px;text-transform:uppercase}
+.input{width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;
+  color:var(--ink);background:#f9fafb;outline:none;transition:all 0.18s;font-family:'DM Sans',sans-serif;font-weight:400}
+.input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+.input::placeholder{color:#c4cad4;font-size:13px}
+.hint{font-size:11px;color:#c4cad4;margin-top:4px;display:block}
+.phone-row{display:flex;gap:8px}
+.flag-select{width:140px;flex-shrink:0;cursor:pointer}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 20px;
+  background:var(--grad);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;text-decoration:none;letter-spacing:-0.1px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,0.3);color:#fff}
+.btn:active{transform:translateY(0)}
+.btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--muted);box-shadow:none}
+.btn-ghost:hover{background:#f8fafc;border-color:#cbd5e1;box-shadow:none;transform:none;color:var(--ink)}
+.btn-sm{width:auto;padding:9px 18px;font-size:13px}
+.btn-row{display:flex;gap:10px}.btn-row .btn{flex:1}
+
+/* ── ALERTS ── */
+.alert{padding:10px 13px;border-radius:10px;font-size:13px;margin-bottom:13px;
+  display:none;align-items:center;gap:10px;font-weight:500;line-height:1.4}
+.alert.show{display:flex}
+.alert-error{background:rgba(220,53,69,0.07);color:#dc3545;border-left:3px solid #dc3545}
+.alert-success{background:rgba(22,163,74,0.07);color:#16a34a;border-left:3px solid #16a34a}
+.alert-info{background:rgba(37,99,235,0.07);color:var(--accent);border-left:3px solid var(--accent)}
+
+/* ── LOADING ── */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(247,248,252,0.95);z-index:9999;
+  align-items:center;justify-content:center;flex-direction:column;backdrop-filter:blur(8px)}
+.loading-overlay.active{display:flex}
+.loader-card{background:#0f1623;padding:1rem 2.2rem;border-radius:1.3rem;margin-bottom:14px}
+.loader{color:rgba(255,255,255,0.4);font-family:'DM Sans',sans-serif;font-weight:500;font-size:20px;height:38px;padding:8px;display:flex;align-items:center}
+.words{overflow:hidden;position:relative}
+.words::after{content:"";position:absolute;inset:0;background:linear-gradient(#0f1623 10%,transparent 30%,transparent 70%,#0f1623 90%);z-index:20}
+.word{display:block;height:100%;padding-left:6px;color:#60a5fa;animation:spin_w 4s infinite}
+@keyframes spin_w{10%{transform:translateY(-102%)}25%{transform:translateY(-100%)}35%{transform:translateY(-202%)}50%{transform:translateY(-200%)}60%{transform:translateY(-302%)}75%{transform:translateY(-300%)}85%{transform:translateY(-402%)}100%{transform:translateY(-400%)}}
+.loading-label{color:var(--muted);font-size:13px;font-weight:500}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#dde1ea;border-radius:10px}
+
+@media(max-width:768px){
+  .topbar{padding:0 14px}
+  .topbar-nav{display:none}
+  .hamburger{display:flex}
+  .topbar-logo-sub{display:none}
+}
+@media(max-width:400px){.topbar{padding:0 10px}}
+</style>
+{% block head %}{% endblock %}
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loader-card">
+    <div class="loader"><p>JAIN&nbsp;</p>
+      <div class="words">
+        <span class="word">Discovers</span>
+        <span class="word">Innovates</span>
+        <span class="word">Creates</span>
+        <span class="word">Inspires</span>
+        <span class="word">Discovers</span>
+      </div>
+    </div>
+  </div>
+  <p class="loading-label" id="loadingText">Please wait...</p>
+</div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <a href="/" class="topbar-logo">
+    <img src="/static/images/jain.png" alt="Jain University"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="topbar-logo-fallback" style="display:none">J</div>
+  </a>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-nav" id="topbarNav">{% block topbar_nav %}{% endblock %}</div>
+  <button class="hamburger" id="hamburger" onclick="toggleDrawer()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+
+<div class="mobile-drawer" id="mobileDrawer">{% block mobile_nav %}{% endblock %}</div>
+
+<div class="main-content">{% block content %}{% endblock %}</div>
+
+<script>
+/* ── UI HELPERS ── */
+function toggleDrawer(){
+  const d=document.getElementById('mobileDrawer'),h=document.getElementById('hamburger');
+  const open=d.classList.toggle('open');h.classList.toggle('open',open);
+}
+document.addEventListener('click',e=>{
+  const d=document.getElementById('mobileDrawer'),h=document.getElementById('hamburger');
+  if(d&&h&&!d.contains(e.target)&&!h.contains(e.target)){d.classList.remove('open');h.classList.remove('open')}
+});
+function showLoad(msg){
+  document.getElementById('loadingText').textContent=msg||'Please wait...';
+  document.getElementById('loadingOverlay').classList.add('active');
+}
+function hideLoad(){document.getElementById('loadingOverlay').classList.remove('active')}
+
+/* ── USER STORAGE ── */
+function getUser(){
+  try{return JSON.parse(localStorage.getItem('riasec_user')||sessionStorage.getItem('riasec_user')||'null')}
+  catch{return null}
+}
+function saveUser(u){
+  localStorage.setItem('riasec_user',JSON.stringify(u));
+  sessionStorage.setItem('riasec_user',JSON.stringify(u));
+}
+function clearUser(){
+  localStorage.removeItem('riasec_user');
+  sessionStorage.removeItem('riasec_user');
+}
+function logout(){clearUser();window.location.href='/entry'}
+
+/* ── TRAIT META ── */
+const TRAIT_INFO={
+  R:{name:"Realistic",    icon:"🔧", color:"#dc6b4a", bg:"#fff4f1", desc:"Practical & hands-on"},
+  I:{name:"Investigative",icon:"🔬", color:"#1d6fb5", bg:"#eff6ff", desc:"Analytical & scientific"},
+  A:{name:"Artistic",     icon:"🎨", color:"#7c3aed", bg:"#f5f3ff", desc:"Creative & expressive"},
+  S:{name:"Social",       icon:"🤝", color:"#0f9b6e", bg:"#f0fdf7", desc:"Helpful & cooperative"},
+  E:{name:"Enterprising", icon:"🚀", color:"#b45309", bg:"#fffbeb", desc:"Leadership & ambitious"},
+  C:{name:"Conventional", icon:"📊", color:"#475569", bg:"#f8fafc", desc:"Organized & systematic"}
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   42 RIASEC QUESTIONS — 7 per trait
+══════════════════════════════════════════════════════════════════ */
+const QUESTIONS = [
+  /* R: REALISTIC */
+  { trait:"R", text:"I enjoy working with tools, machines, or equipment to build or repair things." },
+  { trait:"R", text:"I prefer physical, hands-on tasks over sitting at a desk all day." },
+  { trait:"R", text:"I like working outdoors or in active environments rather than in an office." },
+  { trait:"R", text:"I enjoy assembling, fixing, or taking apart mechanical or electronic devices." },
+  { trait:"R", text:"I find satisfaction in producing something tangible with my hands." },
+  { trait:"R", text:"I like working with plants, animals, or natural environments." },
+  { trait:"R", text:"I prefer practical, real-world solutions over abstract theories or ideas." },
+  /* I: INVESTIGATIVE */
+  { trait:"I", text:"I enjoy researching topics deeply to find answers or uncover patterns." },
+  { trait:"I", text:"I like working with data, numbers, or charts to draw meaningful conclusions." },
+  { trait:"I", text:"I find science fascinating and enjoy reading about discoveries and breakthroughs." },
+  { trait:"I", text:"I enjoy solving complex problems that require careful logical reasoning." },
+  { trait:"I", text:"I like conducting experiments or testing hypotheses to understand how things work." },
+  { trait:"I", text:"I prefer to think through a problem thoroughly before taking any action." },
+  { trait:"I", text:"I am naturally curious and love learning how and why things function the way they do." },
+  /* A: ARTISTIC */
+  { trait:"A", text:"I enjoy creating original work — whether it's visual art, music, writing, or design." },
+  { trait:"A", text:"I prefer tasks that give me creative freedom over those with rigid rules or procedures." },
+  { trait:"A", text:"I find inspiration in aesthetics — colours, shapes, sounds, or storytelling." },
+  { trait:"A", text:"I like expressing my thoughts and emotions through a creative medium." },
+  { trait:"A", text:"I enjoy designing things — layouts, experiences, visuals, or environments." },
+  { trait:"A", text:"I feel energised when brainstorming new ideas or imagining possibilities." },
+  { trait:"A", text:"I appreciate art, film, music, or literature and notice details others often miss." },
+  /* S: SOCIAL */
+  { trait:"S", text:"I genuinely enjoy helping others solve problems or navigate difficult situations." },
+  { trait:"S", text:"I feel fulfilled when I make a positive impact on someone's life or wellbeing." },
+  { trait:"S", text:"I like teaching, mentoring, or explaining concepts to people of different backgrounds." },
+  { trait:"S", text:"I prefer working with people over working alone with data or machines." },
+  { trait:"S", text:"I am a good listener and people often come to me for advice or support." },
+  { trait:"S", text:"I enjoy collaborating in teams and thrive in cooperative group environments." },
+  { trait:"S", text:"I care about social issues and feel motivated to contribute to my community." },
+  /* E: ENTERPRISING */
+  { trait:"E", text:"I enjoy leading or managing a team and taking responsibility for outcomes." },
+  { trait:"E", text:"I am ambitious — I set clear goals and actively work toward achieving them." },
+  { trait:"E", text:"I like persuading or influencing others to adopt ideas, products, or directions." },
+  { trait:"E", text:"I would enjoy starting my own business or launching a new initiative." },
+  { trait:"E", text:"I thrive in competitive environments and am motivated by challenges." },
+  { trait:"E", text:"I am comfortable taking calculated risks in pursuit of bigger opportunities." },
+  { trait:"E", text:"I enjoy giving presentations, pitching ideas, or speaking in front of audiences." },
+  /* C: CONVENTIONAL */
+  { trait:"C", text:"I enjoy organising information, files, or workflows so everything runs efficiently." },
+  { trait:"C", text:"I like following clear procedures and well-defined guidelines to complete tasks accurately." },
+  { trait:"C", text:"I pay close attention to detail and notice errors or inconsistencies others overlook." },
+  { trait:"C", text:"I enjoy working with spreadsheets, databases, or financial records." },
+  { trait:"C", text:"I feel comfortable in structured, predictable work environments with clear expectations." },
+  { trait:"C", text:"I take pride in completing tasks correctly, on time, and without mistakes." },
+  { trait:"C", text:"I like planning, scheduling, and keeping systematic records of my activities." }
+];
+
+/* ── maxPT: 7 per trait ── */
+const maxPT = { R:7, I:7, A:7, S:7, E:7, C:7 };
+
+/* ══════════════════════════════════════════════════════════════════
+   COURSE DEFINITIONS WITH WEIGHTED TRAIT PRIORITIES
+   matchTraits[0] = PRIMARY   (highest weight)
+   matchTraits[1] = SECONDARY
+   matchTraits[2] = TERTIARY  (lowest weight)
+
+   Scoring formula per course:
+     score = (student_rank1_matches_course_rank1 × 15)
+           + (student_rank1_matches_course_rank2 × 10)
+           + (student_rank1_matches_course_rank3 × 5)
+           + (student_rank2_matches_course_rank1 × 10)
+           + (student_rank2_matches_course_rank2 × 7)
+           + (student_rank2_matches_course_rank3 × 3)
+           + (student_rank3_matches_course_rank1 × 5)
+           + (student_rank3_matches_course_rank2 × 3)
+           + (student_rank3_matches_course_rank3 × 1)
+══════════════════════════════════════════════════════════════════ */
+const COURSE_MATCH_WEIGHTS = [
+  [15, 10, 5],   // student's #1 trait vs course's [#1, #2, #3]
+  [10,  7, 3],   // student's #2 trait vs course's [#1, #2, #3]
+  [ 5,  3, 1],   // student's #3 trait vs course's [#1, #2, #3]
+];
+
+function calcCourseScore(courseTraits, studentTop3) {
+  let score = 0;
+  studentTop3.forEach((sTrait, sRank) => {
+    courseTraits.forEach((cTrait, cRank) => {
+      if (sTrait === cTrait) {
+        score += COURSE_MATCH_WEIGHTS[sRank][cRank];
+      }
+    });
+  });
+  return score;
+}
+
+const SCRIPT_URL = '{{ script_url }}';
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

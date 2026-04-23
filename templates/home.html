@@ -1,0 +1,801 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – RIASEC · JAIN (Deemed-to-be University){% endblock %}
+
+{% block topbar_nav %}
+<a href="/home" class="nav-link active">Dashboard</a>
+<a href="/home#recommended" class="nav-link">Recommended</a>
+<div class="nav-divider"></div>
+<div class="nav-user-chip">
+  <div class="nav-avatar" id="nav-avatar">?</div>
+  <span class="nav-user-name" id="nav-user-name">Guest</span>
+</div>
+<button class="nav-link" onclick="logout()" style="color:#9ca3af;font-size:12px">Sign out</button>
+{% endblock %}
+
+{% block mobile_nav %}
+<div style="display:flex;align-items:center;gap:10px;padding:8px 4px;margin-bottom:4px">
+  <div class="nav-avatar" id="mob-avatar" style="width:36px;height:36px;font-size:14px">?</div>
+  <div>
+    <div style="font-size:14px;font-weight:600;color:#0f1623" id="mob-name">Guest</div>
+    <div style="font-size:11px;color:#9ca3af">RIASEC Profile</div>
+  </div>
+</div>
+<div class="drawer-divider"></div>
+<a href="/home" class="mobile-nav-link active">Dashboard</a>
+<a href="/home#recommended" class="mobile-nav-link">Recommended Degree</a>
+<a href="/survey" class="mobile-nav-link">Retake Survey</a>
+<div class="drawer-divider"></div>
+<button class="mobile-nav-link" onclick="logout()" style="color:#ef4444">Sign out</button>
+{% endblock %}
+
+{% block head %}
+<style>
+/* ── PAGE ── */
+.hw{max-width:1060px;margin:0 auto;padding:36px 24px 100px}
+@media(max-width:820px){.hw{padding:20px 14px 70px}}
+@media(max-width:480px){.hw{padding:14px 10px 60px}}
+
+/* ── HERO BANNER ── */
+.hero-banner{
+  position:relative;border-radius:20px;overflow:hidden;
+  min-height:380px;display:flex;flex-direction:column;
+  justify-content:flex-end;margin-bottom:36px
+}
+@media(max-width:600px){.hero-banner{min-height:260px;border-radius:14px;margin-bottom:22px}}
+.hb-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transition:transform 8s ease}
+.hero-banner:hover .hb-img{transform:scale(1.04)}
+.hb-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,12,26,0.97) 0%,rgba(8,12,26,0.6) 45%,rgba(8,12,26,0.08) 100%)}
+.hb-inner{position:relative;z-index:2;padding:36px 40px}
+@media(max-width:600px){.hb-inner{padding:18px 16px}}
+
+.hb-status{
+  position:absolute;top:16px;left:16px;z-index:3;
+  font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;
+  display:none;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15)
+}
+.hb-user-chip{
+  position:absolute;top:16px;right:16px;z-index:3;
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);
+  border-radius:30px;padding:4px 12px 4px 4px;backdrop-filter:blur(10px)
+}
+.hb-avatar{width:26px;height:26px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.hb-greeting{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.9px;margin-bottom:12px}
+.hb-deg-badge{display:none;align-items:center;gap:12px;background:rgba(37,99,235,0.8);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px 16px 8px 10px;margin-bottom:14px}
+.hb-deg-code{font-family:'DM Serif Display',serif;font-size:38px;color:#fff;line-height:1;letter-spacing:-1px}
+.hb-deg-full{font-size:10px;font-weight:600;color:rgba(255,255,255,0.72);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:2px}
+.hb-deg-uni{font-size:10px;color:rgba(255,255,255,0.38)}
+.hb-course{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;line-height:1.25;letter-spacing:-0.2px;margin-bottom:5px;max-width:680px}
+@media(max-width:500px){.hb-course{font-size:18px}}
+.hb-course-sub{font-size:11px;color:rgba(255,255,255,0.38);margin-bottom:20px}
+.hb-traits-lbl{font-size:10px;font-weight:600;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;display:none}
+.hb-pills{display:flex;gap:8px;flex-wrap:wrap}
+.hb-pill{padding:6px 14px;border-radius:30px;font-size:12px;font-weight:600;background:rgba(255,255,255,0.92)}
+
+/* ── SECTION HEADER ── */
+.sec-hd{margin-bottom:18px}
+.sec-eye{font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.sec-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--ink);letter-spacing:-0.2px}
+.sec-sub{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.55}
+
+/* ── TRAITS GRID ── */
+.traits-sec{margin-bottom:40px}
+.traits-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+@media(max-width:860px){.traits-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.traits-grid{grid-template-columns:repeat(2,1fr)}}
+
+.tc{background:#fff;border-radius:13px;border:1.5px solid var(--line);padding:16px 12px;box-shadow:var(--shadow);transition:all 0.22s;text-align:center}
+.tc:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.tc.top-trait{border-width:2px}
+.tc-top-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;background:var(--grad);color:#fff;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:7px}
+.tc-icon{font-size:20px;margin-bottom:3px}
+.tc-code{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;line-height:1;margin-bottom:2px}
+.tc-name{font-size:9px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:9px}
+.tc-bar{height:4px;background:#f1f3f7;border-radius:10px;overflow:hidden;margin-bottom:5px}
+.tc-bar-fill{height:100%;border-radius:10px}
+.tc-score{font-size:11px;font-weight:700}
+
+/* ── COURSE CARDS ── */
+.rec-sec{margin-bottom:40px}
+.course-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:640px){.course-grid{grid-template-columns:1fr}}
+
+.cc{background:#fff;border-radius:16px;border:1px solid var(--line);overflow:hidden;box-shadow:var(--shadow);text-decoration:none;display:flex;flex-direction:column;transition:all 0.22s;cursor:pointer}
+.cc:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:rgba(37,99,235,0.22)}
+.cc.primary{border:2px solid rgba(37,99,235,0.22);box-shadow:0 6px 28px rgba(37,99,235,0.1)}
+
+.cc-img-wrap{position:relative;height:168px;overflow:hidden;flex-shrink:0}
+.cc-img{width:100%;height:100%;object-fit:cover;transition:transform 6s ease}
+.cc:hover .cc-img{transform:scale(1.06)}
+.cc-img-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,12,26,0.65) 0%,transparent 60%)}
+.cc-top-badge{position:absolute;top:10px;left:10px;font-size:10px;font-weight:600;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.4px;color:#fff}
+.cc-level-badge{position:absolute;bottom:10px;right:10px;background:rgba(255,255,255,0.14);color:#fff;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid rgba(255,255,255,0.22);text-transform:uppercase}
+.cc-body{padding:18px 20px;display:flex;flex-direction:column;flex:1}
+.cc-title{font-size:14px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:4px;letter-spacing:-0.1px}
+.cc-meta{font-size:11px;color:var(--muted);margin-bottom:10px}
+.cc-trait-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.cc-trait{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid transparent}
+.cc-pathway{background:#f8fafc;border-radius:8px;padding:9px 12px;font-size:11px;color:var(--muted);border-left:3px solid rgba(37,99,235,0.3);margin-bottom:12px;line-height:1.6}
+.cc-pathway strong{color:var(--accent);display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin-bottom:2px}
+.cc-cta{display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:#fff;padding:10px 14px;border-radius:9px;font-size:12px;font-weight:600;margin-top:auto;transition:all 0.18s}
+.cc:hover .cc-cta{background:var(--accent)}
+
+/* ── CURRICULUM ACCORDION ── */
+.curriculum-sec{margin-bottom:40px}
+
+.prog-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border-radius:13px;border:1px solid var(--line);margin-bottom:8px;box-shadow:var(--shadow);transition:all 0.18s;cursor:pointer;user-select:none}
+.prog-header:hover{border-color:rgba(37,99,235,0.25);background:#fafbff}
+.prog-header.open-state{border-color:rgba(37,99,235,0.2);background:#fafbff}
+.ph-left{display:flex;align-items:center;gap:12px}
+.ph-deg{font-family:'DM Serif Display',serif;font-size:16px;color:var(--accent);width:40px;height:40px;border-radius:10px;background:rgba(37,99,235,0.07);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ph-name{font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-0.1px}
+.ph-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.ph-arrow{color:var(--muted);font-size:16px;transition:transform 0.26s;flex-shrink:0}
+.ph-arrow.open{transform:rotate(180deg);color:var(--accent)}
+.prog-body{display:none;padding:0 0 14px}
+.prog-body.open{display:block}
+
+.hon-sep{display:flex;align-items:center;gap:10px;margin:8px 0 4px}
+.hon-line{flex:1;height:1px;background:var(--line)}
+.hon-tag{font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px;background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.15);padding:3px 13px;border-radius:20px;white-space:nowrap}
+
+.sem-item{border:1px solid var(--line);border-radius:11px;margin-bottom:7px;overflow:hidden;background:#fff}
+.sem-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none;transition:background 0.14s;gap:12px}
+.sem-head:hover{background:#f9fafb}
+.sem-head.open-s{background:#f0f6ff}
+.sem-badge{background:var(--grad);color:#fff;font-size:10px;font-weight:600;padding:3px 11px;border-radius:20px;letter-spacing:0.3px;white-space:nowrap;flex-shrink:0}
+.sem-count{font-size:11px;color:var(--muted);flex:1;margin-left:7px}
+.sem-chev{font-size:13px;color:var(--muted);transition:transform 0.24s;flex-shrink:0}
+.sem-chev.open{transform:rotate(180deg);color:var(--accent)}
+.sem-body{display:none;border-top:1px solid #f3f4f6}
+.sem-body.open{display:block}
+.sem-table{width:100%;border-collapse:collapse}
+.sem-table tr{border-bottom:1px solid #f9fafb;transition:background 0.12s}
+.sem-table tr:last-child{border-bottom:none}
+.sem-table tr:hover{background:#fafbff}
+.sem-table td:first-child{width:34px;padding:10px 6px 10px 16px;font-size:11px;font-weight:600;color:#c4cad4;text-align:center}
+.sem-table td:last-child{padding:10px 16px 10px 4px;font-size:13px;color:var(--ink2);line-height:1.5}
+
+/* ── BOTTOM SIDEBAR ── */
+.bottom-grid{display:grid;grid-template-columns:1fr 270px;gap:20px;align-items:start}
+@media(max-width:820px){.bottom-grid{grid-template-columns:1fr}}
+
+.side-card{background:#fff;border-radius:13px;border:1px solid var(--line);padding:20px;box-shadow:var(--shadow);margin-bottom:14px}
+.side-card-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px}
+.action-row{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:10px;background:#f9fafb;border:1px solid var(--line);cursor:pointer;text-decoration:none;transition:all 0.18s;margin-bottom:7px}
+.action-row:last-child{margin-bottom:0}
+.action-row:hover{border-color:rgba(37,99,235,0.25);background:#eff6ff;transform:translateX(3px)}
+.ar-icon{width:32px;height:32px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ar-text strong{display:block;font-size:12px;font-weight:600;color:var(--ink)}
+.ar-text span{font-size:11px;color:var(--muted)}
+
+.consult-card{background:var(--ink);border-radius:13px;padding:22px}
+.consult-card h4{font-family:'DM Serif Display',serif;font-size:17px;font-weight:400;color:#fff;margin-bottom:7px}
+.consult-card p{font-size:12px;color:rgba(255,255,255,0.4);line-height:1.75;margin-bottom:14px}
+.consult-btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 18px;border-radius:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.18s;width:100%}
+.consult-btn:hover{background:rgba(255,255,255,0.2)}
+
+.empty-card{background:#fff;border-radius:13px;border:1px solid var(--line);padding:40px;text-align:center;box-shadow:var(--shadow);grid-column:1/-1}
+.empty-card p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+
+/* ══════════════════════════════════════
+   RESULTS POPUP MODAL — FIXED
+   z-index above topbar (300), landscape + mobile safe
+══════════════════════════════════════ */
+.modal-ov{
+  position:fixed;inset:0;
+  background:rgba(10,14,26,0.75);
+  z-index:400;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:70px 16px 16px;   /* top padding clears the 60px topbar */
+  backdrop-filter:blur(10px);
+  overflow-y:auto;
+}
+.modal-ov.open{display:flex}
+
+.results-modal{
+  background:#fff;
+  border-radius:22px;
+  width:100%;
+  max-width:680px;
+  margin:auto;
+  box-shadow:0 32px 80px rgba(0,0,0,0.3);
+  position:relative;
+  animation:rmIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  flex-shrink:0;
+}
+@keyframes rmIn{from{transform:translateY(24px) scale(0.93);opacity:0}to{transform:none;opacity:1}}
+
+/* Modal header */
+.rm-hd{
+  background:linear-gradient(160deg,#0b1120 0%,#1a2b4a 55%,#0a2540 100%);
+  border-radius:22px 22px 0 0;
+  padding:28px 28px 24px;
+  position:relative;overflow:hidden
+}
+.rm-hd-orb1{position:absolute;width:200px;height:200px;background:rgba(37,99,235,0.22);border-radius:50%;filter:blur(50px);top:-60px;right:-40px;pointer-events:none}
+.rm-hd-orb2{position:absolute;width:130px;height:130px;background:rgba(124,58,237,0.18);border-radius:50%;filter:blur(50px);bottom:-20px;left:-20px;pointer-events:none}
+
+.rm-logo-row{display:flex;align-items:center;gap:9px;margin-bottom:16px;position:relative;z-index:1}
+.rm-logo-img{height:28px;width:auto;object-fit:contain;filter:brightness(0) invert(1)}
+.rm-logo-fallback{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
+.rm-logo-name{font-size:10px;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:0.2px}
+
+.rm-tag{display:inline-flex;align-items:center;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:3px 12px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.9px;margin-bottom:12px;position:relative;z-index:1}
+.rm-title{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;line-height:1.25;margin-bottom:5px;position:relative;z-index:1}
+.rm-sub{font-size:13px;color:rgba(255,255,255,0.45);position:relative;z-index:1;margin-bottom:18px;line-height:1.55}
+
+/* TOP 3 traits — horizontal landscape layout */
+.rm-top3{
+  display:flex;
+  gap:8px;
+  flex-wrap:nowrap;
+  position:relative;
+  z-index:1;
+  overflow-x:auto;
+  padding-bottom:2px;
+}
+.rm-top3::-webkit-scrollbar{height:3px}
+.rm-top3::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:10px}
+
+.rm-trait-pill{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 14px;
+  border-radius:12px;
+  border:1.5px solid transparent;
+  flex-shrink:0;
+  min-width:0;
+}
+.rm-trait-code{font-family:'DM Serif Display',serif;font-size:20px;line-height:1}
+.rm-trait-name{font-size:12px;font-weight:600;display:block;white-space:nowrap}
+.rm-trait-rank{font-size:10px;font-weight:400;opacity:0.72;white-space:nowrap}
+
+.rm-close{
+  position:absolute;top:14px;right:14px;
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);
+  border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:13px;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  transition:all 0.18s;z-index:2
+}
+.rm-close:hover{background:rgba(255,255,255,0.22)}
+
+/* Modal body */
+.rm-body{padding:24px 28px 26px}
+
+.rm-sec-lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+
+.rm-scores{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:22px}
+@media(max-width:480px){.rm-scores{grid-template-columns:repeat(3,1fr)}}
+.rm-sc{background:#f8fafc;border-radius:10px;padding:10px 6px;text-align:center;border:1.5px solid #f1f3f7}
+.rm-sc.top{border-width:2px}
+.rm-sc-code{font-family:'DM Serif Display',serif;font-size:17px;line-height:1}
+.rm-sc-name{font-size:8px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin:3px 0 6px}
+.rm-sc-bar{height:4px;background:#e5e7eb;border-radius:10px;overflow:hidden;margin-bottom:4px}
+.rm-sc-fill{height:100%;border-radius:10px}
+.rm-sc-val{font-size:11px;font-weight:700}
+
+/* Recommended courses in modal — ranked list */
+.rm-courses{display:flex;flex-direction:column;gap:9px;margin-bottom:22px}
+.rm-cc{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);
+  background:#f9fafb;cursor:pointer;transition:all 0.18s;text-decoration:none
+}
+.rm-cc:hover{border-color:rgba(37,99,235,0.3);background:#eff6ff;transform:translateX(2px)}
+.rm-cc.best{border-color:rgba(37,99,235,0.28);background:rgba(37,99,235,0.04)}
+.rm-rank-badge{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0
+}
+.rm-cc-img{width:50px;height:50px;border-radius:9px;object-fit:cover;flex-shrink:0}
+.rm-cc-body{flex:1;min-width:0}
+.rm-cc-match-bar-wrap{display:flex;align-items:center;gap:6px;margin-top:5px}
+.rm-cc-match-bar{flex:1;height:3px;background:#e5e7eb;border-radius:10px;overflow:hidden}
+.rm-cc-match-fill{height:100%;border-radius:10px}
+.rm-cc-match-pct{font-size:10px;font-weight:700;white-space:nowrap}
+.rm-cc-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px}
+.rm-cc-title{font-size:13px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:1px}
+.rm-cc-meta{font-size:10px;color:var(--muted)}
+.rm-cc-traits{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.rm-cc-trait{font-size:9px;padding:2px 6px;border-radius:20px;font-weight:600;border:1px solid transparent}
+.rm-cc-arr{color:#d1d5db;font-size:15px;transition:all 0.15s;flex-shrink:0}
+.rm-cc:hover .rm-cc-arr{color:var(--accent)}
+
+.rm-footer{display:flex;gap:10px;padding-top:2px}
+.rm-footer .btn{flex:1}
+
+/* Landscape / short-screen modal adjustments */
+@media(max-height:600px){
+  .modal-ov{padding:65px 12px 12px;align-items:flex-start}
+  .rm-hd{padding:20px 22px 18px}
+  .rm-title{font-size:19px}
+  .rm-body{padding:18px 22px 20px}
+}
+@media(max-width:480px){
+  .results-modal{border-radius:16px}
+  .rm-hd{padding:22px 18px 18px;border-radius:16px 16px 0 0}
+  .rm-body{padding:18px 16px 20px}
+  .rm-trait-pill{padding:8px 10px}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hw">
+
+  <!-- ── HERO ── -->
+  <div class="hero-banner">
+    <img class="hb-img" id="hb-img"
+         src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1400&q=80"
+         alt="Campus">
+    <div class="hb-overlay"></div>
+    <div class="hb-status" id="hb-status">Assessment Completed</div>
+    <div class="hb-user-chip">
+      <div class="hb-avatar" id="hb-avatar">?</div>
+      <span style="font-size:12px;color:rgba(255,255,255,0.85);font-weight:600" id="hb-uname">Guest</span>
+    </div>
+    <div class="hb-inner">
+      <div class="hb-greeting" id="hb-greeting">Welcome back</div>
+      <div class="hb-deg-badge" id="hb-deg-badge">
+        <div class="hb-deg-code" id="hb-deg-code">BS</div>
+        <div>
+          <div class="hb-deg-full" id="hb-deg-full">Bachelor of Science (Hons)</div>
+          <div class="hb-deg-uni">JAIN (Deemed-to-be University)</div>
+        </div>
+      </div>
+      <div class="hb-course" id="hb-course">Your Career Assessment Dashboard</div>
+      <div class="hb-course-sub" id="hb-course-sub">JAIN (Deemed-to-be University) · Career Guidance Cell</div>
+      <div class="hb-traits-lbl" id="hb-traits-lbl">Your Top 3 Traits</div>
+      <div class="hb-pills" id="hb-pills"></div>
+    </div>
+  </div>
+
+  <!-- ── RIASEC PROFILE ── -->
+  <div class="traits-sec">
+    <div class="sec-hd">
+      <div class="sec-eye">Your Assessment</div>
+      <div class="sec-title">RIASEC Profile</div>
+    </div>
+    <div class="traits-grid" id="traits-grid">
+      <div class="empty-card">
+        <p style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:8px">Take the RIASEC Survey</p>
+        <p>Discover your personality type and the courses that match you best.</p>
+        <a href="/survey" class="btn btn-sm" style="width:auto;display:inline-flex;margin-top:14px">Start Survey</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RECOMMENDED DEGREE ── -->
+  <div class="rec-sec" id="rec-sec" style="display:none">
+    <div class="sec-hd" id="recommended">
+      <div class="sec-eye">Personalised for you</div>
+      <div class="sec-title" id="rec-title">Your Recommended Degree</div>
+      <div class="sec-sub" id="rec-sub"></div>
+    </div>
+    <div class="course-grid" id="course-grid"></div>
+  </div>
+
+  <!-- ── ALL PROGRAMMES ── -->
+  <div class="curriculum-sec">
+    <div class="sec-hd">
+      <div class="sec-eye">Course Structure</div>
+      <div class="sec-title">All Programmes</div>
+      <div class="sec-sub">Click any programme to expand, then click a semester to see its subjects.</div>
+    </div>
+    <div id="curriculum-list"></div>
+  </div>
+
+  <!-- ── BOTTOM ── -->
+  <div class="bottom-grid">
+    <div></div>
+    <div>
+      <div class="side-card">
+        <div class="side-card-title">Quick Actions</div>
+        <a href="/survey" class="action-row">
+          <div class="ar-icon">↺</div>
+          <div class="ar-text"><strong>Retake Survey</strong><span>Get updated results</span></div>
+        </a>
+        <a href="/results" class="action-row">
+          <div class="ar-icon">📊</div>
+          <div class="ar-text"><strong>View Full Results</strong><span>Detailed breakdown</span></div>
+        </a>
+      </div>
+      <div class="consult-card">
+        <h4>Need Guidance?</h4>
+        <p>Talk to our Admission Coordinator for personalised career and course recommendations.</p>
+        <button class="consult-btn">Contact Coordinator</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /hw -->
+
+<!-- ══════════════════════════════════
+     RESULTS POPUP MODAL
+══════════════════════════════════ -->
+<div class="modal-ov" id="results-modal" onclick="closeBgModal(event)">
+  <div class="results-modal">
+
+    <div class="rm-hd">
+      <div class="rm-hd-orb1"></div>
+      <div class="rm-hd-orb2"></div>
+      <button class="rm-close" onclick="closeResultsModal()" aria-label="Close">✕</button>
+
+      
+
+      <div class="rm-tag">🎯 Your RIASEC Results</div>
+      <div class="rm-title" id="rm-title">Your Personality Profile</div>
+      <div class="rm-sub"  id="rm-sub">Here are your top traits and best-matched programmes</div>
+      <div class="rm-top3" id="rm-top3"></div>
+    </div>
+
+    <div class="rm-body">
+      <div class="rm-sec-lbl">All Six Scores</div>
+      <div class="rm-scores"  id="rm-scores"></div>
+
+      <div class="rm-sec-lbl">Recommended Programmes — Ranked by Match</div>
+      <div class="rm-courses" id="rm-courses"></div>
+
+      <div class="rm-footer">
+        <button class="btn btn-ghost" onclick="closeResultsModal()">View Dashboard</button>
+        <button class="btn" id="rm-best-btn">Explore Best Match →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* ── GUARD ── */
+const user = getUser();
+if(!user || !user.name){ window.location.href = '/entry'; }
+
+const fn = (user.name || 'Guest').split(' ')[0];
+['nav-avatar','mob-avatar'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.textContent = (user.name||'?')[0].toUpperCase();
+});
+['nav-user-name','mob-name'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.textContent = fn;
+});
+
+/* ══════════════════════════════════════
+   ALL 4 COURSES — matchTraits order is priority:
+   [0]=PRIMARY (#1 fit), [1]=SECONDARY, [2]=TERTIARY
+══════════════════════════════════════ */
+const COURSES = [
+  {
+    id:'creative-tech',
+    matchTraits:['A','I','S'],   // Primary=A, Secondary=I, Tertiary=S
+    level:'BS (Hons)',
+    title:'Creative Technology and Design',
+    university:'JAIN (Deemed-to-be University)',
+    duration:'3 Years + 1 Year Honours',
+    image:'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&q=80',
+    thumb:'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&q=80',
+    pathway:"Master's in Creative Technology and Design · UCAM University, Spain",
+    curriculum:[
+      {sem:'Semester 1',courses:['Design Fundamentals and Visual Systems','Human–Computer Interaction','Narrative Storytelling and Data Visualisation','Audio and Image Fundamentals','English / Hindi / Kannada / Spanish / French','MMHV I']},
+      {sem:'Semester 2',courses:['Creative Technology Basics','Real-Time 3D Basics (Unity/Unreal)','Motion and Animation Principles','Accessibility and Inclusive Design','Additional Language','MMHV II']},
+      {sem:'Semester 3',courses:['Real-Time 3D','Physical and Creative Computing 1','Audio Tech and Music Production','Computational Design','Ethics, IP and Media Law','Integrative Competencies Development I','Environmental Studies']},
+      {sem:'Semester 4',courses:['XR Foundations (AR/VR)','Physical and Creative Computing 2','Motion/VFX I','UX Eval and Analytics','Integrative Competencies Development II','Indian Constitution','Open Elective 1']},
+      {sem:'Semester 5',courses:['Production and Pipelines','Data-informed Design','Production Design and Tech Direction','Integrative Competencies Development III','Professional Elective 1','Open Elective 2']},
+      {sem:'Semester 6',courses:['Production Facilitation','Inclusion by Design','Integrative Competencies Development IV','Project-based Internship / Apprenticeship','Professional Elective 2','Open Elective 3']},
+      {type:'sep',label:'Honours'},
+      {sem:'Semester 7 (Honours)',courses:['Advanced HCI and Experience Design','Computational Creativity and Generative Methods','Advanced XR and Spatial Computing Systems','Creative AI Systems','Production Engineering','Integrative Competencies Development V']},
+      {sem:'Semester 8 (Honours)',courses:['Research Methods and Scientific Writing','Integrative Competencies Development VI','Applied Research or Industry Research Practicum','Capstone Project / Graduate Project / Internship','Open Elective 4']},
+      {type:'sep',label:'Honours with Research'},
+      {sem:'Semester 7 (Research)',courses:['Advanced HCI and Experience Design','Computational Creativity and Generative Methods','Advanced XR and Spatial Computing Systems','Creative AI Systems','Production Engineering','Research Methods and Scientific Writing']},
+      {sem:'Semester 8 (Research)',courses:['Research Project','Applied Research or Industry Research Practicum','Capstone Project / Graduate Project / Internship','Research Seminar','Open Elective 4']}
+    ]
+  },
+  {
+    id:'data-ai',
+    matchTraits:['I','C','R'],   // Primary=I, Secondary=C, Tertiary=R
+    level:'BS (Hons)',
+    title:'Data Analytics and Applied Artificial Intelligence',
+    university:'JAIN (Deemed-to-be University)',
+    duration:'3 Years + 1 Year Honours',
+    image:'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&q=80',
+    thumb:'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&q=80',
+    pathway:"Master's in Data Analytics and Applied Artificial Intelligence · UCAM University, Spain",
+    curriculum:[
+      {sem:'Semester 1',courses:['Mathematics I (Discrete Mathematics)','Programming Basics and Python','Data Literacy and Visualisation','Logic and Calculus for Data Science','English / Hindi / Kannada / Spanish / French','MMHV I']},
+      {sem:'Semester 2',courses:['Mathematics II (Probability and Statistics)','Data Structures and Algorithms','Databases with SQL','Data Visualisation and Storytelling','Additional Language','MMHV II']},
+      {sem:'Semester 3',courses:['Software Engineering Basics and APIs','Mathematics III (Probability, Statistics and Statistical Learning)','Data Engineering I (ETL and Data Warehousing)','Introduction to Machine Learning and AI','Responsible AI and Data Governance','Integrative Competencies Development I','Environmental Studies']},
+      {sem:'Semester 4',courses:['Machine Learning Systems (Feature Stores, Eval, Leakage)','Time Series and Forecasting','Experimental Design and Inferencing','Data Engineering II (Spark and Data Lakes)','Integrative Competencies Development II','Indian Constitution','Open Elective 1']},
+      {sem:'Semester 5',courses:['Deep Learning I (CNN / RNN and Representation Learning)','Natural Language Processing I (Tokenisation, Classic and Neural)','Cloud for Data Analytics and AI','Integrative Competencies Development III','MLOps','Open Elective 2']},
+      {sem:'Semester 6',courses:['Recommender Systems','Graph Analytics','Integrative Competencies Development IV','Streaming and Real-Time Analytics','Privacy-Preserving Analytics','Open Elective 3']},
+      {type:'sep',label:'Honours'},
+      {sem:'Semester 7 (Honours)',courses:['Advanced Machine Learning and Applied AI','Deep Learning II (Transformers and GenAI)','Optimisation for Large-Scale Learning','Generative AI','Causal Inference and Uplift Modelling','Integrative Competencies Development V']},
+      {sem:'Semester 8 (Honours)',courses:['Research Methods and Scientific Writing','Integrative Competencies Development VI','Applied Research or Industry Research Practicum','Capstone Project / Graduate Project / Internship','Open Elective 4']},
+      {type:'sep',label:'Honours with Research'},
+      {sem:'Semester 7 (Research)',courses:['Advanced Machine Learning and Applied AI','Deep Learning II (Transformers and GenAI)','Optimisation for Large-Scale Learning','Generative AI','Causal Inference and Uplift Modelling','Research Methods and Scientific Writing']},
+      {sem:'Semester 8 (Research)',courses:['Research Project','Applied Research or Industry Research Practicum','Capstone Project / Graduate Project / Internship','Research Seminar','Open Elective 4']}
+    ]
+  },
+  {
+    id:'corporate-mgmt',
+    matchTraits:['E','C','I'],   // Primary=E, Secondary=C, Tertiary=I
+    level:'MS',
+    title:'Corporate Management and Lean Six Sigma',
+    university:'JAIN (Deemed-to-be University)',
+    duration:'2 Years',
+    image:'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80',
+    thumb:'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&q=80',
+    pathway:'Masters in Corporate Management and Lean Six Sigma (Lean Six Sigma Institute) + PG Certificate in Business Excellence · UCAM University, Spain',
+    curriculum:[
+      {sem:'Semester 1',courses:['Principles of Management and Corporate Environment','Accounting and Financial Reporting for Managers','Quantitative Techniques and Business Statistics','Lean Tools (Yellow Belt)','Six Sigma Improvement Tools (Green Belt) I']},
+      {sem:'Semester 2',courses:['Marketing Management','Operations and Supply Chain Management','Organisational Behaviour and Human Resource Management','Six Sigma Improvement Tools (Green Belt) II','Lean Six Sigma Advanced Tools (Black Belt)']},
+      {sem:'Semester 3',courses:['Strategic Management and Corporate Policy','Project Management and Risk Analysis','Business Analytics for Process Excellence','Lean Specialties','Application in Industry 4.0 - I','Integrative Competencies Development I']},
+      {sem:'Semester 4',courses:['Corporate Performance Management','Entrepreneurship and Lean Consulting Practice','Application in Industry 4.0 - II','Integrative Competencies Development II',"Master's Final Project"]}
+    ]
+  },
+  {
+    id:'sports-science',
+    matchTraits:['R','I','S'],   // Primary=R, Secondary=I, Tertiary=S
+    level:'MS',
+    title:'High Performance Sports: Strength and Conditioning',
+    university:'JAIN (Deemed-to-be University)',
+    duration:'2 Years',
+    image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&q=80',
+    thumb:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80',
+    pathway:'PG Certificate in High Performance Sports: Strength and Conditioning · UCAM University, Spain',
+    curriculum:[
+      {sem:'Semester 1',courses:['Research Methodology','Computer and Research Methods in Strength and Conditioning','Communication and Professional Skills']},
+      {sem:'Semester 2',courses:['Scientific Principles of Strength and Conditioning','Exercise Physiology','Biomechanics and Movement Analysis']},
+      {sem:'Semester 3',courses:['Sport Nutrition and Ergogenic Aids','Program Design in Strength and Conditioning','Injury Prevention and Rehabilitation','Integrative Competencies Development: Leadership and Organisational Behaviour']},
+      {sem:'Semester 4',courses:['Practicum / Internship','Masters Thesis']}
+    ]
+  }
+];
+
+const MAX_POSSIBLE_SCORE = 15 + 10 + 5; // 30 pts max
+
+/* ── RENDER HERO ── */
+function renderHero(top3){
+  document.getElementById('hb-avatar').textContent  = (user.name||'?')[0].toUpperCase();
+  document.getElementById('hb-uname').textContent   = fn;
+  document.getElementById('hb-greeting').textContent= `Welcome back, ${fn}`;
+  if(!top3.length) return;
+
+  const hbs = document.getElementById('hb-status');
+  hbs.style.display='block'; hbs.textContent='Assessment Completed';
+  hbs.style.background='rgba(37,99,235,0.9)'; hbs.style.color='#fff';
+
+  const scored = COURSES.map(c=>({...c, score:calcCourseScore(c.matchTraits, top3)})).sort((a,b)=>b.score-a.score);
+  const best   = scored[0];
+  if(best && best.score>0){
+    document.getElementById('hb-img').src = best.image;
+    const badge=document.getElementById('hb-deg-badge');
+    badge.style.display='inline-flex';
+    document.getElementById('hb-deg-code').textContent = best.level==='MS'?'MS':'BS';
+    document.getElementById('hb-deg-full').textContent = best.level==='MS'?'Master of Science':'Bachelor of Science (Hons)';
+    document.getElementById('hb-course').textContent   = best.title;
+    document.getElementById('hb-course-sub').textContent='Your recommended programme · JAIN (Deemed-to-be University)';
+  }
+  document.getElementById('hb-traits-lbl').style.display='block';
+  document.getElementById('hb-pills').innerHTML=top3.map(t=>{
+    const i=TRAIT_INFO[t];
+    return`<span class="hb-pill" style="color:${i.color}">${i.icon} ${i.name}</span>`;
+  }).join('');
+}
+
+/* ── RENDER TRAITS GRID ── */
+function renderTraits(top3, scores){
+  if(!top3.length) return;
+  const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('traits-grid').innerHTML=sorted.map(([t,score])=>{
+    const info=TRAIT_INFO[t]; const max=maxPT[t]||7; const pct=Math.round((score/max)*100); const isTop=top3.includes(t);
+    return`<div class="tc${isTop?' top-trait':''}" style="${isTop?`border-color:${info.color}55;background:${info.bg}`:''}">
+      ${isTop?`<div class="tc-top-lbl">Top Trait</div>`:''}
+      <div class="tc-icon">${info.icon}</div>
+      <div class="tc-code" style="color:${info.color}">${t}</div>
+      <div class="tc-name">${info.name}</div>
+      <div class="tc-bar"><div class="tc-bar-fill" style="width:${pct}%;background:${info.color}"></div></div>
+      <div class="tc-score" style="color:${info.color}">${score}/${max}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── RENDER COURSE CARDS ── */
+function buildCard(c, rank, top3){
+  const isPrimary=rank===0;
+  const traitHtml=c.matchTraits.map((t,idx)=>{
+    const info=TRAIT_INFO[t]; const matched=top3.includes(t);
+    const priority=['Primary','Secondary','Tertiary'][idx];
+    return`<span class="cc-trait" title="${priority} trait" style="background:${info.bg};color:${info.color};border-color:${matched?info.color+'55':'transparent'}">${info.icon} ${info.name}</span>`;
+  }).join('');
+  return`<a href="/course/${c.id}" class="cc${isPrimary?' primary':''}">
+    <div class="cc-img-wrap">
+      <img class="cc-img" src="${c.image}" alt="${c.title}" loading="lazy">
+      <div class="cc-img-overlay"></div>
+      <span class="cc-top-badge" style="background:${isPrimary?'#2563eb':'rgba(255,255,255,0.16)'}">${isPrimary?'Best Match ⭐':'Also a Great Fit'}</span>
+      <span class="cc-level-badge">${c.level}</span>
+    </div>
+    <div class="cc-body">
+      <div class="cc-title">${c.title}</div>
+      <div class="cc-meta">${c.university} · ${c.duration}</div>
+      <div class="cc-trait-row">${traitHtml}</div>
+      <div class="cc-pathway"><strong>International Pathway</strong>${c.pathway}</div>
+      <div class="cc-cta"><span>View Course &amp; Enroll</span><span>→</span></div>
+    </div>
+  </a>`;
+}
+
+function renderCourses(top3){
+  if(!top3.length) return;
+  const scored=COURSES.map(c=>({...c,score:calcCourseScore(c.matchTraits,top3)})).sort((a,b)=>b.score-a.score);
+  const topC=scored.filter(c=>c.score>0).slice(0,2);
+  if(!topC.length) return;
+  document.getElementById('rec-sec').style.display='block';
+  document.getElementById('rec-sub').textContent=`Based on your top traits: ${top3.map(t=>TRAIT_INFO[t].name).join(' › ')}.`;
+  document.getElementById('course-grid').innerHTML=topC.map((c,i)=>buildCard(c,i,top3)).join('');
+}
+
+/* ── CURRICULUM ACCORDION ── */
+function buildCurriculum(){
+  const list=document.getElementById('curriculum-list');
+  list.innerHTML=COURSES.map((c,ci)=>{
+    const degCode=c.level==='MS'?'MS':'BS';
+    const semHtml=c.curriculum.map((block,bi)=>{
+      if(block.type==='sep'){
+        return`<div class="hon-sep"><div class="hon-line"></div><div class="hon-tag">${block.label}</div><div class="hon-line"></div></div>`;
+      }
+      const sid=`s-${ci}-${bi}`;
+      const rows=block.courses.map((t,i)=>`<tr><td>${i+1}</td><td>${t}</td></tr>`).join('');
+      return`<div class="sem-item">
+        <div class="sem-head" onclick="toggleSem('${sid}',this)">
+          <span class="sem-badge">${block.sem}</span>
+          <span class="sem-count">${block.courses.length} subjects</span>
+          <span class="sem-chev" id="sc-${sid}">▾</span>
+        </div>
+        <div class="sem-body" id="${sid}"><table class="sem-table">${rows}</table></div>
+      </div>`;
+    }).join('');
+    return`<div style="margin-bottom:10px">
+      <div class="prog-header" id="ph-${ci}" onclick="toggleProg(${ci})">
+        <div class="ph-left">
+          <div class="ph-deg">${degCode}</div>
+          <div><div class="ph-name">${c.title}</div><div class="ph-sub">${c.level} · ${c.university}</div></div>
+        </div>
+        <span class="ph-arrow" id="ca-${ci}">▾</span>
+      </div>
+      <div class="prog-body" id="cb-${ci}">${semHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleProg(ci){
+  const body=document.getElementById(`cb-${ci}`);
+  const arr=document.getElementById(`ca-${ci}`);
+  const ph=document.getElementById(`ph-${ci}`);
+  const open=body.classList.toggle('open');
+  arr.classList.toggle('open',open);
+  ph.classList.toggle('open-state',open);
+}
+function toggleSem(sid,headEl){
+  const body=document.getElementById(sid);
+  const chev=document.getElementById(`sc-${sid}`);
+  const open=body.classList.toggle('open');
+  if(chev) chev.classList.toggle('open',open);
+  if(headEl) headEl.classList.toggle('open-s',open);
+}
+
+/* ════════════════════════════════════
+   RESULTS POPUP MODAL
+════════════════════════════════════ */
+let _bestId=null;
+
+function openResultsModal(){
+  const top3=user.top3||[];
+  const scores=user.scores||{};
+  if(!top3.length) return;
+
+  /* Header */
+  document.getElementById('rm-title').textContent=`${fn}'s Personality Profile`;
+  document.getElementById('rm-sub').textContent=`Your top traits: ${top3.map(t=>TRAIT_INFO[t].name).join(' › ')}`;
+
+  /* Top-3 pills */
+  document.getElementById('rm-top3').innerHTML=top3.map((t,i)=>{
+    const info=TRAIT_INFO[t];
+    const rankLabels=['#1 Primary','#2 Secondary','#3 Tertiary'];
+    return`<div class="rm-trait-pill" style="background:${info.bg};border-color:${info.color}44">
+      <span class="rm-trait-code" style="color:${info.color}">${info.icon}</span>
+      <div>
+        <span class="rm-trait-name" style="color:${info.color}">${info.name} (${t})</span>
+        <span class="rm-trait-rank" style="color:${info.color}">${rankLabels[i]} Trait</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  /* Scores grid */
+  const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('rm-scores').innerHTML=sorted.map(([t,score])=>{
+    const info=TRAIT_INFO[t]; const max=maxPT[t]||7; const pct=Math.round((score/max)*100); const isTop=top3.includes(t);
+    return`<div class="rm-sc${isTop?' top':''}" style="${isTop?`border-color:${info.color}55;background:${info.bg}`:''}">
+      <div class="rm-sc-code" style="color:${info.color}">${t}</div>
+      <div class="rm-sc-name">${info.name}</div>
+      <div class="rm-sc-bar"><div class="rm-sc-fill" style="width:${pct}%;background:${info.color}"></div></div>
+      <div class="rm-sc-val" style="color:${info.color}">${score}/${max}</div>
+    </div>`;
+  }).join('');
+
+  /* Ranked courses using weighted scoring */
+  const scoredC=COURSES.map(c=>({
+    ...c,
+    score: calcCourseScore(c.matchTraits, top3)
+  })).sort((a,b)=>b.score-a.score);
+
+  _bestId=scoredC.length?scoredC[0].id:null;
+
+  const rankEmojis=['🥇','🥈','🥉','4️⃣'];
+  const rankLabels=['Best Match','2nd Match','3rd Match','4th Match'];
+
+  document.getElementById('rm-courses').innerHTML=scoredC.map((c,i)=>{
+    const isBest=i===0;
+    const matchPct=Math.round((c.score/MAX_POSSIBLE_SCORE)*100);
+    const traitHtml=c.matchTraits.map((t,ti)=>{
+      const info=TRAIT_INFO[t]; const matched=top3.includes(t);
+      return`<span class="rm-cc-trait" style="background:${info.bg};color:${info.color};border-color:${matched?info.color+'44':'transparent'}">${info.icon} ${info.name}</span>`;
+    }).join('');
+    return`<a href="/course/${c.id}" class="rm-cc${isBest?' best':''}">
+      <div class="rm-rank-badge" style="background:${isBest?'rgba(37,99,235,0.12)':'#f3f4f6'};font-size:18px">${rankEmojis[i]||'•'}</div>
+      <img class="rm-cc-img" src="${c.thumb}" alt="${c.title}" onerror="this.style.display='none'">
+      <div class="rm-cc-body">
+        <span class="rm-cc-badge" style="background:${isBest?'rgba(37,99,235,0.1)':'rgba(107,114,128,0.1)'};color:${isBest?'var(--accent)':'var(--muted)'}">${rankLabels[i]}</span>
+        <div class="rm-cc-title">${c.title}</div>
+        <div class="rm-cc-meta">${c.level} · JAIN · ${c.duration}</div>
+        <div class="rm-cc-traits">${traitHtml}</div>
+        <div class="rm-cc-match-bar-wrap">
+          <div class="rm-cc-match-bar"><div class="rm-cc-match-fill" style="width:${matchPct}%;background:${isBest?'var(--accent)':'#9ca3af'}"></div></div>
+          <span class="rm-cc-match-pct" style="color:${isBest?'var(--accent)':'var(--muted)'}">${matchPct}% fit</span>
+        </div>
+      </div>
+      <span class="rm-cc-arr">→</span>
+    </a>`;
+  }).join('');
+
+  document.getElementById('rm-best-btn').onclick=()=>{
+    if(_bestId) window.location.href=`/course/${_bestId}`;
+    else closeResultsModal();
+  };
+
+  document.getElementById('results-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeResultsModal(){
+  document.getElementById('results-modal').classList.remove('open');
+  document.body.style.overflow='';
+  sessionStorage.removeItem('riasec_show_results');
+}
+
+function closeBgModal(e){
+  if(e.target===document.getElementById('results-modal')) closeResultsModal();
+}
+
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeResultsModal(); });
+
+/* ── INIT ── */
+(function(){
+  const top3=user.top3||[];
+  const scores=user.scores||{};
+  renderHero(top3);
+  renderTraits(top3,scores);
+  renderCourses(top3);
+  buildCurriculum();
+  if(sessionStorage.getItem('riasec_show_results')==='1'){
+    setTimeout(openResultsModal, 700);
+  }
+})();
+</script>
+{% endblock %}

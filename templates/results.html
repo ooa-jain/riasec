@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}Results – RIASEC · JAIN (Deemed-to-be University){% endblock %}
+
+{% block topbar_nav %}
+<a href="/home" class="nav-link">← Dashboard</a>
+<div class="nav-divider"></div>
+<div class="nav-user-chip">
+  <div class="nav-avatar" id="nav-avatar">?</div>
+  <span class="nav-user-name" id="nav-user-name">Guest</span>
+</div>
+<button class="nav-link" onclick="logout()">Logout</button>
+{% endblock %}
+
+{% block mobile_nav %}
+<div style="display:flex;align-items:center;gap:10px;padding:8px 4px;margin-bottom:4px">
+  <div class="nav-avatar" id="mob-avatar" style="width:36px;height:36px;font-size:14px">?</div>
+  <div><div style="font-size:14px;font-weight:700;color:#1e293b" id="mob-name">Guest</div></div>
+</div>
+<div class="drawer-divider"></div>
+<a href="/home" class="mobile-nav-link">📊 Dashboard</a>
+<a href="/results" class="mobile-nav-link active">📋 My Results</a>
+<a href="/survey" class="mobile-nav-link">↺ Retake Survey</a>
+<div class="drawer-divider"></div>
+<button class="mobile-nav-link" onclick="logout()" style="color:#ef4444">⬅ Logout</button>
+{% endblock %}
+
+{% block head %}
+<style>
+.results-wrap{max-width:1000px;margin:0 auto;padding:44px 32px}
+@media(max-width:900px){.results-wrap{padding:28px 20px}}
+@media(max-width:600px){.results-wrap{padding:20px 16px}}
+
+/* Page header */
+.results-header{text-align:center;margin-bottom:40px}
+.results-header h1{font-size:32px;font-weight:800;color:#1a1a2e;letter-spacing:-0.8px;margin:12px 0 8px}
+.results-header p{font-size:14px;color:#64748b;font-weight:500}
+
+/* Top 3 hero cards */
+.top3-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:36px}
+@media(max-width:640px){.top3-row{grid-template-columns:1fr}}
+
+.top3-card{border-radius:22px;padding:32px 24px;text-align:center;position:relative;overflow:hidden;border:2px solid transparent;transition:transform 0.2s}
+.top3-card:hover{transform:translateY(-4px)}
+.top3-card.rank-1{padding:36px 24px}
+.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;
+  border-radius:50%;font-size:14px;font-weight:800;margin:0 auto 14px;border:2px solid rgba(0,0,0,0.1)}
+.top3-icon{font-size:38px;display:block;margin-bottom:10px}
+.top3-letter{font-size:40px;font-weight:800;line-height:1;margin-bottom:4px}
+.top3-name{font-size:14px;font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;opacity:0.8}
+.top3-score-bar{height:8px;background:rgba(0,0,0,0.1);border-radius:10px;overflow:hidden;margin-bottom:8px}
+.top3-score-fill{height:100%;border-radius:10px;background:rgba(255,255,255,0.6);transition:width 1.2s ease}
+.top3-score-text{font-size:13px;font-weight:700;opacity:0.9}
+.top3-desc{font-size:12px;opacity:0.7;margin-top:6px}
+
+/* All traits breakdown */
+.breakdown-section{background:#fff;border-radius:22px;border:1px solid rgba(0,0,0,0.06);padding:36px 40px;margin-bottom:28px;box-shadow:0 4px 20px rgba(0,0,0,0.05)}
+@media(max-width:600px){.breakdown-section{padding:24px 20px}}
+.breakdown-section h2{font-size:16px;font-weight:700;color:#1e293b;margin-bottom:24px;letter-spacing:-0.2px}
+
+.trait-row-full{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:16px;border-radius:14px;transition:background 0.2s}
+.trait-row-full:hover{background:#f8fafc}
+.trait-row-icon-box{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.trait-row-info{flex:1}
+.trait-row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.trait-row-name{font-size:15px;font-weight:700;color:#1e293b}
+.trait-row-badge{font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;background:linear-gradient(135deg,#667eea,#956afa);color:#fff;text-transform:uppercase;letter-spacing:0.5px}
+.trait-row-score{font-size:14px;font-weight:800}
+.trait-row-bar-bg{height:8px;background:#f1f5f9;border-radius:10px;overflow:hidden;margin-bottom:6px}
+.trait-row-bar{height:100%;border-radius:10px;transition:width 1.2s ease}
+.trait-row-desc{font-size:12px;color:#94a3b8;font-weight:500}
+
+/* Careers grid */
+.careers-section{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px}
+@media(max-width:600px){.careers-section{grid-template-columns:1fr}}
+.career-box{background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,0.06);padding:24px;box-shadow:0 4px 20px rgba(0,0,0,0.05)}
+.career-box h3{font-size:13px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.career-list{list-style:none;padding:0}
+.career-list li{padding:10px 14px;margin-bottom:8px;background:#f8fafc;border-radius:10px;
+  border-left:3px solid;font-size:13px;font-weight:600;color:#374151;display:flex;align-items:center;gap:10px}
+.career-list li::before{content:'→';font-weight:800}
+
+/* Consult */
+.consult-banner{background:linear-gradient(135deg,#1a1a2e,#0f3460);border-radius:22px;padding:40px;text-align:center;margin-bottom:28px}
+.consult-banner h2{font-size:22px;font-weight:800;color:#fff;margin-bottom:10px;letter-spacing:-0.3px}
+.consult-banner p{font-size:14px;color:rgba(255,255,255,0.65);line-height:1.7;max-width:500px;margin:0 auto 24px}
+.consult-banner .btn{width:auto;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);font-size:14px;padding:12px 28px}
+.consult-banner .btn:hover{background:rgba(255,255,255,0.25)}
+
+/* Actions */
+.results-actions{display:flex;gap:14px;justify-content:center}
+@media(max-width:500px){.results-actions{flex-direction:column}}
+.results-actions .btn{width:auto;padding:12px 28px}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-wrap">
+
+  <!-- HEADER -->
+  <div class="results-header">
+    <div class="badge-label">RIASEC Profile Report</div>
+    <h1 id="results-title">Your Results</h1>
+    <p id="results-sub">Here's a detailed breakdown of your personality assessment</p>
+  </div>
+
+  <!-- TOP 3 HERO -->
+  <div class="top3-row" id="top3-row"></div>
+
+  <!-- FULL BREAKDOWN -->
+  <div class="breakdown-section">
+    <h2>Full Personality Breakdown</h2>
+    <div id="breakdown-list"></div>
+  </div>
+
+  <!-- CAREERS -->
+  <div class="careers-section" id="careers-section"></div>
+
+  <!-- CONSULT -->
+  <div class="consult-banner">
+    <h2>📋 Want Personalized Guidance?</h2>
+    <p>Our Admission Coordinators at JAIN (Deemed-to-be University) can help you map your RIASEC profile to specific courses, programs, and career paths that align with your strengths.</p>
+    <button class="btn">Contact Admission Coordinator</button>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="results-actions">
+    <a href="/home" class="btn btn-ghost">← Back to Dashboard</a>
+    <a href="/survey" class="btn">↺ Retake Survey</a>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const user=getUser();
+if(!user||!user.name){window.location.href='/entry'}
+
+const initials=(user.name||'?')[0].toUpperCase();
+['nav-avatar','mob-avatar'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=initials});
+const firstName=user.name.split(' ')[0];
+['nav-user-name','mob-name'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=firstName});
+function logout(){clearUser();window.location.href='/entry'}
+
+function renderResults(){
+  if(!user.top3||!user.scores){
+    document.querySelector('.results-wrap').innerHTML=`<div style="text-align:center;padding:80px 20px"><span style="font-size:48px;display:block;margin-bottom:16px">🎯</span><h2 style="font-size:20px;font-weight:700;color:#1e293b;margin-bottom:8px">No Results Yet</h2><p style="color:#64748b;margin-bottom:24px">Take the survey first to see your results.</p><a href="/survey" class="btn btn-sm" style="width:auto;display:inline-flex">Start Survey →</a></div>`;
+    return;
+  }
+
+  const firstName=user.name.split(' ')[0];
+  document.getElementById('results-title').textContent=`${firstName}'s RIASEC Profile`;
+  document.getElementById('results-sub').textContent=`Assessment completed ${user.timestamp?new Date(user.timestamp).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}):'recently'} · 42 questions`;
+
+  const sorted=Object.entries(user.scores).sort((a,b)=>b[1]-a[1]);
+  const top3=user.top3;
+
+  // ── TOP 3 HERO ──
+  const top3Row=document.getElementById('top3-row');
+  top3Row.innerHTML='';
+  const ranks=['🥇','🥈','🥉'];
+  top3.forEach((t,i)=>{
+    const info=TRAIT_INFO[t];
+    const score=user.scores[t]||0;
+    const max=maxPT[t];
+    const pct=Math.round((score/max)*100);
+    const card=document.createElement('div');
+    card.className=`top3-card rank-${i+1}`;
+    card.style.background=`linear-gradient(145deg,${info.bg},${info.bg}cc)`;
+    card.style.borderColor=info.color+'44';
+    card.innerHTML=`
+      <div class="rank-badge" style="background:${info.color}22;border-color:${info.color}44;color:${info.color}">${ranks[i]}</div>
+      <span class="top3-icon">${info.icon}</span>
+      <div class="top3-letter" style="color:${info.color}">${t}</div>
+      <div class="top3-name" style="color:${info.color}">${info.name}</div>
+      <div class="top3-score-bar"><div class="top3-score-fill" style="width:${pct}%;background:${info.color}"></div></div>
+      <div class="top3-score-text" style="color:${info.color}">${score} / ${max} points</div>
+      <div class="top3-desc" style="color:${info.color}">${info.desc}</div>`;
+    top3Row.appendChild(card);
+  });
+
+  // ── BREAKDOWN ──
+  const list=document.getElementById('breakdown-list');
+  list.innerHTML='';
+  sorted.forEach(([t,score])=>{
+    const info=TRAIT_INFO[t];
+    const max=maxPT[t];
+    const pct=Math.round((score/max)*100);
+    const isTop=top3.includes(t);
+    const div=document.createElement('div');
+    div.className='trait-row-full';
+    div.innerHTML=`
+      <div class="trait-row-icon-box" style="background:${info.bg}">${info.icon}</div>
+      <div class="trait-row-info">
+        <div class="trait-row-head">
+          <div>
+            <span class="trait-row-name">${info.name} (${t})</span>
+            ${isTop?`<span class="trait-row-badge" style="margin-left:8px">Top Trait</span>`:''}
+          </div>
+          <span class="trait-row-score" style="color:${info.color}">${score}/${max}</span>
+        </div>
+        <div class="trait-row-bar-bg"><div class="trait-row-bar" style="width:${pct}%;background:${info.color}"></div></div>
+        <div class="trait-row-desc">${info.desc} · ${pct}% match</div>
+      </div>`;
+    list.appendChild(div);
+  });
+
+  // ── CAREERS ──
+  const careersSection=document.getElementById('careers-section');
+  careersSection.innerHTML='';
+  top3.slice(0,2).forEach(t=>{
+    const info=TRAIT_INFO[t];
+    const box=document.createElement('div');
+    box.className='career-box';
+    box.innerHTML=`<h3><span style="color:${info.color}">${info.icon}</span>${info.name} Careers</h3>
+      <ul class="career-list">${info.careers.map(c=>`<li style="border-color:${info.color};color:${info.color}">${c}</li>`).join('')}</ul>`;
+    careersSection.appendChild(box);
+  });
+}
+
+renderResults();
+</script>
+{% endblock %}

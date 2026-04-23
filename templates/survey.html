@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% block title %}Survey – RIASEC · JAIN (Deemed-to-be University){% endblock %}
+
+{% block topbar_nav %}
+<span id="nav-progress-label" style="font-size:12px;color:#94a3b8;font-weight:600">Q 1 / 42</span>
+<div style="width:130px;height:5px;background:#f1f5f9;border-radius:10px;overflow:hidden;margin-left:8px">
+  <div id="nav-prog-bar"
+       style="height:100%;background:var(--grad);border-radius:10px;transition:width 0.5s ease;width:0%">
+  </div>
+</div>
+{% endblock %}
+
+{% block mobile_nav %}
+<div style="padding:8px 4px;margin-bottom:4px">
+  <div style="font-size:14px;font-weight:700;color:#1e293b">Taking Survey</div>
+  <div style="font-size:11px;color:#94a3b8;margin-top:2px" id="mob-q-count">Q 1 / 42</div>
+</div>
+<div class="drawer-divider"></div>
+<a href="/entry" class="mobile-nav-link">⬅ Exit Survey</a>
+{% endblock %}
+
+{% block head %}
+<style>
+.survey-page{
+  display:flex;align-items:center;justify-content:center;
+  min-height:calc(100vh - 60px);padding:32px 20px
+}
+.survey-wrap{width:100%;max-width:680px}
+
+/* ── CATEGORY TAG ── */
+.q-category-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.8px;
+  margin-bottom:20px;border:1px solid transparent
+}
+
+/* ── QUESTION CARD ── */
+.q-card{
+  background:#fff;border-radius:24px;
+  border:1px solid rgba(0,0,0,0.06);
+  padding:48px 52px;margin-bottom:24px;
+  box-shadow:0 12px 44px rgba(0,0,0,0.09),0 2px 8px rgba(0,0,0,0.04);
+  position:relative;overflow:hidden
+}
+.q-card-glyph{
+  position:absolute;right:40px;top:30px;
+  font-size:90px;opacity:0.04;font-weight:800;line-height:1;
+  user-select:none;pointer-events:none;
+  font-family:'DM Serif Display',serif
+}
+.q-meta-row{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:10px
+}
+.q-counter{
+  font-size:12px;font-weight:700;color:var(--accent);
+  background:rgba(37,99,235,0.1);padding:5px 14px;border-radius:20px
+}
+.q-shortcut{font-size:11px;color:#b8c4d0;font-weight:500}
+
+.prog-bar{
+  height:5px;background:#f1f5f9;border-radius:10px;
+  overflow:hidden;margin-bottom:36px
+}
+.prog-fill{
+  height:100%;background:var(--grad);border-radius:10px;transition:width 0.5s ease
+}
+
+.q-text{
+  font-size:22px;font-weight:700;color:#1a1a2e;line-height:1.5;
+  letter-spacing:-0.3px;position:relative;z-index:1;margin-bottom:40px
+}
+
+/* ── ANSWER BUTTONS ── */
+.ans-row{display:flex;gap:16px}
+.ans-btn{
+  flex:1;padding:18px 20px;border:2px solid #e8ecf0;border-radius:16px;
+  background:#fff;font-size:15px;font-weight:700;cursor:pointer;
+  transition:all 0.2s;display:flex;align-items:center;justify-content:center;
+  gap:11px;font-family:'DM Sans',sans-serif
+}
+.ans-icon{
+  width:36px;height:36px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-size:16px;
+  transition:all 0.2s;flex-shrink:0
+}
+.ans-btn.yes .ans-icon{background:rgba(46,204,113,0.12);color:#2ecc71}
+.ans-btn.no  .ans-icon{background:rgba(231,76,60,0.12);color:#e74c3c}
+
+.ans-btn.yes:hover,.ans-btn.yes.sel{
+  border-color:#2ecc71;
+  background:linear-gradient(135deg,#2ecc71,#27ae60);
+  color:#fff;box-shadow:0 8px 24px rgba(46,204,113,0.32);
+  transform:translateY(-3px)
+}
+.ans-btn.yes:hover .ans-icon,.ans-btn.yes.sel .ans-icon{
+  background:rgba(255,255,255,0.25);color:#fff
+}
+.ans-btn.no:hover,.ans-btn.no.sel{
+  border-color:#e74c3c;
+  background:linear-gradient(135deg,#e74c3c,#c0392b);
+  color:#fff;box-shadow:0 8px 24px rgba(231,76,60,0.32);
+  transform:translateY(-3px)
+}
+.ans-btn.no:hover .ans-icon,.ans-btn.no.sel .ans-icon{
+  background:rgba(255,255,255,0.25);color:#fff
+}
+
+.q-hint{
+  text-align:center;font-size:12px;color:#b8c4d0;
+  margin-top:16px;font-weight:500;line-height:1.6
+}
+
+/* ── SAVING CARD ── */
+.saving-card{
+  background:#fff;border-radius:24px;border:1px solid rgba(0,0,0,0.06);
+  padding:60px 52px;text-align:center;
+  box-shadow:0 12px 44px rgba(0,0,0,0.09)
+}
+.saving-icon{font-size:60px;display:block;margin-bottom:16px}
+.saving-title{
+  font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;
+  color:var(--ink);margin-bottom:10px;letter-spacing:-0.3px
+}
+.saving-sub{font-size:14px;color:var(--muted);line-height:1.7}
+
+@media(max-width:640px){
+  .survey-page{padding:20px 14px;align-items:flex-start;padding-top:24px}
+  .q-card{padding:28px 22px}
+  .q-text{font-size:17px;margin-bottom:28px}
+  .ans-btn{padding:14px 12px;font-size:14px}
+  .ans-icon{width:28px;height:28px;font-size:13px}
+  .q-card-glyph{font-size:60px;right:18px;top:20px}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="survey-page">
+<div class="survey-wrap">
+
+  <!-- SURVEY -->
+  <div id="sec-survey">
+    <div class="q-card">
+      <div class="q-category-tag" id="q-category-tag"></div>
+      <div class="q-meta-row">
+        <span class="q-counter" id="q-counter">Q 1 / 42</span>
+        <span class="q-shortcut">
+          Press
+          <kbd style="background:#f1f5f9;border-radius:4px;padding:1px 6px;font-size:11px;border:1px solid #e2e8f0">Y</kbd>
+          or
+          <kbd style="background:#f1f5f9;border-radius:4px;padding:1px 6px;font-size:11px;border:1px solid #e2e8f0">N</kbd>
+        </span>
+      </div>
+      <div class="prog-bar">
+        <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+      <div class="q-text" id="q-text">Loading question...</div>
+      <div class="ans-row">
+        <button class="ans-btn yes" id="btn-yes" onclick="answer(1)">
+          <span class="ans-icon">✓</span> Yes, that's me
+        </button>
+        <button class="ans-btn no" id="btn-no" onclick="answer(0)">
+          <span class="ans-icon">✗</span> Not really
+        </button>
+      </div>
+      <div class="q-hint">Answer based on your genuine interests — there are no right or wrong answers</div>
+      <div class="q-card-glyph" id="q-glyph">?</div>
+    </div>
+  </div>
+
+  <!-- SAVING -->
+  <div id="sec-saving" style="display:none">
+    <div class="saving-card">
+      <span class="saving-icon">🎯</span>
+      <div class="saving-title">Survey Complete!</div>
+      <div class="saving-sub">
+        Analysing your personality profile…<br>
+        <span style="font-size:12px;color:#9ca3af;display:block;margin-top:6px">
+          📧 Your results are being emailed to you
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* ── GUARD ── */
+const user = getUser();
+if(!user || !user.name){ window.location.href = '/entry'; }
+
+/* ── STATE ── */
+let scores  = { R:0, I:0, A:0, S:0, E:0, C:0 };
+let answers = [];
+let curQ    = 0;
+
+/* ── RENDER QUESTION ── */
+function renderQ(){
+  if(curQ >= QUESTIONS.length){ finishSurvey(); return; }
+
+  const q    = QUESTIONS[curQ];
+  const info = TRAIT_INFO[q.trait];
+
+  /* Text & counters */
+  document.getElementById('q-text').textContent    = q.text;
+  document.getElementById('q-counter').textContent = `Q ${curQ+1} / ${QUESTIONS.length}`;
+  document.getElementById('q-glyph').textContent   = q.trait;
+
+  /* Progress bars */
+  const pct = (curQ / QUESTIONS.length) * 100;
+  document.getElementById('prog-fill').style.width        = pct + '%';
+  document.getElementById('nav-prog-bar').style.width     = pct + '%';
+  document.getElementById('nav-progress-label').textContent = `Q ${curQ+1} / 42`;
+  const mob = document.getElementById('mob-q-count');
+  if(mob) mob.textContent = `Q ${curQ+1} / 42`;
+
+  /* Category tag */
+  const tag = document.getElementById('q-category-tag');
+  tag.textContent        = `${info.icon} ${info.name}`;
+  tag.style.background   = info.bg;
+  tag.style.color        = info.color;
+  tag.style.borderColor  = info.color + '33';
+
+  /* Reset buttons */
+  document.querySelectorAll('.ans-btn').forEach(b => b.classList.remove('sel'));
+}
+
+/* ── ANSWER ── */
+function answer(val){
+  if(curQ >= QUESTIONS.length) return;
+  const q = QUESTIONS[curQ];
+  if(val === 1) scores[q.trait]++;
+  answers.push(val);
+  document.getElementById(val===1 ? 'btn-yes' : 'btn-no').classList.add('sel');
+  setTimeout(() => { curQ++; renderQ(); }, 320);
+}
+
+/* ── FINISH ── */
+function finishSurvey(){
+  document.getElementById('sec-survey').style.display = 'none';
+  document.getElementById('sec-saving').style.display = 'block';
+
+  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  const top3   = sorted.slice(0,3).map(x => x[0]);
+  const ts     = new Date().toISOString();
+
+  const updatedUser = { ...user, scores:{...scores}, top3, timestamp:ts };
+  saveUser(updatedUser);
+
+  /* Flag home page to open results popup */
+  sessionStorage.setItem('riasec_show_results', '1');
+
+  /* Submit to server — Google Sheet + email */
+  submitResults(updatedUser).finally(() => {
+    window.location.href = '/home';
+  });
+}
+
+async function submitResults(u){
+  try {
+    await fetch('/api/submit-results', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        name:      u.name,
+        email:     u.email,
+        phone:     u.phone,
+        scores:    u.scores,
+        top3:      u.top3,
+        timestamp: u.timestamp
+      })
+    });
+  } catch(e){
+    console.warn('Submit error:', e.message);
+  }
+}
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', e => {
+  if(document.getElementById('sec-survey').style.display !== 'none'){
+    if(e.key==='y' || e.key==='Y') answer(1);
+    if(e.key==='n' || e.key==='N') answer(0);
+  }
+});
+
+/* ── START ── */
+renderQ();
+</script>
+{% endblock %}
