@@ -1,0 +1,363 @@
+{% extends "base.html" %}
+{% block title %}Survey – RIASEC · JAIN (Deemed-to-be University){% endblock %}
+
+{% block topbar_nav %}
+<span id="nav-progress-label" style="font-size:12px;color:#94a3b8;font-weight:600">Q 1 / 41</span>
+<div style="width:130px;height:5px;background:#f1f5f9;border-radius:10px;overflow:hidden;margin-left:8px">
+  <div id="nav-prog-bar" style="height:100%;background:var(--grad);border-radius:10px;transition:width 0.5s ease;width:0%"></div>
+</div>
+{% endblock %}
+
+{% block mobile_nav %}
+<div style="padding:8px 4px;margin-bottom:4px">
+  <div style="font-size:14px;font-weight:700;color:#1e293b">Taking Survey</div>
+  <div style="font-size:11px;color:#94a3b8;margin-top:2px" id="mob-q-count">Q 1 / 41</div>
+</div>
+<div class="drawer-divider"></div>
+<a href="/entry" class="mobile-nav-link">Exit Survey</a>
+{% endblock %}
+
+{% block head %}
+<style>
+.survey-page{
+  display:flex;align-items:center;justify-content:center;
+  min-height:calc(100vh - 60px);padding:32px 20px
+}
+.survey-wrap{width:100%;max-width:680px}
+.q-category-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.8px;margin-bottom:20px;border:1px solid transparent
+}
+.q-card{
+  background:#fff;border-radius:24px;border:1px solid rgba(0,0,0,0.06);
+  padding:48px 52px;margin-bottom:24px;
+  box-shadow:0 12px 44px rgba(0,0,0,0.09),0 2px 8px rgba(0,0,0,0.04);
+  position:relative;overflow:hidden
+}
+.q-card-glyph{position:absolute;right:40px;top:30px;font-size:90px;opacity:0.04;font-weight:800;line-height:1;user-select:none;pointer-events:none;font-family:'DM Serif Display',serif}
+.q-meta-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.q-counter{font-size:12px;font-weight:700;color:var(--accent);background:rgba(37,99,235,0.1);padding:5px 14px;border-radius:20px}
+.q-shortcut{font-size:11px;color:#b8c4d0;font-weight:500}
+.prog-bar{height:5px;background:#f1f5f9;border-radius:10px;overflow:hidden;margin-bottom:36px}
+.prog-fill{height:100%;background:var(--grad);border-radius:10px;transition:width 0.5s ease}
+.q-text{font-size:22px;font-weight:700;color:#1a1a2e;line-height:1.5;letter-spacing:-0.3px;position:relative;z-index:1;margin-bottom:40px}
+.ans-row{display:flex;gap:16px}
+.ans-btn{flex:1;padding:18px 20px;border:2px solid #e8ecf0;border-radius:16px;background:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:11px;font-family:'DM Sans',sans-serif}
+.ans-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.2s;flex-shrink:0}
+.ans-btn.yes .ans-icon{background:rgba(46,204,113,0.12);color:#2ecc71}
+.ans-btn.no .ans-icon{background:rgba(231,76,60,0.12);color:#e74c3c}
+.ans-btn.yes:hover,.ans-btn.yes.sel{border-color:#2ecc71;background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;box-shadow:0 8px 24px rgba(46,204,113,0.32);transform:translateY(-3px)}
+.ans-btn.yes:hover .ans-icon,.ans-btn.yes.sel .ans-icon{background:rgba(255,255,255,0.25);color:#fff}
+.ans-btn.no:hover,.ans-btn.no.sel{border-color:#e74c3c;background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;box-shadow:0 8px 24px rgba(231,76,60,0.32);transform:translateY(-3px)}
+.ans-btn.no:hover .ans-icon,.ans-btn.no.sel .ans-icon{background:rgba(255,255,255,0.25);color:#fff}
+.q-hint{text-align:center;font-size:12px;color:#b8c4d0;margin-top:16px;font-weight:500;line-height:1.6}
+@media(max-width:640px){
+  .survey-page{padding:20px 14px;align-items:flex-start;padding-top:24px}
+  .q-card{padding:28px 22px}
+  .q-text{font-size:17px;margin-bottom:28px}
+  .ans-btn{padding:14px 12px;font-size:14px}
+  .ans-icon{width:28px;height:28px;font-size:13px}
+  .q-card-glyph{font-size:60px;right:18px;top:20px}
+}
+
+/* ═══════════════════════════════
+   RESULTS POPUP MODAL
+═══════════════════════════════ */
+.rp-overlay{
+  position:fixed;inset:0;background:rgba(10,14,26,0.78);z-index:500;
+  display:none;align-items:center;justify-content:center;
+  padding:70px 16px 16px;backdrop-filter:blur(12px);overflow-y:auto
+}
+.rp-overlay.open{display:flex}
+.rp-modal{
+  background:#fff;border-radius:24px;width:100%;max-width:720px;
+  box-shadow:0 32px 80px rgba(0,0,0,0.35);position:relative;
+  animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);flex-shrink:0;margin:auto
+}
+@keyframes popIn{from{transform:translateY(28px) scale(0.92);opacity:0}to{transform:none;opacity:1}}
+
+/* Modal header */
+.rpm-hd{
+  background:linear-gradient(160deg,#0b1120 0%,#1a2b4a 55%,#0a2540 100%);
+  border-radius:24px 24px 0 0;padding:28px 32px 24px;position:relative;overflow:hidden
+}
+.rpm-orb1{position:absolute;width:200px;height:200px;background:rgba(37,99,235,0.22);border-radius:50%;filter:blur(50px);top:-60px;right:-40px;pointer-events:none}
+.rpm-orb2{position:absolute;width:140px;height:140px;background:rgba(124,58,237,0.18);border-radius:50%;filter:blur(50px);bottom:-20px;left:-20px;pointer-events:none}
+.rpm-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:3px 12px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:11px;position:relative;z-index:1}
+.rpm-title{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;margin-bottom:4px;position:relative;z-index:1}
+.rpm-sub{font-size:12px;color:rgba(255,255,255,0.42);margin-bottom:16px;position:relative;z-index:1}
+
+/* Top 3 pills in modal header */
+.rpm-top3{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;position:relative;z-index:1;padding-bottom:2px}
+.rpm-top3::-webkit-scrollbar{height:3px}
+.rpm-top3::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:10px}
+.rpm-trait-pill{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;border:1.5px solid transparent;flex-shrink:0}
+.rpm-trait-code{font-family:'DM Serif Display',serif;font-size:20px;line-height:1}
+.rpm-trait-info{display:flex;flex-direction:column;gap:1px}
+.rpm-trait-name{font-size:12px;font-weight:700;white-space:nowrap}
+.rpm-trait-rank{font-size:10px;font-weight:400;opacity:0.72;white-space:nowrap}
+
+/* Modal body */
+.rpm-body{padding:24px 32px 28px}
+@media(max-width:480px){.rpm-hd{padding:22px 18px 18px}.rpm-body{padding:18px 16px 22px}}
+
+/* Score mini grid */
+.rpm-scores-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.rpm-scores{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:22px}
+@media(max-width:480px){.rpm-scores{grid-template-columns:repeat(3,1fr)}}
+.rpm-sc{background:#f8fafc;border-radius:10px;padding:10px 6px;text-align:center;border:1.5px solid #f1f3f7}
+.rpm-sc.top{border-width:2px}
+.rpm-sc-icon{font-size:14px}
+.rpm-sc-code{font-family:'DM Serif Display',serif;font-size:17px;line-height:1}
+.rpm-sc-name{font-size:8px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin:3px 0 6px}
+.rpm-sc-bar{height:4px;background:#e5e7eb;border-radius:10px;overflow:hidden;margin-bottom:4px}
+.rpm-sc-fill{height:100%;border-radius:10px}
+.rpm-sc-val{font-size:11px;font-weight:700}
+
+/* 2 Course recs in modal */
+.rpm-courses-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.rpm-courses{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
+@media(max-width:480px){.rpm-courses{grid-template-columns:1fr}}
+.rpm-course-card{border-radius:14px;border:1.5px solid var(--line);overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:all 0.18s}
+.rpm-course-card:hover{border-color:rgba(37,99,235,0.3);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.rpm-course-card.best{border:2px solid rgba(37,99,235,0.3)}
+.rcc-img-wrap{position:relative;height:100px;overflow:hidden;flex-shrink:0}
+.rcc-img{width:100%;height:100%;object-fit:cover;transition:transform 5s ease}
+.rpm-course-card:hover .rcc-img{transform:scale(1.06)}
+.rcc-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,12,26,0.7) 0%,transparent 60%)}
+.rcc-badge{position:absolute;top:7px;left:7px;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;color:#fff;background:rgba(37,99,235,0.9);text-transform:uppercase;letter-spacing:0.3px}
+.rcc-body{padding:12px 14px;flex:1;display:flex;flex-direction:column}
+.rcc-level{font-size:9px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
+.rcc-title{font-size:12px;font-weight:700;color:var(--ink);line-height:1.35;margin-bottom:5px;flex:1}
+.rcc-match{display:inline-flex;align-items:center;gap:4px;background:rgba(37,99,235,0.07);color:var(--accent);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-bottom:8px}
+.rcc-btns{display:flex;gap:5px;margin-top:auto}
+.rcc-btn{flex:1;display:flex;align-items:center;justify-content:center;padding:7px 6px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;transition:all 0.18s;font-family:'DM Sans',sans-serif;text-decoration:none;border:none;gap:3px}
+.rcc-btn-view{background:var(--ink);color:#fff}
+.rcc-btn-view:hover{background:var(--accent);color:#fff}
+.rcc-btn-schol{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.rcc-btn-schol:hover{box-shadow:0 3px 10px rgba(16,185,129,0.3);color:#fff}
+
+/* Modal footer */
+.rpm-footer{display:flex;gap:10px;flex-wrap:wrap}
+.rpm-footer .btn{flex:1;min-width:120px}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="survey-page">
+<div class="survey-wrap">
+
+  <!-- ACTIVE SURVEY -->
+  <div id="sec-survey">
+    <div class="q-card">
+      <div class="q-category-tag" id="q-category-tag"></div>
+      <div class="q-meta-row">
+        <span class="q-counter" id="q-counter">Q 1 / 41</span>
+        <span class="q-shortcut">Press Y or N</span>
+      </div>
+      <div class="prog-bar">
+        <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+      <div class="q-text" id="q-text">Loading question...</div>
+      <div class="ans-row">
+        <button class="ans-btn yes" id="btn-yes" onclick="answer(1)">
+          <span class="ans-icon">&#10003;</span> Yes, that's me
+        </button>
+        <button class="ans-btn no" id="btn-no" onclick="answer(0)">
+          <span class="ans-icon">&#10007;</span> Not really
+        </button>
+      </div>
+      <div class="q-hint">Answer based on your genuine interests — there are no right or wrong answers</div>
+      <div class="q-card-glyph" id="q-glyph">?</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════
+     RESULTS POPUP MODAL
+═══════════════════════════════ -->
+<div class="rp-overlay" id="rp-overlay">
+  <div class="rp-modal">
+
+    <!-- Header with top 3 -->
+    <div class="rpm-hd">
+      <div class="rpm-orb1"></div><div class="rpm-orb2"></div>
+      <div class="rpm-tag">&#127919; Your RIASEC Results</div>
+      <div class="rpm-title" id="rpm-title">Your Personality Profile</div>
+      <div class="rpm-sub" id="rpm-sub">Here are your top 3 traits and recommended programmes</div>
+      <div class="rpm-top3" id="rpm-top3"></div>
+    </div>
+
+    <!-- Body -->
+    <div class="rpm-body">
+
+      <!-- All 6 scores -->
+      <div class="rpm-scores-lbl">All Six Scores</div>
+      <div class="rpm-scores" id="rpm-scores"></div>
+
+      <!-- 2 recommended courses -->
+      <div class="rpm-courses-lbl">Your Recommended Programmes</div>
+      <div class="rpm-courses" id="rpm-courses"></div>
+
+      <!-- Footer actions -->
+      <div class="rpm-footer">
+        <a href="/results" class="btn btn-ghost" style="font-size:13px">&#128202; View Full Report</a>
+        <a href="/home" class="btn" style="font-size:13px" id="rpm-home-btn">Go to Dashboard &#8594;</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+var user=getUser();
+if(!user||!user.name){window.location.replace('/entry');}
+
+var scores={R:0,I:0,A:0,S:0,E:0,C:0};
+var curQ=0;
+
+function renderQ(){
+  if(curQ>=QUESTIONS.length){finishSurvey();return;}
+  var q=QUESTIONS[curQ];
+  var info=TRAIT_INFO[q.trait]||{};
+
+  document.getElementById('q-text').textContent=q.text;
+  document.getElementById('q-counter').textContent='Q '+(curQ+1)+' / '+QUESTIONS.length;
+  document.getElementById('q-glyph').textContent=q.trait;
+
+  var pct=(curQ/QUESTIONS.length)*100;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('nav-prog-bar').style.width=pct+'%';
+  document.getElementById('nav-progress-label').textContent='Q '+(curQ+1)+' / '+QUESTIONS.length;
+  var mob=document.getElementById('mob-q-count');
+  if(mob)mob.textContent='Q '+(curQ+1)+' / '+QUESTIONS.length;
+
+  var tag=document.getElementById('q-category-tag');
+  tag.textContent=(info.icon||'')+' '+q.trait+' — '+(info.name||q.trait);
+  tag.style.background=info.bg||'#f3f4f6';
+  tag.style.color=info.color||'#374151';
+  tag.style.borderColor=(info.color||'#e5e7eb')+'33';
+
+  document.getElementById('btn-yes').classList.remove('sel');
+  document.getElementById('btn-no').classList.remove('sel');
+}
+
+function answer(val){
+  if(curQ>=QUESTIONS.length)return;
+  var q=QUESTIONS[curQ];
+  if(val===1)scores[q.trait]++;
+  document.getElementById(val===1?'btn-yes':'btn-no').classList.add('sel');
+  setTimeout(function(){curQ++;renderQ();},320);
+}
+
+function finishSurvey(){
+  /* compute top3 */
+  var entries=[];
+  var keys=['R','I','A','S','E','C'];
+  for(var i=0;i<keys.length;i++) entries.push([keys[i],scores[keys[i]]]);
+  entries.sort(function(a,b){return b[1]-a[1];});
+  var top3=[entries[0][0],entries[1][0],entries[2][0]];
+  var ts=new Date().toISOString();
+
+  var updatedUser={
+    name:user.name,email:user.email,phone:user.phone,
+    scores:{R:scores.R,I:scores.I,A:scores.A,S:scores.S,E:scores.E,C:scores.C},
+    top3:top3,timestamp:ts
+  };
+  saveUser(updatedUser);
+  user=updatedUser;
+
+  /* submit to server in background */
+  submitToServer(updatedUser);
+
+  /* hide survey, show popup */
+  document.getElementById('sec-survey').style.display='none';
+  showResultsPopup(top3,scores);
+}
+
+function showResultsPopup(top3,scores){
+  var fn=String(user.name||'Student').trim().split(' ')[0];
+
+  /* title */
+  document.getElementById('rpm-title').textContent=fn+"'s Personality Profile";
+  document.getElementById('rpm-sub').textContent='Your top traits: '+top3.map(function(t){return TRAIT_INFO[t].name;}).join(' › ');
+
+  /* top 3 pills */
+  var rankLabels=['#1 Primary','#2 Secondary','#3 Tertiary'];
+  document.getElementById('rpm-top3').innerHTML=top3.map(function(t,i){
+    var info=TRAIT_INFO[t];
+    return '<div class="rpm-trait-pill" style="background:'+info.bg+';border-color:'+info.color+'44">'+
+      '<span class="rpm-trait-code" style="color:'+info.color+'">'+info.icon+'</span>'+
+      '<div class="rpm-trait-info">'+
+        '<span class="rpm-trait-name" style="color:'+info.color+'">'+info.name+' ('+t+')</span>'+
+        '<span class="rpm-trait-rank" style="color:'+info.color+'">'+rankLabels[i]+'</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  /* all 6 scores sorted */
+  var sorted=Object.entries(scores).sort(function(a,b){return b[1]-a[1];});
+  document.getElementById('rpm-scores').innerHTML=sorted.map(function(pair){
+    var t=pair[0],sc=pair[1],info=TRAIT_INFO[t],max=maxPT[t]||7,pct=Math.round((sc/max)*100),isTop=top3.indexOf(t)>=0;
+    return '<div class="rpm-sc'+(isTop?' top':'')+'" style="'+(isTop?'border-color:'+info.color+'55;background:'+info.bg:'')+'">' +
+      '<div class="rpm-sc-icon">'+info.icon+'</div>'+
+      '<div class="rpm-sc-code" style="color:'+info.color+'">'+t+'</div>'+
+      '<div class="rpm-sc-name">'+info.name+'</div>'+
+      '<div class="rpm-sc-bar"><div class="rpm-sc-fill" style="width:'+pct+'%;background:'+info.color+'"></div></div>'+
+      '<div class="rpm-sc-val" style="color:'+info.color+'">'+sc+'/'+max+'</div>'+
+    '</div>';
+  }).join('');
+
+  /* score and rank both WEBINAR_COURSES */
+  var scored=WEBINAR_COURSES.map(function(c){
+    return {c:c,score:calcCourseScore(c.matchTraits,top3)};
+  }).sort(function(a,b){return b.score-a.score;});
+
+  var rankBadges=['&#11088; #1 Best Match','&#10024; #2 Best Match'];
+  document.getElementById('rpm-courses').innerHTML=scored.map(function(item,ri){
+    var c=item.c,matchPct=Math.round((item.score/30)*100);
+    return '<div class="rpm-course-card'+(ri===0?' best':'')+'">'+
+      '<div class="rcc-img-wrap">'+
+        '<img class="rcc-img" src="'+c.image+'" alt="'+c.title+'" loading="lazy">'+
+        '<div class="rcc-overlay"></div>'+
+        '<span class="rcc-badge">'+rankBadges[ri]+' &middot; '+matchPct+'%</span>'+
+      '</div>'+
+      '<div class="rcc-body">'+
+        '<div class="rcc-level">'+c.level+'</div>'+
+        '<div class="rcc-title">'+c.fullTitle+'</div>'+
+        '<div class="rcc-match">&#9989; '+matchPct+'% Match</div>'+
+        '<div class="rcc-btns">'+
+          '<a href="'+c.courseLink+'" class="rcc-btn rcc-btn-view">View Course</a>'+
+          '<a href="'+c.scholarshipLink+'" target="_blank" class="rcc-btn rcc-btn-schol">&#127891; Scholarship</a>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  /* open popup */
+  document.getElementById('rp-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function submitToServer(u){
+  fetch('/api/submit-results',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name:u.name,email:u.email,phone:u.phone,scores:u.scores,top3:u.top3,timestamp:u.timestamp})
+  }).then(function(r){return r.json();}).then(function(d){console.log('Submitted:',d);}).catch(function(e){console.warn(e);});
+}
+
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('sec-survey').style.display!=='none'){
+    if(e.key==='y'||e.key==='Y')answer(1);
+    if(e.key==='n'||e.key==='N')answer(0);
+  }
+});
+
+renderQ();
+</script>
+{% endblock %}

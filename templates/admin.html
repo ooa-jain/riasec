@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – RIASEC · Jain University</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:#080d1a;color:#e2e8f0;min-height:100vh}
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:radial-gradient(ellipse at 50% 0%,rgba(102,126,234,0.12) 0%,transparent 70%)}
+.login-card{background:#0d1530;border:1px solid #1e2d50;border-radius:22px;padding:44px 40px;width:100%;max-width:380px;box-shadow:0 24px 60px rgba(0,0,0,0.5);position:relative;overflow:hidden}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#667eea,#956afa,#764ba2)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo-icon{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:22px;font-weight:800;color:#fff}
+.login-logo h2{font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.3px}
+.login-logo p{font-size:11px;color:#475569;margin-top:3px;text-transform:uppercase;letter-spacing:0.8px}
+.login-input{width:100%;background:#070c1a;border:1.5px solid #1e2d50;border-radius:10px;padding:12px 15px;color:#e2e8f0;font-size:14px;font-family:'Poppins',sans-serif;outline:none;margin-bottom:12px;transition:all 0.2s;font-weight:500}
+.login-input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.12)}
+.login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.2s}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(102,126,234,0.4)}
+.login-err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:8px;padding:10px 13px;font-size:12px;font-weight:600;margin-bottom:12px;display:none}
+.login-err.show{display:block}
+.back-link{display:block;text-align:center;margin-top:16px;color:#475569;font-size:12px;text-decoration:none;transition:color 0.2s}
+.back-link:hover{color:#667eea}
+#dashboard{display:none;min-height:100vh}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:220px;flex-shrink:0;background:#0d1530;border-right:1px solid #1a2540;padding:24px 14px;position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column;z-index:10;overflow-y:auto}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px;padding:0 4px}
+.sb-logo-text{font-size:13px;font-weight:700;color:#fff;line-height:1.2}
+.sb-logo-sub{font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:0.8px;display:block}
+.sb-section{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin:16px 0 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:#475569;font-size:13px;font-weight:600;margin-bottom:2px;transition:all 0.18s;text-decoration:none;border:none;background:none;font-family:'Poppins',sans-serif;width:100%;text-align:left}
+.nav-item:hover{background:#1a2540;color:#94a3b8}
+.nav-item.active{background:linear-gradient(135deg,rgba(102,126,234,0.2),rgba(118,75,162,0.15));color:#818cf8;border:1px solid rgba(102,126,234,0.2)}
+.nav-icon{width:20px;text-align:center;font-size:15px;flex-shrink:0}
+.sb-spacer{flex:1}
+.main{margin-left:220px;padding:28px 32px;flex:1;min-height:100vh}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:20px 16px}}
+.main-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.main-topbar h1{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.3px}
+.topbar-actions{display:flex;gap:10px;flex-wrap:wrap}
+.action-btn{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.18s;border:1px solid}
+.btn-refresh{background:rgba(102,126,234,0.12);border-color:rgba(102,126,234,0.3);color:#818cf8}
+.btn-refresh:hover{background:rgba(102,126,234,0.22)}
+.btn-csv{background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.3);color:#34d399}
+.btn-csv:hover{background:rgba(16,185,129,0.22)}
+.btn-logout{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.2);color:#f87171}
+.btn-logout:hover{background:rgba(239,68,68,0.18)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:#0d1530;border:1px solid #1a2540;border-radius:16px;padding:20px 22px}
+.stat-val{font-size:34px;font-weight:800;background:linear-gradient(135deg,#667eea,#956afa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
+.stat-lbl{font-size:11px;color:#334155;margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.sec-card{background:#0d1530;border:1px solid #1a2540;border-radius:16px;padding:22px;margin-bottom:18px}
+.sec-card h3{font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px}
+.dist-row{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:10px;cursor:pointer;margin-bottom:4px;transition:background 0.18s}
+.dist-row:hover{background:#1a2540}
+.dist-label{width:145px;font-size:13px;color:#e2e8f0;font-weight:600;flex-shrink:0;display:flex;align-items:center;gap:7px}
+.dist-bar-bg{flex:1;height:8px;background:#0a1020;border-radius:10px;overflow:hidden}
+.dist-bar{height:100%;border-radius:10px;transition:width 0.9s ease}
+.dist-count{width:30px;text-align:right;font-size:13px;font-weight:800;color:#818cf8}
+.tab-bar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;background:#0a1020;padding:4px;border-radius:11px}
+.tab{background:transparent;border:none;color:#475569;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;transition:all 0.18s;white-space:nowrap}
+.tab:hover{color:#94a3b8;background:#1a2540}
+.tab.active{background:#1e2d50;color:#818cf8}
+.dl-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px;padding:16px;background:#0a1020;border-radius:12px;border:1px solid #1a2540}
+.dl-group{display:flex;flex-direction:column;gap:5px}
+.dl-label{font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px}
+.dl-input{background:#0d1530;border:1.5px solid #1e2d50;border-radius:8px;padding:8px 12px;color:#e2e8f0;font-size:13px;font-family:'Poppins',sans-serif;outline:none;transition:border-color 0.18s}
+.dl-input:focus{border-color:#667eea}
+.dl-select{background:#0d1530;border:1.5px solid #1e2d50;border-radius:8px;padding:8px 12px;color:#e2e8f0;font-size:13px;font-family:'Poppins',sans-serif;outline:none;cursor:pointer}
+.table-wrap{overflow-x:auto;border-radius:12px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:#070c1a;color:#475569;font-size:10px;padding:11px 12px;text-align:left;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;position:sticky;top:0;z-index:2}
+.data-table td{padding:11px 12px;border-bottom:1px solid rgba(26,37,64,0.8);color:#cbd5e1;vertical-align:middle}
+.data-table tr{cursor:pointer}
+.data-table tr:hover td{background:rgba(102,126,234,0.06)}
+.data-table tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin:1px;background:rgba(102,126,234,0.12);color:#818cf8;border:1px solid rgba(102,126,234,0.18)}
+.badge-t1{background:rgba(255,215,0,0.12);color:#fbbf24;border-color:rgba(255,215,0,0.25)}
+.table-footer{font-size:11px;color:#334155;margin-top:10px;padding:0 4px}
+.empty-state{text-align:center;padding:40px;color:#334155;font-size:13px}
+.loading-shimmer{animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%,100%{opacity:0.5}50%{opacity:1}}
+.error-banner{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:16px 20px;color:#f87171;font-size:13px;font-weight:600;margin-bottom:18px;display:none;line-height:1.6}
+.error-banner.show{display:block}
+</style>
+</head>
+<body>
+<div id="loginPage" class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🔐</div>
+      <h2>Admin Portal</h2>
+      <p>Jain University · RIASEC</p>
+    </div>
+    <div class="login-err" id="loginErr">Invalid credentials. Please try again.</div>
+    <input class="login-input" type="text" id="aUser" placeholder="Username" autocomplete="username">
+    <input class="login-input" type="password" id="aPass" placeholder="Password" autocomplete="current-password">
+    <button class="login-btn" onclick="adminLogin()">Login to Dashboard</button>
+    <a href="/entry" class="back-link">← Back to Survey</a>
+  </div>
+</div>
+<div id="dashboard">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sb-logo">
+        <div>
+          <span class="sb-logo-text">Jain University</span>
+          <span class="sb-logo-sub">RIASEC Admin</span>
+        </div>
+      </div>
+      <div class="sb-section">Navigation</div>
+      <button class="nav-item active" onclick="showSection('overview')" id="nav-overview"><span class="nav-icon">📊</span>Overview</button>
+      <button class="nav-item" onclick="showSection('responses')" id="nav-responses"><span class="nav-icon">📋</span>All Responses</button>
+      <button class="nav-item" onclick="showSection('traits')" id="nav-traits"><span class="nav-icon">🎯</span>Trait Analysis</button>
+      <div class="sb-spacer"></div>
+      <a href="/entry" class="nav-item"><span class="nav-icon">🏠</span>Back to Survey</a>
+    </div>
+    <div class="main">
+      <div class="main-topbar">
+        <h1 id="main-title">Overview</h1>
+        <div class="topbar-actions">
+          <button class="action-btn btn-refresh" onclick="loadData()">↻ Refresh</button>
+          <button class="action-btn btn-csv" onclick="downloadAllCSV()">⬇ Export CSV</button>
+          <button class="action-btn btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
+      <div class="error-banner" id="errorBanner"></div>
+      <div id="sec-overview">
+        <div class="stat-grid" id="stat-grid">
+          <div class="stat-card"><div class="stat-val loading-shimmer">—</div><div class="stat-lbl">Total Responses</div></div>
+          <div class="stat-card"><div class="stat-val loading-shimmer">—</div><div class="stat-lbl">Top Trait</div></div>
+          <div class="stat-card"><div class="stat-val loading-shimmer" style="font-size:18px;padding-top:8px">—</div><div class="stat-lbl">Latest Test</div></div>
+        </div>
+        <div class="sec-card">
+          <h3>Trait Distribution</h3>
+          <div id="trait-dist"><div class="empty-state loading-shimmer">Loading data…</div></div>
+        </div>
+      </div>
+      <div id="sec-responses" style="display:none">
+        <div class="sec-card">
+          <div class="tab-bar" id="filter-tabs">
+            <button class="tab active" onclick="setTraitFilter('all')">All</button>
+            <button class="tab" onclick="setTraitFilter('R')">🔧 R</button>
+            <button class="tab" onclick="setTraitFilter('I')">🔬 I</button>
+            <button class="tab" onclick="setTraitFilter('A')">🎨 A</button>
+            <button class="tab" onclick="setTraitFilter('S')">🤝 S</button>
+            <button class="tab" onclick="setTraitFilter('E')">🚀 E</button>
+            <button class="tab" onclick="setTraitFilter('C')">📊 C</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>#1</th><th>#2</th><th>#3</th><th>R</th><th>I</th><th>A</th><th>S</th><th>E</th><th>C</th><th>Date</th></tr></thead>
+              <tbody id="resp-body"><tr><td colspan="14" class="empty-state loading-shimmer">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="table-footer" id="resp-footer"></div>
+        </div>
+      </div>
+      <div id="sec-traits" style="display:none">
+        <div class="sec-card">
+          <h3>Trait Scores Summary</h3>
+          <div id="trait-summary"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const TRAIT_INFO={R:{name:"Realistic",icon:"🔧",color:"#e17055"},I:{name:"Investigative",icon:"🔬",color:"#0984e3"},A:{name:"Artistic",icon:"🎨",color:"#956afa"},S:{name:"Social",icon:"🤝",color:"#00b894"},E:{name:"Enterprising",icon:"🚀",color:"#f39c12"},C:{name:"Conventional",icon:"📊",color:"#636e72"}};
+const CREDS={u:'admin',p:'admin@2023'};
+let allData=[],activeTraitFilter='all',activeSection='overview';
+
+function getTop3(row){return(row.top3_codes||'').split(/\s*,\s*/).map(s=>s.trim()).filter(Boolean).slice(0,3)}
+function fmtDate(ts){if(!ts)return'—';try{return new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'2-digit'})}catch{return ts||'—'}}
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+function csvQ(s){return'"'+String(s||'').replace(/"/g,'""')+'"'}
+function today(){return new Date().toISOString().slice(0,10)}
+function showErr(msg){const b=document.getElementById('errorBanner');b.innerHTML=msg;b.classList.add('show')}
+function hideErr(){document.getElementById('errorBanner').classList.remove('show')}
+
+function adminLogin(){
+  const u=document.getElementById('aUser').value.trim();
+  const p=document.getElementById('aPass').value.trim();
+  if(u===CREDS.u&&p===CREDS.p){
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    loadData();
+  }else{
+    const e=document.getElementById('loginErr');e.classList.add('show');
+    setTimeout(()=>e.classList.remove('show'),3000);
+  }
+}
+function logout(){document.getElementById('loginPage').style.display='flex';document.getElementById('dashboard').style.display='none'}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('loginPage').style.display!=='none')adminLogin();});
+
+async function loadData(){
+  hideErr();
+  try{
+    const res=await fetch('/api/admin-data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:'admin@2023'})});
+    if(!res.ok){const err=await res.json();throw new Error(err.error||'HTTP '+res.status)}
+    const data=await res.json();
+    allData=(data.rows||[]).filter(r=>r.name&&r.name.trim());
+    allData.forEach(r=>r._top3=getTop3(r));
+    renderAll();
+  }catch(e){showErr('Failed to load data. <code>'+e.message+'</code>')}
+}
+
+function renderAll(){renderOverview();renderResponses();if(activeSection==='traits')renderTraits()}
+
+function showSection(sec){
+  activeSection=sec;
+  ['overview','responses','traits'].forEach(s=>{
+    document.getElementById('sec-'+s).style.display=s===sec?'block':'none';
+    document.getElementById('nav-'+s).classList.toggle('active',s===sec);
+  });
+  const titles={overview:'Overview',responses:'All Responses',traits:'Trait Analysis'};
+  document.getElementById('main-title').textContent=titles[sec]||sec;
+  if(sec==='traits')renderTraits();
+}
+
+function renderOverview(){
+  const total=allData.length;
+  const tc={R:0,I:0,A:0,S:0,E:0,C:0};
+  allData.forEach(d=>{const t=d._top3[0];if(t&&tc[t]!==undefined)tc[t]++});
+  const topEntry=Object.entries(tc).sort((a,b)=>b[1]-a[1])[0]||['—',0];
+  const latest=allData.length?fmtDate(allData[allData.length-1].timestamp):'—';
+  document.getElementById('stat-grid').innerHTML=`
+    <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Total Responses</div></div>
+    <div class="stat-card"><div class="stat-val">${TRAIT_INFO[topEntry[0]]?TRAIT_INFO[topEntry[0]].icon+' '+topEntry[0]:'—'}</div><div class="stat-lbl">Top Trait</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:18px;padding-top:8px">${latest}</div><div class="stat-lbl">Latest Test</div></div>`;
+  const max=Math.max(...Object.values(tc),1);
+  document.getElementById('trait-dist').innerHTML=Object.entries(tc).sort((a,b)=>b[1]-a[1]).map(([t,c])=>`
+    <div class="dist-row" onclick="showSection('responses');setTraitFilter('${t}')">
+      <div class="dist-label">${TRAIT_INFO[t].icon} ${TRAIT_INFO[t].name}</div>
+      <div class="dist-bar-bg"><div class="dist-bar" style="width:${(c/max)*100}%;background:${TRAIT_INFO[t].color}"></div></div>
+      <div class="dist-count">${c}</div>
+    </div>`).join('')||'<div class="empty-state">No data yet</div>';
+}
+
+function setTraitFilter(f){
+  activeTraitFilter=f;
+  document.querySelectorAll('#filter-tabs .tab').forEach((t,i)=>{const vals=['all','R','I','A','S','E','C'];t.classList.toggle('active',vals[i]===f)});
+  renderResponses();
+  if(activeSection!=='responses')showSection('responses');
+}
+
+function renderResponses(){
+  let data=[...allData];
+  if(activeTraitFilter!=='all')data=data.filter(r=>r._top3[0]===activeTraitFilter);
+  const tbody=document.getElementById('resp-body');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="14" class="empty-state">No responses found.</td></tr>';document.getElementById('resp-footer').textContent='';return}
+  tbody.innerHTML=data.map((d,i)=>{
+    const top3=d._top3;
+    const traitCell=(t,rank)=>{
+      if(!t||!TRAIT_INFO[t])return'<td>—</td>';
+      return`<td><span class="badge ${rank===0?'badge-t1':''}" style="color:${TRAIT_INFO[t].color};border-color:${TRAIT_INFO[t].color}44">${TRAIT_INFO[t].icon} ${t}</span></td>`;
+    };
+    return`<tr>
+      <td style="color:#334155">${i+1}</td>
+      <td style="font-weight:700;color:#f1f5f9">${esc(d.name)}</td>
+      <td style="color:#475569">${esc(d.email)}</td>
+      <td style="color:#475569">${esc(d.phone)}</td>
+      ${traitCell(top3[0],0)}${traitCell(top3[1],1)}${traitCell(top3[2],2)}
+      <td>${d.R}</td><td>${d.I}</td><td>${d.A}</td><td>${d.S}</td><td>${d.E}</td><td>${d.C}</td>
+      <td style="color:#334155;white-space:nowrap">${fmtDate(d.timestamp)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('resp-footer').textContent=`Showing ${data.length} of ${allData.length} students`;
+}
+
+function renderTraits(){
+  const tc={R:0,I:0,A:0,S:0,E:0,C:0};
+  const totals={R:0,I:0,A:0,S:0,E:0,C:0};
+  allData.forEach(d=>{const t=d._top3[0];if(t&&tc[t]!==undefined)tc[t]++;Object.keys(totals).forEach(k=>{totals[k]+=Number(d[k])||0})});
+  const n=allData.length||1;
+  document.getElementById('trait-summary').innerHTML=Object.entries(TRAIT_INFO).map(([t,info])=>`
+    <div class="dist-row">
+      <div class="dist-label">${info.icon} ${info.name} (${t})</div>
+      <div class="dist-bar-bg" style="flex:1"><div class="dist-bar" style="width:${Math.round((tc[t]/(allData.length||1))*100)}%;background:${info.color}"></div></div>
+      <div class="dist-count">${tc[t]} top · avg ${(totals[t]/n).toFixed(1)}</div>
+    </div>`).join('');
+}
+
+function buildCSV(data){
+  const headers=['Name','Email','Phone','Date','#1','#2','#3','R','I','A','S','E','C'];
+  const rows=data.map(d=>{const top3=d._top3;return[csvQ(d.name),csvQ(d.email),csvQ(d.phone),csvQ(fmtDate(d.timestamp)),csvQ(top3[0]||''),csvQ(top3[1]||''),csvQ(top3[2]||''),d.R,d.I,d.A,d.S,d.E,d.C].join(',')});
+  return[headers.join(','),...rows].join('\n');
+}
+function triggerCSV(content,filename){
+  const blob=new Blob([content],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function downloadAllCSV(){triggerCSV(buildCSV(allData),'jain-riasec-all-'+today()+'.csv')}
+</script>
+</body>
+</html>

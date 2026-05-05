@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+{% block title %}Course Details – JAIN School of Global Studies{% endblock %}
+
+{% block topbar_nav %}
+<a href="/home" class="nav-link">Dashboard</a>
+<a href="/home#all-programs" class="nav-link nav-programs">🎓 View All Programs</a>
+<div class="nav-divider"></div>
+<div class="nav-user-chip">
+  <span class="nav-user-name" id="nav-user-name">Guest</span>
+</div>
+<button class="nav-link" onclick="logout()" style="color:#6b7280;font-size:12px">Sign out</button>
+{% endblock %}
+
+{% block mobile_nav %}
+<div style="display:flex;align-items:center;gap:10px;padding:8px 4px;margin-bottom:4px">
+  <div class="nav-avatar" id="mob-avatar" style="width:36px;height:36px;font-size:14px">?</div>
+  <div><div style="font-size:14px;font-weight:600;color:#0f1623" id="mob-name">Guest</div></div>
+</div>
+<div class="drawer-divider"></div>
+<a href="/home" class="mobile-nav-link">Dashboard</a>
+<a href="/home#all-programs" class="mobile-nav-link">All Programs</a>
+<div class="drawer-divider"></div>
+<button class="mobile-nav-link" onclick="logout()" style="color:#ef4444">Sign out</button>
+{% endblock %}
+
+{% block head %}
+<style>
+.cp{max-width:960px;margin:0 auto;padding:36px 20px 100px}
+@media(max-width:700px){.cp{padding:16px 12px 80px}}
+.c-hero{border-radius:18px;overflow:hidden;position:relative;min-height:320px;display:flex;flex-direction:column;justify-content:flex-end;margin-bottom:22px}
+.c-hi{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.c-ho{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,12,26,0.95) 0%,rgba(8,12,26,0.55) 45%,rgba(8,12,26,0.08) 100%)}
+.c-hin{position:relative;z-index:2;padding:26px 30px}
+.c-bc{display:flex;align-items:center;gap:7px;margin-bottom:11px;flex-wrap:wrap}
+.c-bc a{font-size:11px;color:rgba(255,255,255,0.4);text-decoration:none}.c-bc a:hover{color:rgba(255,255,255,0.8)}
+.c-bc-sep{font-size:11px;color:rgba(255,255,255,0.2)}.c-bc-cur{font-size:11px;color:rgba(255,255,255,0.6)}
+.c-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.c-badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px}
+.c-badge-rec{background:rgba(37,99,235,0.85);color:#fff}
+.c-badge-lvl{background:rgba(255,255,255,0.14);color:rgba(255,255,255,0.82);border:1px solid rgba(255,255,255,0.2)}
+.c-badge-schol{background:linear-gradient(135deg,rgba(16,185,129,0.9),rgba(5,150,105,0.9));color:#fff}
+.c-title{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;line-height:1.25;margin-bottom:4px}
+.c-uni{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:14px}
+.c-meta{display:flex;gap:18px;flex-wrap:wrap}
+.c-meta-val{font-size:14px;font-weight:700;color:#fff;line-height:1}
+.c-meta-lbl{font-size:10px;color:rgba(255,255,255,0.38);margin-top:3px;text-transform:uppercase;letter-spacing:0.5px}
+.schol-banner{background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(5,150,105,0.06));border:1.5px solid rgba(16,185,129,0.26);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.sb-content{flex:1;min-width:180px}
+.sb-title{font-size:14px;font-weight:700;color:#0f9b6e;margin-bottom:2px}
+.sb-desc{font-size:12px;color:#047857;line-height:1.6}
+.schol-apply-btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 16px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.18s;margin-top:8px;width:100%;text-decoration:none}
+.schol-apply-btn:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(16,185,129,0.35);color:#fff}
+.sc{background:#fff;border-radius:13px;border:1px solid var(--line);padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow)}
+.sc-h{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid #f3f4f6}
+.acc-item{border:1px solid var(--line);border-radius:10px;margin-bottom:6px;overflow:hidden;background:#fff}
+.acc-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;user-select:none;transition:background 0.15s;gap:10px}
+.acc-head:hover{background:#f9fafb}.acc-head.open{background:#f0f6ff}
+.acc-sem-tag{background:var(--grad);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.acc-sem-count{font-size:11px;color:var(--muted);flex-shrink:0}
+.acc-chevron{font-size:12px;color:var(--muted);transition:transform 0.25s;flex-shrink:0}
+.acc-head.open .acc-chevron{transform:rotate(180deg);color:var(--accent)}
+.acc-body{display:none;border-top:1px solid #f3f4f6}.acc-body.open{display:block}
+.acc-table{width:100%;border-collapse:collapse}
+.acc-table tr{border-bottom:1px solid #f9fafb}.acc-table tr:last-child{border-bottom:none}
+.acc-table tr:hover{background:#fafbff}
+.acc-table td:first-child{width:30px;padding:9px 5px 9px 13px;font-size:11px;font-weight:600;color:#c4cad4;text-align:center}
+.acc-table td:last-child{padding:9px 13px 9px 4px;font-size:13px;color:var(--ink2);line-height:1.5}
+.hon-div{display:flex;align-items:center;gap:10px;margin:4px 0}
+.hon-line{flex:1;height:1px;background:var(--line)}
+.hon-tag{font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px;background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.14);padding:3px 11px;border-radius:20px;white-space:nowrap}
+.pw-step{display:flex;gap:11px;align-items:flex-start}
+.pw-num{width:22px;height:22px;border-radius:50%;background:var(--grad);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.pw-body strong{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.pw-body span{font-size:12px;color:var(--muted)}
+.pw-line{width:1px;height:20px;background:var(--line);margin:5px 0 5px 11px}
+.enroll-c{background:#fff;border-radius:13px;border:1.5px solid rgba(16,185,129,0.22);padding:16px;box-shadow:var(--shadow)}
+.en-img{width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:10px}
+.en-title{font-size:13px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:2px}
+.en-uni{font-size:11px;color:var(--muted);margin-bottom:10px}
+.en-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f3f4f6;font-size:12px;gap:7px}
+.en-row:last-of-type{border-bottom:none}.en-k{color:#9ca3af;font-weight:500;flex-shrink:0}
+.en-v{color:var(--ink);font-weight:600;text-align:right;font-size:11px}
+.en-btn{width:100%;margin-top:10px;padding:11px;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;text-decoration:none;display:block;text-align:center}
+.en-btn-schol{background:linear-gradient(135deg,#10b981,#059669)}
+.en-btn-enroll{background:var(--grad)}
+.en-btn:hover{transform:translateY(-1px);color:#fff}
+.sticky-sb{position:sticky;top:76px;display:flex;flex-direction:column;gap:11px}
+.c-layout{display:grid;grid-template-columns:1fr 265px;gap:16px;align-items:start}
+@media(max-width:740px){.c-layout{grid-template-columns:1fr}}
+.modal-ov{position:fixed;inset:0;background:rgba(10,14,26,0.65);z-index:400;display:none;align-items:center;justify-content:center;padding:70px 14px 14px;backdrop-filter:blur(8px);overflow-y:auto}
+.modal-ov.open{display:flex}
+.modal-bx{background:#fff;border-radius:15px;padding:24px 20px;max-width:400px;width:100%;box-shadow:var(--shadow-lg);position:relative;animation:mIn 0.22s ease;flex-shrink:0;margin:auto}
+@keyframes mIn{from{transform:translateY(14px) scale(0.96);opacity:0}to{transform:none;opacity:1}}
+.modal-x{position:absolute;top:11px;right:11px;background:#f3f4f6;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all 0.18s}
+.modal-x:hover{background:#e5e7eb}
+.modal-h{font-family:'DM Serif Display',serif;font-size:19px;color:var(--ink);margin-bottom:3px}
+.modal-p{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+.mf{margin-bottom:9px}
+.mf label{display:block;font-size:10px;font-weight:600;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px}
+.mf input{width:100%;padding:10px 11px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;transition:all 0.18s;background:#f9fafb}
+.mf input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,0.09)}
+.m-submit{width:100%;padding:11px;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px;transition:all 0.18s}
+.m-submit.green{background:linear-gradient(135deg,#10b981,#059669)}
+.m-submit.green:hover{box-shadow:0 6px 18px rgba(16,185,129,0.35);transform:translateY(-1px)}
+.m-submit.blue{background:var(--grad)}
+.m-submit.blue:hover{transform:translateY(-1px)}
+.m-err{background:rgba(220,53,69,0.06);color:#dc3545;border-left:3px solid #dc3545;border-radius:7px;padding:7px 10px;font-size:12px;margin-bottom:9px;display:none}.m-err.show{display:block}
+.m-ok{text-align:center;display:none;padding:8px 0}
+.m-ok-icon{font-size:44px;display:block;margin-bottom:9px}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cp">
+  <div class="c-hero">
+    <img class="c-hi" id="c-img" src="" alt="">
+    <div class="c-ho"></div>
+    <div class="c-hin">
+      <div class="c-bc"><a href="/home">Dashboard</a><span class="c-bc-sep">›</span><span class="c-bc-cur" id="bc-cur">Course</span></div>
+      <div class="c-badges">
+        <span class="c-badge c-badge-rec">Recommended for You</span>
+        <span class="c-badge c-badge-lvl" id="h-level">BS</span>
+        <span class="c-badge c-badge-schol">🎓 Scholarship Available</span>
+      </div>
+      <div class="c-title" id="h-title">Loading…</div>
+      <div class="c-uni">JAIN (Deemed-to-be University)</div>
+      <div class="c-meta">
+        <div><div class="c-meta-val" id="h-dur">—</div><div class="c-meta-lbl">Duration</div></div>
+        <div><div class="c-meta-val" id="h-deg">—</div><div class="c-meta-lbl">Degree</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="schol-banner">
+    <div style="font-size:34px">🎓</div>
+    <div class="sb-content">
+      <div class="sb-title">JAIN School of Global Studies × UCAM Merit Scholarship</div>
+      <div class="sb-desc">Your RIASEC score qualifies you for a tuition scholarship. Apply now to secure your place!</div>
+      <button class="schol-apply-btn" onclick="applyScholarship()">Apply for Scholarship →</button>
+    </div>
+  </div>
+
+  <div class="c-layout">
+    <div>
+      <div class="sc">
+        <div class="sc-h">About This Programme</div>
+        <p style="font-size:14px;color:#374151;line-height:1.8" id="about-txt"></p>
+      </div>
+      <div class="sc">
+        <div class="sc-h">Curriculum — click a semester to expand</div>
+        <div id="acc-body"></div>
+      </div>
+      <div class="sc">
+        <div class="sc-h">International Pathway</div>
+        <div class="pw-step"><div class="pw-num">1</div><div class="pw-body"><strong id="ps1t">Programme</strong><span id="ps1s">JAIN</span></div></div>
+        <div class="pw-line"></div>
+        <div class="pw-step"><div class="pw-num">2</div><div class="pw-body"><strong id="ps2t">Postgraduate</strong><span id="ps2s">International University</span></div></div>
+        <p style="margin-top:12px;background:rgba(37,99,235,0.04);border:1px solid rgba(37,99,235,0.12);border-radius:9px;padding:11px 13px;font-size:12px;color:var(--muted);line-height:1.7">Students completing the JAIN programme are eligible for direct pathway entry into the postgraduate programme at UCAM University, Spain.</p>
+      </div>
+    </div>
+    <div class="sticky-sb">
+      <div class="enroll-c">
+        <img class="en-img" id="en-img" src="" alt="">
+        <div class="en-title" id="en-title">Programme</div>
+        <div class="en-uni">JAIN (Deemed-to-be University)</div>
+        <div id="en-details"></div>
+        <a href="#" class="en-btn en-btn-schol" onclick="applyScholarship();return false" style="margin-top:12px">🎓 Apply for Scholarship</a>
+        <a href="#" class="en-btn en-btn-enroll" onclick="openModal('enroll');return false" style="margin-top:8px">📋 Enroll Now</a>
+        <div style="font-size:10px;color:#9ca3af;text-align:center;margin-top:7px;line-height:1.6">Our team will contact you within 24 hours.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCHOLARSHIP MODAL -->
+<div class="modal-ov" id="schol-modal" onclick="if(event.target===this)closeModal('schol')">
+  <div class="modal-bx">
+    <button class="modal-x" onclick="closeModal('schol')">✕</button>
+    <div id="sf-wrap">
+      <div class="modal-h">🎓 Apply for Scholarship</div>
+      <p class="modal-p">Secure your merit scholarship at JAIN School of Global Studies.</p>
+      <div class="m-err" id="sf-err"></div>
+      <div class="mf"><label>Full Name *</label><input type="text" id="sf-name"></div>
+      <div class="mf"><label>Email *</label><input type="email" id="sf-email"></div>
+      <div class="mf"><label>Phone *</label><input type="tel" id="sf-phone" placeholder="+91 XXXXXXXXXX"></div>
+      <div class="mf"><label>Message (optional)</label><input type="text" id="sf-msg" placeholder="Any questions?"></div>
+      <button class="m-submit green" id="sf-btn" onclick="submitForm('schol')">Apply Now 🎓</button>
+    </div>
+    <div class="m-ok" id="sf-ok"><span class="m-ok-icon">🎓</span><h3 style="color:#10b981;margin-bottom:8px">Scholarship Applied!</h3><p style="font-size:13px;color:var(--muted)">The Admissions Department will contact you for the next steps.</p><button class="m-submit blue" onclick="closeModal('schol')" style="margin-top:12px">Close</button></div>
+  </div>
+</div>
+
+<!-- ENROLL MODAL -->
+<div class="modal-ov" id="enroll-modal" onclick="if(event.target===this)closeModal('enroll')">
+  <div class="modal-bx">
+    <button class="modal-x" onclick="closeModal('enroll')">✕</button>
+    <div id="ef-wrap">
+      <div class="modal-h">📋 Enroll Now</div>
+      <p class="modal-p">Express your interest to enroll in this programme.</p>
+      <div class="m-err" id="ef-err"></div>
+      <div class="mf"><label>Full Name *</label><input type="text" id="ef-name"></div>
+      <div class="mf"><label>Email *</label><input type="email" id="ef-email"></div>
+      <div class="mf"><label>Phone *</label><input type="tel" id="ef-phone" placeholder="+91 XXXXXXXXXX"></div>
+      <div class="mf"><label>Message (optional)</label><input type="text" id="ef-msg" placeholder="Any questions?"></div>
+      <button class="m-submit blue" id="ef-btn" onclick="submitForm('enroll')">Submit Enrollment</button>
+    </div>
+    <div class="m-ok" id="ef-ok"><span class="m-ok-icon">✅</span><h3 style="color:var(--accent);margin-bottom:8px">Request Received!</h3><p style="font-size:13px;color:var(--muted)">Our Admission Coordinator will contact you within 24 hours.</p><button class="m-submit blue" onclick="closeModal('enroll')" style="margin-top:12px">Close</button></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% raw %}
+<script>
+function _readUser(){
+  try{const s=localStorage.getItem('riasec_user')||sessionStorage.getItem('riasec_user');return s?JSON.parse(s):null;}catch(e){return null;}
+}
+const user=(typeof getUser==='function')?getUser():_readUser();
+if(!user||!user.name||!String(user.name).trim()){window.location.replace('/entry');}
+const fn=user&&user.name?String(user.name).trim().split(' ')[0]:'Guest';
+['nav-avatar','mob-avatar'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fn[0].toUpperCase();});
+['nav-user-name','mob-name'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fn;});
+
+const COURSES={
+  'creative-tech':{id:'creative-tech',matchTraits:['A','I','S'],level:'BS (Hons)',title:'Creative Technology and Design',university:'JAIN (Deemed-to-be University)',duration:'3 Years + 1 Year Honours',image:'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&q=80',thumb:'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&q=80',about:'The BS (Hons) in Creative Technology and Design bridges art, design, and emerging technology. Students create immersive digital experiences, interactive media, and innovative design solutions.',pathway:{s1t:'BS (Hons) in Creative Technology and Design',s1s:'JAIN (Deemed-to-be University) — 3 Years + 1 Year Honours',s2t:"Master's in Creative Technology and Design",s2s:'UCAM University, Spain'},curriculum:[{sem:'Semester 1',courses:['Design Fundamentals and Visual Systems','Human–Computer Interaction','Narrative Storytelling and Data Visualisation','Audio and Image Fundamentals','English / Hindi / Kannada / Spanish / French','MMHV I']},{sem:'Semester 2',courses:['Creative Technology Basics','Real-Time 3D Basics (Unity/Unreal)','Motion and Animation Principles','Accessibility and Inclusive Design','Additional Language','MMHV II']},{sem:'Semester 3',courses:['Real-Time 3D','Physical and Creative Computing 1','Audio Tech and Music Production','Computational Design','Ethics, IP and Media Law','Integrative Competencies Development I','Environmental Studies']},{sem:'Semester 4',courses:['XR Foundations (AR/VR)','Physical and Creative Computing 2','Motion/VFX I','UX Eval and Analytics','Integrative Competencies Development II','Indian Constitution','Open Elective 1']},{sem:'Semester 5',courses:['Production and Pipelines','Data-informed Design','Production Design and Tech Direction','Integrative Competencies Development III','Professional Elective 1','Open Elective 2']},{sem:'Semester 6',courses:['Production Facilitation','Inclusion by Design','Integrative Competencies Development IV','Project-based Internship','Professional Elective 2','Open Elective 3']},{type:'sep',label:'Honours'},{sem:'Semester 7 (Honours)',courses:['Advanced HCI and Experience Design','Computational Creativity and Generative Methods','Advanced XR and Spatial Computing Systems','Creative AI Systems','Production Engineering','Integrative Competencies Development V']},{sem:'Semester 8 (Honours)',courses:['Research Methods and Scientific Writing','Integrative Competencies Development VI','Applied Research or Industry Research Practicum','Capstone Project','Open Elective 4']}]},
+  'data-ai':{id:'data-ai',matchTraits:['I','C','R'],level:'BS (Hons)',title:'Data Analytics and Applied Artificial Intelligence',university:'JAIN (Deemed-to-be University)',duration:'3 Years + 1 Year Honours',image:'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&q=80',thumb:'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&q=80',about:'The BS (Hons) in Data Analytics and Applied Artificial Intelligence equips students with mathematics, programming, and domain expertise to build intelligent systems and drive data-informed decisions.',pathway:{s1t:'BS (Hons) in Data Analytics and Applied Artificial Intelligence',s1s:'JAIN (Deemed-to-be University) — 3 Years + 1 Year Honours',s2t:"Master's in Data Analytics and Applied AI",s2s:'UCAM University, Spain'},curriculum:[{sem:'Semester 1',courses:['Mathematics I (Discrete Mathematics)','Programming Basics and Python','Data Literacy and Visualisation','Logic and Calculus for Data Science','English / Hindi / Kannada / Spanish / French','MMHV I']},{sem:'Semester 2',courses:['Mathematics II (Probability and Statistics)','Data Structures and Algorithms','Databases with SQL','Data Visualisation and Storytelling','Additional Language','MMHV II']},{sem:'Semester 3',courses:['Software Engineering Basics and APIs','Mathematics III','Data Engineering I (ETL and Data Warehousing)','Introduction to Machine Learning and AI','Responsible AI and Data Governance','Integrative Competencies Development I','Environmental Studies']},{sem:'Semester 4',courses:['Machine Learning Systems','Time Series and Forecasting','Experimental Design and Inferencing','Data Engineering II (Spark and Data Lakes)','Integrative Competencies Development II','Indian Constitution','Open Elective 1']},{sem:'Semester 5',courses:['Deep Learning I (CNN / RNN)','Natural Language Processing I','Cloud for Data Analytics and AI','Integrative Competencies Development III','MLOps','Open Elective 2']},{sem:'Semester 6',courses:['Recommender Systems','Graph Analytics','Integrative Competencies Development IV','Streaming and Real-Time Analytics','Privacy-Preserving Analytics','Open Elective 3']},{type:'sep',label:'Honours'},{sem:'Semester 7 (Honours)',courses:['Advanced Machine Learning and Applied AI','Deep Learning II (Transformers and GenAI)','Optimisation for Large-Scale Learning','Generative AI','Causal Inference and Uplift Modelling','Integrative Competencies Development V']},{sem:'Semester 8 (Honours)',courses:['Research Methods and Scientific Writing','Integrative Competencies Development VI','Applied Research or Industry Research Practicum','Capstone Project','Open Elective 4']}]},
+  'corporate-mgmt':{id:'corporate-mgmt',matchTraits:['E','C','I'],level:'MS',title:'Corporate Management and Lean Six Sigma',university:'JAIN (Deemed-to-be University)',duration:'2 Years',image:'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80',thumb:'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&q=80',about:'The MS in Corporate Management and Lean Six Sigma combines strategic business leadership with operational excellence methodologies.',pathway:{s1t:'MS in Corporate Management and Lean Six Sigma',s1s:'JAIN (Deemed-to-be University) — 2 Years',s2t:"Master's in Corporate Management + PG Certificate in Business Excellence",s2s:'UCAM University, Spain'},curriculum:[{sem:'Semester 1',courses:['Principles of Management and Corporate Environment','Accounting and Financial Reporting for Managers','Quantitative Techniques and Business Statistics','Lean Tools (Yellow Belt)','Six Sigma Improvement Tools (Green Belt) I']},{sem:'Semester 2',courses:['Marketing Management','Operations and Supply Chain Management','Organisational Behaviour and Human Resource Management','Six Sigma Improvement Tools (Green Belt) II','Lean Six Sigma Advanced Tools (Black Belt)']},{sem:'Semester 3',courses:['Strategic Management and Corporate Policy','Project Management and Risk Analysis','Business Analytics for Process Excellence','Lean Specialties','Application in Industry 4.0 - I','Integrative Competencies Development I']},{sem:'Semester 4',courses:['Corporate Performance Management','Entrepreneurship and Lean Consulting Practice','Application in Industry 4.0 - II','Integrative Competencies Development II',"Master's Final Project"]}]},
+  'sports-science':{id:'sports-science',matchTraits:['R','I','S'],level:'MS',title:'High Performance Sports: Strength and Conditioning',university:'JAIN (Deemed-to-be University)',duration:'2 Years',image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&q=80',thumb:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80',about:'The MS in High Performance Sports: Strength and Conditioning trains sports scientists and conditioning coaches for elite environments.',pathway:{s1t:'MS in High Performance Sports: Strength and Conditioning',s1s:'JAIN (Deemed-to-be University) — 2 Years',s2t:'PG Certificate in High Performance Sports: Strength and Conditioning',s2s:'UCAM University, Spain'},curriculum:[{sem:'Semester 1',courses:['Research Methodology','Computer and Research Methods in Strength and Conditioning','Communication and Professional Skills']},{sem:'Semester 2',courses:['Scientific Principles of Strength and Conditioning','Exercise Physiology','Biomechanics and Movement Analysis']},{sem:'Semester 3',courses:['Sport Nutrition and Ergogenic Aids','Program Design in Strength and Conditioning','Injury Prevention and Rehabilitation','Integrative Competencies Development: Leadership and Organisational Behaviour']},{sem:'Semester 4',courses:['Practicum / Internship','Masters Thesis']}]}
+};
+
+const cid=window.location.pathname.split('/course/')[1];
+const C=COURSES[cid];
+if(!C){document.querySelector('.cp').innerHTML='<div style="text-align:center;padding:100px 20px"><p style="color:#6b7280;margin-bottom:20px">Course not found.</p><a href="/home" class="btn btn-sm" style="width:auto;display:inline-flex">Back to Dashboard</a></div>';}
+else{render(C);}
+
+function render(c){
+  document.getElementById('bc-cur').textContent=c.title;
+  document.getElementById('h-level').textContent=c.level;
+  document.getElementById('h-title').textContent=c.title;
+  document.getElementById('h-dur').textContent=c.duration;
+  document.getElementById('h-deg').textContent=c.level;
+  document.getElementById('c-img').src=c.image;
+  document.getElementById('about-txt').textContent=c.about;
+  document.getElementById('ps1t').textContent=c.pathway.s1t;
+  document.getElementById('ps1s').textContent=c.pathway.s1s;
+  document.getElementById('ps2t').textContent=c.pathway.s2t;
+  document.getElementById('ps2s').textContent=c.pathway.s2s;
+  document.getElementById('en-img').src=c.thumb;
+  document.getElementById('en-title').textContent=c.title;
+  document.getElementById('en-details').innerHTML=
+    '<div class="en-row"><span class="en-k">Duration</span><span class="en-v">'+c.duration+'</span></div>'+
+    '<div class="en-row"><span class="en-k">Degree</span><span class="en-v">'+c.level+'</span></div>'+
+    '<div class="en-row"><span class="en-k">Pathway</span><span class="en-v">'+c.pathway.s2t+'</span></div>';
+
+  // Pre-fill modals
+  ['sf-name','ef-name'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=user.name||'';});
+  ['sf-email','ef-email'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=user.email||'';});
+  ['sf-phone','ef-phone'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=user.phone||'';});
+
+  // Build accordion
+  const ab=document.getElementById('acc-body');ab.innerHTML='';
+  c.curriculum.forEach((block,idx)=>{
+    if(block.type==='sep'){
+      const d=document.createElement('div');d.className='hon-div';d.style.margin='12px 0 5px';
+      d.innerHTML='<div class="hon-line"></div><div class="hon-tag">'+block.label+'</div><div class="hon-line"></div>';
+      ab.appendChild(d);return;
+    }
+    const isFirst=idx===0||c.curriculum[idx-1].type==='sep';
+    const item=document.createElement('div');item.className='acc-item';
+    const rows=block.courses.map((t,i)=>'<tr><td>'+(i+1)+'</td><td>'+t+'</td></tr>').join('');
+    item.innerHTML='<div class="acc-head'+(isFirst?' open':'')+'" onclick="toggleAcc(this)"><span class="acc-sem-tag">'+block.sem+'</span><span class="acc-sem-count">'+block.courses.length+' subjects</span><span class="acc-chevron">▾</span></div><div class="acc-body'+(isFirst?' open':'')+'"><table class="acc-table">'+rows+'</table></div>';
+    ab.appendChild(item);
+  });
+}
+
+function toggleAcc(head){head.classList.toggle('open');head.nextElementSibling.classList.toggle('open');}
+
+function openModal(type){
+  document.getElementById(type+'-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById(type==='schol'?'sf-wrap':'ef-wrap').style.display='block';
+  document.getElementById(type==='schol'?'sf-ok':'ef-ok').style.display='none';
+  document.getElementById(type==='schol'?'sf-err':'ef-err').classList.remove('show');
+}
+function closeModal(type){
+  document.getElementById(type+'-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+async function submitForm(type){
+  const pfx=type==='schol'?'sf':'ef';
+  const name=document.getElementById(pfx+'-name').value.trim();
+  const email=document.getElementById(pfx+'-email').value.trim();
+  const phone=document.getElementById(pfx+'-phone').value.trim();
+  const msg=document.getElementById(pfx+'-msg').value.trim();
+  const errEl=document.getElementById(pfx+'-err');
+  const btnEl=document.getElementById(pfx+'-btn');
+  if(!name||!email||!phone){errEl.textContent='Please fill in all required fields.';errEl.classList.add('show');return;}
+  errEl.classList.remove('show');
+  const orig=btnEl.textContent;btnEl.textContent='Submitting…';btnEl.disabled=true;
+  try{
+    await fetch('/api/enroll',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,email,phone,message:msg,
+        course:C?C.level+': '+C.title:cid,courseId:cid,
+        top3:user.top3||[],scores:user.scores||{},
+        scholarship:type==='schol',timestamp:new Date().toISOString()})});
+  }catch(e){console.warn(e);}
+  btnEl.textContent=orig;btnEl.disabled=false;
+  document.getElementById(pfx+'-wrap').style.display='none';
+  document.getElementById(pfx+'-ok').style.display='block';
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal('schol');closeModal('enroll');}});
+
+/* ── SCHOLARSHIP CLICK — log to admin then redirect ── */
+function applyScholarship(){
+  var u = (typeof getUser === 'function') ? getUser() : _readUser();
+  var courseTitle = C ? (C.level + ': ' + C.title) : cid;
+
+  /* Log click to sheet + send email notification */
+  fetch('/api/enroll', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      name:      u ? u.name  : 'Unknown',
+      email:     u ? u.email : '',
+      phone:     u ? u.phone : '',
+      course:    courseTitle,
+      courseId:  cid,
+      top3:      u ? (u.top3 || []) : [],
+      scores:    u ? (u.scores || {}) : {},
+      scholarship: true,
+      message:   'Scholarship button clicked — redirected to jainsogs.com/gfs/',
+      timestamp: new Date().toISOString()
+    })
+  }).catch(function(e){ console.warn('Log error:', e); });
+
+  /* Open scholarship page */
+  window.open('https://jainsogs.com/gfs/', '_blank');
+}
+
+</script>
+{% endraw %}
+{% endblock %}
