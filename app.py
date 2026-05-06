@@ -1,10 +1,15 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-import requests, json, csv, io, smtplib, threading, os
+import requests, json, csv, io, smtplib, threading, os, re
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 
 load_dotenv()
+
+_EMAIL_RE = re.compile(r'^[a-zA-Z0-9._%+\-]{2,}@[a-zA-Z0-9\-]{2,}(\.[a-zA-Z0-9\-]{1,})*\.[a-zA-Z]{2,}$')
+
+def is_valid_email(email: str) -> bool:
+    return bool(_EMAIL_RE.match(email))
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'jain_riasec_secret_2024')
@@ -469,8 +474,8 @@ def course(course_id):
 @app.route('/api/lookup-email', methods=['POST'])
 def lookup_email():
     email = (request.json or {}).get('email', '').strip().lower()
-    if not email:
-        return jsonify({'found': False})
+    if not email or not is_valid_email(email):
+        return jsonify({'found': False, 'error': 'Invalid email address'})
     rows    = fetch_sheet_data()
     matches = [r for r in rows if r.get('email', '').strip().lower() == email]
     if matches:
@@ -493,6 +498,8 @@ def submit_results():
 
     if not (name and email and top3):
         return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+    if not is_valid_email(email):
+        return jsonify({'success': False, 'error': 'Invalid email address'}), 400
 
     row = [ts, name, email, phone,
            scores.get('R', 0), scores.get('I', 0), scores.get('A', 0),
