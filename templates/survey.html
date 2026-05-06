@@ -2,19 +2,21 @@
 {% block title %}Survey – RIASEC · JAIN (Deemed-to-be University){% endblock %}
 
 {% block topbar_nav %}
-<span id="nav-progress-label" style="font-size:12px;color:#94a3b8;font-weight:600">Q 1 / 41</span>
+<span id="nav-progress-label" style="font-size:13px;color:#94a3b8;font-weight:600">Q 1 / 41</span>
 <div style="width:130px;height:5px;background:#f1f5f9;border-radius:10px;overflow:hidden;margin-left:8px">
   <div id="nav-prog-bar" style="height:100%;background:var(--grad);border-radius:10px;transition:width 0.5s ease;width:0%"></div>
 </div>
+<a href="/home" id="nav-home-btn" class="nav-link" style="display:none;background:var(--grad);color:#fff;font-weight:700;margin-left:10px;border-radius:8px;padding:7px 16px">&#127968; Go to Dashboard</a>
 {% endblock %}
 
 {% block mobile_nav %}
 <div style="padding:8px 4px;margin-bottom:4px">
-  <div style="font-size:14px;font-weight:700;color:#1e293b">Taking Survey</div>
-  <div style="font-size:11px;color:#94a3b8;margin-top:2px" id="mob-q-count">Q 1 / 41</div>
+  <div style="font-size:15px;font-weight:700;color:#1e293b" id="mob-survey-title">Taking Survey</div>
+  <div style="font-size:12px;color:#94a3b8;margin-top:2px" id="mob-q-count">Q 1 / 41</div>
 </div>
 <div class="drawer-divider"></div>
-<a href="/entry" class="mobile-nav-link">Exit Survey</a>
+<a href="/home" id="mob-home-btn" class="mobile-nav-link" style="display:none;color:var(--accent);font-weight:700">&#127968; Go to Dashboard</a>
+<a href="/entry" id="mob-exit-btn" class="mobile-nav-link">Exit Survey</a>
 {% endblock %}
 
 {% block head %}
@@ -302,8 +304,14 @@ function finishSurvey(){
   /* submit to server in background */
   submitToServer(updatedUser);
 
-  /* hide survey, show popup */
+  /* hide survey, show popup, reveal nav home btn */
   document.getElementById('sec-survey').style.display='none';
+  var nhb=document.getElementById('nav-home-btn');if(nhb)nhb.style.display='flex';
+  var mhb=document.getElementById('mob-home-btn');if(mhb)mhb.style.display='flex';
+  var meb=document.getElementById('mob-exit-btn');if(meb)meb.style.display='none';
+  var mst=document.getElementById('mob-survey-title');if(mst)mst.textContent='Results Ready!';
+  var npl=document.getElementById('nav-progress-label');if(npl)npl.style.display='none';
+  var npb=document.getElementById('nav-prog-bar');if(npb)npb.parentElement.style.display='none';
   showResultsPopup(top3,scores);
 }
 
