@@ -182,6 +182,69 @@ def build_email_html(name, top3, scores):
           </td></tr>
         </table>"""
 
+    # Compute recommended courses based on top3
+    WEBINAR_COURSES_EMAIL = [
+        {'id': 'creative-tech', 'matchTraits': ['A','I','S'],
+         'title': 'BS (Hons) in Creative Technology and Design',
+         'level': 'BS (Hons)', 'duration': '3 Years + 1 Year Honours',
+         'pathway': "Master's in Creative Technology and Design — UCAM University, Spain",
+         'link': 'https://jainsogs.com/gfs/'},
+        {'id': 'data-ai', 'matchTraits': ['I','C','R'],
+         'title': 'BS (Hons) in Data Analytics and Applied Artificial Intelligence',
+         'level': 'BS (Hons)', 'duration': '3 Years + 1 Year Honours',
+         'pathway': "Master's in Data Analytics and Applied AI — UCAM University, Spain",
+         'link': 'https://jainsogs.com/gfs/'},
+        {'id': 'corporate-mgmt', 'matchTraits': ['E','C','I'],
+         'title': 'MS in Corporate Management and Lean Six Sigma',
+         'level': 'MS', 'duration': '2 Years',
+         'pathway': 'PG Certificate in Business Excellence — UCAM University, Spain',
+         'link': 'https://jainsogs.com/gfs/'},
+        {'id': 'sports-science', 'matchTraits': ['R','I','S'],
+         'title': 'MS in High Performance Sports: Strength and Conditioning',
+         'level': 'MS', 'duration': '2 Years',
+         'pathway': 'PG Certificate in High Performance Sports — UCAM University, Spain',
+         'link': 'https://jainsogs.com/gfs/'},
+    ]
+    WEIGHTS = [[15,10,5],[10,7,3],[5,3,1]]
+    def course_score(traits, student_top3):
+        s = 0
+        for si, st in enumerate(student_top3):
+            for ci, ct in enumerate(traits):
+                if st == ct:
+                    s += WEIGHTS[si][ci]
+        return s
+
+    ranked = sorted(WEBINAR_COURSES_EMAIL,
+                    key=lambda c: course_score(c['matchTraits'], top3), reverse=True)[:2]
+
+    def course_card_email(c, rank):
+        badge = ['⭐ #1 Best Match', '✨ #2 Best Match'][rank]
+        pct = int((course_score(c['matchTraits'], top3) / 30) * 100)
+        traits_html = ''.join(
+            f'<span style="display:inline-block;background:#f0f4ff;color:#2563eb;font-size:11px;font-weight:600;'
+            f'padding:3px 9px;border-radius:20px;margin:2px 3px 2px 0;">{t}</span>'
+            for t in c['matchTraits']
+        )
+        return f"""
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
+          <tr><td style="background:#f8fafc;border:2px solid #e0e7ff;border-radius:14px;padding:18px 20px;">
+            <div style="font-size:10px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">{badge} &nbsp;·&nbsp; {pct}% Match</div>
+            <div style="font-size:15px;font-weight:800;color:#1e293b;line-height:1.35;margin-bottom:5px;">{c['title']}</div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:8px;">{c['level']} &nbsp;·&nbsp; JAIN University &nbsp;·&nbsp; {c['duration']}</div>
+            <div style="margin-bottom:10px;">{traits_html}</div>
+            <div style="background:#eff6ff;border-left:3px solid #2563eb;border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:#1d4ed8;margin-bottom:12px;">
+              <strong style="display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">International Pathway</strong>
+              {c['pathway']}
+            </div>
+            <a href="{c['link']}" style="display:inline-block;background:linear-gradient(135deg,#10b981,#059669);
+              color:#fff;text-decoration:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;">
+              Apply for Scholarship →
+            </a>
+          </td></tr>
+        </table>"""
+
+    courses_html = ''.join(course_card_email(c, i) for i, c in enumerate(ranked))
+
     cards_html = ''.join(trait_card(code, i) for i, code in enumerate(top3))
     return f"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#f0f2f8;font-family:'Segoe UI',Arial,sans-serif;">
@@ -200,6 +263,12 @@ def build_email_html(name, top3, scores):
       Here are your <strong style="color:#667eea;">top 3 personality traits</strong>.
     </p>
     {cards_html}
+    <div style="height:1px;background:#e8ecf0;margin:28px 0;"></div>
+    <div style="font-size:18px;font-weight:800;color:#1e293b;margin-bottom:6px;">🎓 Your Recommended Programmes</div>
+    <p style="margin:0 0 20px;font-size:14px;color:#64748b;line-height:1.6;">
+      Based on your personality profile, these programmes are your best fit:
+    </p>
+    {courses_html}
     <table width="100%" cellpadding="0" cellspacing="0"><tr>
       <td style="background:linear-gradient(135deg,rgba(102,126,234,0.07),rgba(149,106,250,0.07));
         border:1.5px solid rgba(102,126,234,0.18);border-radius:16px;padding:24px;text-align:center;">

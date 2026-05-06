@@ -56,8 +56,8 @@
 .ph-icon img{width:100%;height:100%;object-fit:cover}
 .ph-icon-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:16px;color:#fff}
 .ph-text{flex:1;min-width:0}
-.ph-name{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-0.1px;margin-bottom:2px;line-height:1.3}
-.ph-sub{font-size:11px;color:var(--muted)}
+.ph-name{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-0.1px;margin-bottom:2px;line-height:1.3}
+.ph-sub{font-size:12px;color:var(--muted)}
 .ph-badges{display:flex;gap:5px;align-items:center;flex-wrap:wrap;flex-shrink:0}
 .ph-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
 .ph-schol-badge{background:rgba(16,185,129,0.1);color:#059669;border:1px solid rgba(16,185,129,0.2)}
@@ -72,7 +72,7 @@
 /* Course detail inside accordion */
 .prog-detail{padding:20px 22px}
 .pd-img{width:100%;height:200px;object-fit:cover;border-radius:10px;margin-bottom:16px}
-.pd-about{font-size:13px;color:var(--ink2);line-height:1.75;margin-bottom:18px}
+.pd-about{font-size:15px;color:var(--ink2);line-height:1.75;margin-bottom:18px}
 .pd-pathway{background:#f0f7ff;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12px;color:var(--accent);margin-bottom:18px;line-height:1.6}
 .pd-pathway strong{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;color:#1d4ed8}
 .pd-btns{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
@@ -99,7 +99,7 @@
 .sem-table tr:last-child{border-bottom:none}
 .sem-table tr:hover{background:#fafbff}
 .sem-table td:first-child{width:34px;padding:9px 6px 9px 16px;font-size:11px;font-weight:600;color:#c4cad4;text-align:center}
-.sem-table td:last-child{padding:9px 16px 9px 4px;font-size:13px;color:var(--ink2);line-height:1.5}
+.sem-table td:last-child{padding:9px 16px 9px 4px;font-size:14px;color:var(--ink2);line-height:1.5}
 .hon-sep{display:flex;align-items:center;gap:10px;margin:8px 0 4px}
 .hon-line{flex:1;height:1px;background:var(--line)}
 .hon-tag{font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px;background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.15);padding:3px 13px;border-radius:20px;white-space:nowrap}
@@ -123,6 +123,24 @@
       <div class="pg-title">All Programmes</div>
       <div class="pg-sub">7 programmes total · 4 with JAIN × UCAM Scholarship · 3 coming soon<br>Click any programme to expand and view the full curriculum.</div>
     </div>
+  </div>
+
+  <!-- PERSONALISED COURSES GATE -->
+  <div id="personalized-gate" style="display:none;background:#fff;border:1.5px solid rgba(37,99,235,0.2);border-radius:16px;padding:24px 28px;margin-bottom:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 2px 12px rgba(37,99,235,0.07)">
+    <div style="font-size:36px;flex-shrink:0">🔒</div>
+    <div style="flex:1;min-width:200px">
+      <div style="font-size:16px;font-weight:800;color:#1e293b;margin-bottom:4px">See Your Personalised Programme Suggestions</div>
+      <div style="font-size:14px;color:#64748b;line-height:1.6">Take the 5-minute RIASEC survey to unlock course recommendations tailored to your personality.</div>
+    </div>
+    <a href="/survey" class="btn" style="width:auto;white-space:nowrap;font-size:14px;padding:12px 22px">Take Survey → Unlock Recommendations</a>
+  </div>
+  <div id="personalized-match" style="display:none;background:linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.06));border:1.5px solid rgba(37,99,235,0.18);border-radius:16px;padding:20px 28px;margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <div style="font-size:30px;flex-shrink:0">⭐</div>
+    <div style="flex:1;min-width:180px">
+      <div style="font-size:15px;font-weight:800;color:#1e293b;margin-bottom:3px" id="gate-match-title">Your Top Recommended Programmes</div>
+      <div style="font-size:13px;color:#64748b" id="gate-match-sub">Based on your RIASEC profile — click <strong>⭐ Recommended for Me</strong> to filter</div>
+    </div>
+    <button class="btn" onclick="filterPrograms('recommended',document.querySelector('.pft:last-child'))" style="width:auto;font-size:13px;padding:10px 20px">⭐ Show My Matches</button>
   </div>
 
   <!-- FILTER TABS -->
@@ -151,6 +169,24 @@ var fn=String(user.name||'Guest').trim().split(' ')[0];
 ['nav-user-name','mob-name'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=fn;});
 
 var top3=user.top3||[];
+
+/* Show personalised gate or match banner */
+(function(){
+  var gate=document.getElementById('personalized-gate');
+  var match=document.getElementById('personalized-match');
+  if(!top3||!top3.length){
+    if(gate)gate.style.display='flex';
+    if(match)match.style.display='none';
+  }else{
+    if(gate)gate.style.display='none';
+    if(match){
+      match.style.display='flex';
+      var names=top3.map(function(t){return(TRAIT_INFO[t]||{}).name||t;}).join(' › ');
+      var el=document.getElementById('gate-match-sub');
+      if(el)el.innerHTML='Your profile: <strong>'+names+'</strong> — click the button to see your matches';
+    }
+  }
+})();
 
 /* ALL 7 PROGRAMS */
 var ALL_PROGRAMS=[
