@@ -18,12 +18,12 @@ SMTP_PORT     = 587
 
 # ── Trait meta ─────────────────────────────────────────────────────────────────
 TRAIT_INFO = {
-    'R': {'name': 'Realistic',     'icon': '🔧', 'color': '#e17055', 'desc': 'Practical & hands-on',    'careers': ['Engineer', 'Architect', 'Mechanic', 'Pilot', 'Chef']},
-    'I': {'name': 'Investigative', 'icon': '🔬', 'color': '#0984e3', 'desc': 'Analytical & scientific', 'careers': ['Scientist', 'Doctor', 'Data Analyst', 'Researcher', 'Economist']},
-    'A': {'name': 'Artistic',      'icon': '🎨', 'color': '#956afa', 'desc': 'Creative & expressive',   'careers': ['Designer', 'Writer', 'Musician', 'Filmmaker', 'Art Director']},
-    'S': {'name': 'Social',        'icon': '🤝', 'color': '#00b894', 'desc': 'Helpful & cooperative',   'careers': ['Teacher', 'Counselor', 'Nurse', 'HR Manager', 'Social Worker']},
-    'E': {'name': 'Enterprising',  'icon': '🚀', 'color': '#f39c12', 'desc': 'Leadership & ambitious',  'careers': ['Entrepreneur', 'Manager', 'Lawyer', 'Sales Director', 'CEO']},
-    'C': {'name': 'Conventional',  'icon': '📊', 'color': '#636e72', 'desc': 'Organized & systematic',  'careers': ['Accountant', 'Banker', 'Admin', 'Financial Analyst', 'Auditor']},
+    'R': {'name': 'Realistic',     'icon': '🔧', 'color': '#e17055', 'desc': 'Practical & hands-on',    'careers': ['Strength & Conditioning Coach', 'Sports Performance Analyst', 'Data Systems Engineer', 'Technology Integration Specialist', 'Rehabilitation & Recovery Coach']},
+    'I': {'name': 'Investigative', 'icon': '🔬', 'color': '#0984e3', 'desc': 'Analytical & scientific', 'careers': ['Data Scientist / AI Engineer', 'Business Intelligence Analyst', 'Exercise Physiologist', 'AI / ML Engineer', 'Research & Analytics Specialist']},
+    'A': {'name': 'Artistic',      'icon': '🎨', 'color': '#956afa', 'desc': 'Creative & expressive',   'careers': ['UX / UI Designer', 'Creative Technologist', 'Game Designer', 'Brand & Experience Designer', 'Immersive Media Director']},
+    'S': {'name': 'Social',        'icon': '🤝', 'color': '#00b894', 'desc': 'Helpful & cooperative',   'careers': ['Sports Coach & Performance Mentor', 'UX Research Specialist', 'Learning Experience Designer', 'Community & Engagement Manager', 'Health & Wellness Consultant']},
+    'E': {'name': 'Enterprising',  'icon': '🚀', 'color': '#f39c12', 'desc': 'Leadership & ambitious',  'careers': ['Management Consultant', 'Business Development Manager', 'Operations & Process Director', 'Entrepreneur / Startup Founder', 'Programme & Project Manager']},
+    'C': {'name': 'Conventional',  'icon': '📊', 'color': '#636e72', 'desc': 'Organized & systematic',  'careers': ['Data & Business Analyst', 'Process Excellence Manager', 'Financial Analyst', 'Quality & Compliance Manager', 'Database & Systems Administrator']},
 }
 
 BG_COLORS = {
