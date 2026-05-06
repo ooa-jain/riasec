@@ -297,7 +297,6 @@
 <script>
 var user=getUser();
 if(!user||!user.name){window.location.replace('/entry');}
-if(user&&user.name&&(!user.top3||user.top3.length===0)){window.location.replace('/survey');}
 
 var fn=String(user.name||'Guest').trim().split(' ')[0];
 ['nav-avatar','mob-avatar'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=fn[0].toUpperCase();});
