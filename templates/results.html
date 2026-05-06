@@ -127,9 +127,11 @@
 .empty-results p{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6}
 
 /* ACTIONS BAR */
-.rp-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
-.rp-actions .btn{flex:1;min-width:120px;font-size:13px}
+.rp-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:28px}
+.rp-actions .btn{flex:1;min-width:110px;font-size:13px}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -203,6 +205,8 @@
     <div class="rp-actions">
       <a href="/home" class="btn btn-ghost">&#8592; Dashboard</a>
       <a href="/programs" class="btn" style="background:var(--grad)">&#127891; View All Programs</a>
+      <button class="btn btn-ghost" onclick="downloadPageJPEG(this)">&#128247; Save as Image</button>
+      <button class="btn btn-ghost" onclick="downloadPagePDF(this)">&#128196; Download PDF</button>
       <a href="/survey" class="btn btn-ghost">&#8635; Retake Survey</a>
     </div>
 
@@ -327,6 +331,42 @@ function render(){
     '</div>';
   });
   document.getElementById('career-dropdowns').innerHTML=cdHtml;
+}
+
+function downloadPageJPEG(btn){
+  var target=document.querySelector('.rp');
+  if(!target||typeof html2canvas==='undefined'){alert('Download library not ready, please try again.');return;}
+  btn.textContent='Saving...';btn.disabled=true;
+  html2canvas(target,{scale:2,useCORS:true,backgroundColor:'#f7f8fc'}).then(function(canvas){
+    var link=document.createElement('a');
+    link.download='RIASEC-Results.jpg';
+    link.href=canvas.toDataURL('image/jpeg',0.92);
+    link.click();
+    btn.textContent='&#128247; Save as Image';btn.disabled=false;
+  }).catch(function(){btn.textContent='&#128247; Save as Image';btn.disabled=false;});
+}
+
+function downloadPagePDF(btn){
+  var target=document.querySelector('.rp');
+  if(!target||typeof html2canvas==='undefined'||typeof window.jspdf==='undefined'){alert('Download library not ready, please try again.');return;}
+  btn.textContent='Generating...';btn.disabled=true;
+  html2canvas(target,{scale:2,useCORS:true,backgroundColor:'#f7f8fc'}).then(function(canvas){
+    var jsPDF=window.jspdf.jsPDF;
+    var imgData=canvas.toDataURL('image/jpeg',0.92);
+    var pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    var pageW=pdf.internal.pageSize.getWidth();
+    var pageH=pdf.internal.pageSize.getHeight();
+    var imgW=pageW;
+    var imgH=(canvas.height/canvas.width)*pageW;
+    var y=0;
+    while(y<imgH){
+      if(y>0)pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,-y,imgW,imgH);
+      y+=pageH;
+    }
+    pdf.save('RIASEC-Results.pdf');
+    btn.textContent='&#128196; Download PDF';btn.disabled=false;
+  }).catch(function(){btn.textContent='&#128196; Download PDF';btn.disabled=false;});
 }
 
 render();
