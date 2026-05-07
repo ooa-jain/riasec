@@ -7,13 +7,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Poppins',sans-serif;background:#080d1a;color:#e2e8f0;min-height:100vh}
-.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:radial-gradient(ellipse at 50% 0%,rgba(102,126,234,0.12) 0%,transparent 70%)}
-.login-card{background:#0d1530;border:1px solid #1e2d50;border-radius:22px;padding:44px 40px;width:100%;max-width:380px;box-shadow:0 24px 60px rgba(0,0,0,0.5);position:relative;overflow:hidden}
+
+/* ── Same grid background as main app ── */
+body{
+  font-family:'Poppins',sans-serif;
+  color:#e2e8f0;
+  min-height:100vh;
+  --grid-color:rgba(255,255,255,0.04);
+  background-color:#080d1a;
+  background-image:
+    linear-gradient(0deg,transparent 24%,var(--grid-color) 25%,var(--grid-color) 26%,transparent 27%,transparent 74%,var(--grid-color) 75%,var(--grid-color) 76%,transparent 77%,transparent),
+    linear-gradient(90deg,transparent 24%,var(--grid-color) 25%,var(--grid-color) 26%,transparent 27%,transparent 74%,var(--grid-color) 75%,var(--grid-color) 76%,transparent 77%,transparent);
+  background-size:55px 55px;
+}
+
+/* ── LOGIN ── */
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-card{
+  background:#0d1530;border:1px solid #1e2d50;border-radius:22px;
+  padding:44px 40px;width:100%;max-width:380px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.6);position:relative;overflow:hidden
+}
 .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#667eea,#956afa,#764ba2)}
 .login-logo{text-align:center;margin-bottom:28px}
-.login-logo-icon{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:22px;font-weight:800;color:#fff}
-.login-logo h2{font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.3px}
+.login-logo-icon{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:22px;color:#fff}
+.login-logo h2{font-size:18px;font-weight:800;color:#fff}
 .login-logo p{font-size:11px;color:#475569;margin-top:3px;text-transform:uppercase;letter-spacing:0.8px}
 .login-input{width:100%;background:#070c1a;border:1.5px solid #1e2d50;border-radius:10px;padding:12px 15px;color:#e2e8f0;font-size:14px;font-family:'Poppins',sans-serif;outline:none;margin-bottom:12px;transition:all 0.2s;font-weight:500}
 .login-input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.12)}
@@ -23,70 +41,126 @@ body{font-family:'Poppins',sans-serif;background:#080d1a;color:#e2e8f0;min-heigh
 .login-err.show{display:block}
 .back-link{display:block;text-align:center;margin-top:16px;color:#475569;font-size:12px;text-decoration:none;transition:color 0.2s}
 .back-link:hover{color:#667eea}
+
+/* ── DASHBOARD LAYOUT ── */
 #dashboard{display:none;min-height:100vh}
 .layout{display:flex;min-height:100vh}
-.sidebar{width:220px;flex-shrink:0;background:#0d1530;border-right:1px solid #1a2540;padding:24px 14px;position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column;z-index:10;overflow-y:auto}
-.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px;padding:0 4px}
-.sb-logo-text{font-size:13px;font-weight:700;color:#fff;line-height:1.2}
-.sb-logo-sub{font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:0.8px;display:block}
-.sb-section{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin:16px 0 8px}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:230px;flex-shrink:0;
+  background:#0a0f22;border-right:1px solid #1a2540;
+  padding:24px 14px;position:fixed;top:0;bottom:0;left:0;
+  display:flex;flex-direction:column;z-index:10;overflow-y:auto
+}
+.sb-logo{margin-bottom:30px;padding:0 6px}
+.sb-logo-brand{font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.3px}
+.sb-logo-sub{font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-top:2px;display:block}
+.sb-section{font-size:9px;font-weight:700;color:#2d3a55;text-transform:uppercase;letter-spacing:1.2px;padding:0 8px;margin:18px 0 8px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:#475569;font-size:13px;font-weight:600;margin-bottom:2px;transition:all 0.18s;text-decoration:none;border:none;background:none;font-family:'Poppins',sans-serif;width:100%;text-align:left}
 .nav-item:hover{background:#1a2540;color:#94a3b8}
 .nav-item.active{background:linear-gradient(135deg,rgba(102,126,234,0.2),rgba(118,75,162,0.15));color:#818cf8;border:1px solid rgba(102,126,234,0.2)}
-.nav-icon{width:20px;text-align:center;font-size:15px;flex-shrink:0}
+.nav-icon{width:22px;text-align:center;font-size:14px;flex-shrink:0}
 .sb-spacer{flex:1}
-.main{margin-left:220px;padding:28px 32px;flex:1;min-height:100vh}
-@media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:20px 16px}}
-.main-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+
+/* ── MAIN CONTENT ── */
+.main{margin-left:230px;padding:28px 32px;flex:1;min-height:100vh}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:16px 12px}}
+
+/* ── TOPBAR ── */
+.main-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;padding-bottom:20px;border-bottom:1px solid #1a2540}
 .main-topbar h1{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.3px}
-.topbar-actions{display:flex;gap:10px;flex-wrap:wrap}
-.action-btn{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.18s;border:1px solid}
+.topbar-actions{display:flex;gap:8px;flex-wrap:wrap}
+.action-btn{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.18s;border:1px solid;display:inline-flex;align-items:center;gap:5px}
 .btn-refresh{background:rgba(102,126,234,0.12);border-color:rgba(102,126,234,0.3);color:#818cf8}
 .btn-refresh:hover{background:rgba(102,126,234,0.22)}
 .btn-csv{background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.3);color:#34d399}
 .btn-csv:hover{background:rgba(16,185,129,0.22)}
 .btn-logout{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.2);color:#f87171}
 .btn-logout:hover{background:rgba(239,68,68,0.18)}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
-.stat-card{background:#0d1530;border:1px solid #1a2540;border-radius:16px;padding:20px 22px}
-.stat-val{font-size:34px;font-weight:800;background:linear-gradient(135deg,#667eea,#956afa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
-.stat-lbl{font-size:11px;color:#334155;margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.btn-del{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);color:#f87171;font-size:11px;padding:5px 10px}
+.btn-del:hover{background:rgba(239,68,68,0.2)}
+
+/* ── STAT CARDS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:#0d1530;border:1px solid #1a2540;border-radius:16px;padding:20px 22px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#667eea,#764ba2)}
+.stat-val{font-size:32px;font-weight:800;background:linear-gradient(135deg,#667eea,#956afa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
+.stat-lbl{font-size:10px;color:#334155;margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px}
+
+/* ── SECTION CARDS ── */
 .sec-card{background:#0d1530;border:1px solid #1a2540;border-radius:16px;padding:22px;margin-bottom:18px}
-.sec-card h3{font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px}
+.sec-card-title{font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #1a2540}
+
+/* ── TRAIT DIST ── */
 .dist-row{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:10px;cursor:pointer;margin-bottom:4px;transition:background 0.18s}
 .dist-row:hover{background:#1a2540}
-.dist-label{width:145px;font-size:13px;color:#e2e8f0;font-weight:600;flex-shrink:0;display:flex;align-items:center;gap:7px}
+.dist-label{width:155px;font-size:13px;color:#e2e8f0;font-weight:600;flex-shrink:0;display:flex;align-items:center;gap:7px}
 .dist-bar-bg{flex:1;height:8px;background:#0a1020;border-radius:10px;overflow:hidden}
 .dist-bar{height:100%;border-radius:10px;transition:width 0.9s ease}
-.dist-count{width:30px;text-align:right;font-size:13px;font-weight:800;color:#818cf8}
+.dist-count{width:35px;text-align:right;font-size:13px;font-weight:800;color:#818cf8}
+
+/* ── FILTER TABS ── */
 .tab-bar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;background:#0a1020;padding:4px;border-radius:11px}
 .tab{background:transparent;border:none;color:#475569;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;transition:all 0.18s;white-space:nowrap}
 .tab:hover{color:#94a3b8;background:#1a2540}
 .tab.active{background:#1e2d50;color:#818cf8}
-.dl-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px;padding:16px;background:#0a1020;border-radius:12px;border:1px solid #1a2540}
-.dl-group{display:flex;flex-direction:column;gap:5px}
-.dl-label{font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px}
-.dl-input{background:#0d1530;border:1.5px solid #1e2d50;border-radius:8px;padding:8px 12px;color:#e2e8f0;font-size:13px;font-family:'Poppins',sans-serif;outline:none;transition:border-color 0.18s}
-.dl-input:focus{border-color:#667eea}
-.dl-select{background:#0d1530;border:1.5px solid #1e2d50;border-radius:8px;padding:8px 12px;color:#e2e8f0;font-size:13px;font-family:'Poppins',sans-serif;outline:none;cursor:pointer}
-.table-wrap{overflow-x:auto;border-radius:12px}
-.data-table{width:100%;border-collapse:collapse;font-size:12px}
-.data-table th{background:#070c1a;color:#475569;font-size:10px;padding:11px 12px;text-align:left;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;position:sticky;top:0;z-index:2}
-.data-table td{padding:11px 12px;border-bottom:1px solid rgba(26,37,64,0.8);color:#cbd5e1;vertical-align:middle}
-.data-table tr{cursor:pointer}
-.data-table tr:hover td{background:rgba(102,126,234,0.06)}
+
+/* ── DATA TABLE ── */
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid #1a2540}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
+.data-table th{background:#070c1a;color:#475569;font-size:10px;padding:12px 14px;text-align:left;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;position:sticky;top:0;z-index:2;border-bottom:1px solid #1a2540}
+.data-table td{padding:11px 14px;border-bottom:1px solid rgba(26,37,64,0.6);color:#cbd5e1;vertical-align:middle;white-space:nowrap}
 .data-table tr:last-child td{border-bottom:none}
-.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin:1px;background:rgba(102,126,234,0.12);color:#818cf8;border:1px solid rgba(102,126,234,0.18)}
-.badge-t1{background:rgba(255,215,0,0.12);color:#fbbf24;border-color:rgba(255,215,0,0.25)}
+.data-table tbody tr:hover td{background:rgba(102,126,234,0.06)}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;margin:1px;background:rgba(102,126,234,0.12);color:#818cf8;border:1px solid rgba(102,126,234,0.18)}
+.badge-t1{background:rgba(255,215,0,0.1);color:#fbbf24;border-color:rgba(255,215,0,0.25)}
+.badge-t2{background:rgba(148,163,184,0.1);color:#94a3b8;border-color:rgba(148,163,184,0.2)}
+.badge-course{background:rgba(16,185,129,0.1);color:#34d399;border-color:rgba(16,185,129,0.25);font-size:9px}
 .table-footer{font-size:11px;color:#334155;margin-top:10px;padding:0 4px}
+
+/* ── USER DETAIL MODAL ── */
+.modal-ov{position:fixed;inset:0;background:rgba(5,8,20,0.85);z-index:400;display:none;align-items:center;justify-content:center;padding:60px 16px 16px;backdrop-filter:blur(10px);overflow-y:auto}
+.modal-ov.open{display:flex}
+.modal-bx{background:#0d1530;border:1px solid #1e2d50;border-radius:20px;padding:28px;max-width:620px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,0.6);position:relative;animation:mIn 0.24s ease;flex-shrink:0;margin:auto}
+@keyframes mIn{from{transform:translateY(16px) scale(0.95);opacity:0}to{transform:none;opacity:1}}
+.modal-x{position:absolute;top:14px;right:14px;background:#1a2540;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:13px;color:#94a3b8;display:flex;align-items:center;justify-content:center;transition:all 0.18s}
+.modal-x:hover{background:#263355;color:#fff}
+.modal-name{font-size:22px;font-weight:800;color:#fff;margin-bottom:4px}
+.modal-email{font-size:13px;color:#475569;margin-bottom:20px}
+.modal-section{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #1a2540}
+.modal-trait-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.modal-trait-card{border-radius:12px;padding:14px;text-align:center}
+.modal-trait-rank{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;opacity:0.7;margin-bottom:4px}
+.modal-trait-letter{font-size:28px;font-weight:800;line-height:1;margin-bottom:2px}
+.modal-trait-name{font-size:11px;font-weight:600;opacity:0.8}
+.modal-score-row{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:20px}
+.modal-score-cell{background:#070c1a;border-radius:8px;padding:8px 4px;text-align:center}
+.modal-score-code{font-size:14px;font-weight:800;line-height:1;margin-bottom:3px}
+.modal-score-bar{height:4px;background:#1a2540;border-radius:10px;overflow:hidden;margin-bottom:3px}
+.modal-score-fill{height:100%;border-radius:10px}
+.modal-score-val{font-size:10px;font-weight:700;color:#475569}
+.modal-course-row{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.modal-course-item{background:#070c1a;border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #1a2540}
+.modal-course-title{font-size:12px;font-weight:700;color:#e2e8f0;flex:1;line-height:1.4}
+.modal-course-match{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
+.modal-del-btn{width:100%;padding:11px;background:rgba(239,68,68,0.12);border:1.5px solid rgba(239,68,68,0.3);color:#f87171;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.18s;margin-top:4px}
+.modal-del-btn:hover{background:rgba(239,68,68,0.22);transform:translateY(-1px)}
+
+/* ── MISC ── */
 .empty-state{text-align:center;padding:40px;color:#334155;font-size:13px}
 .loading-shimmer{animation:shimmer 1.5s infinite}
-@keyframes shimmer{0%,100%{opacity:0.5}50%{opacity:1}}
-.error-banner{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:16px 20px;color:#f87171;font-size:13px;font-weight:600;margin-bottom:18px;display:none;line-height:1.6}
+@keyframes shimmer{0%,100%{opacity:0.4}50%{opacity:1}}
+.error-banner{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:14px 18px;color:#f87171;font-size:13px;font-weight:600;margin-bottom:18px;display:none;line-height:1.6}
 .error-banner.show{display:block}
+.search-input{background:#070c1a;border:1.5px solid #1e2d50;border-radius:10px;padding:9px 14px;color:#e2e8f0;font-size:13px;font-family:'Poppins',sans-serif;outline:none;transition:border-color 0.18s;width:220px}
+.search-input:focus{border-color:#667eea}
+.search-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 </style>
 </head>
 <body>
+
+<!-- ── LOGIN PAGE ── -->
 <div id="loginPage" class="login-page">
   <div class="login-card">
     <div class="login-logo">
@@ -101,200 +175,558 @@ body{font-family:'Poppins',sans-serif;background:#080d1a;color:#e2e8f0;min-heigh
     <a href="/entry" class="back-link">← Back to Survey</a>
   </div>
 </div>
+
+<!-- ── DASHBOARD ── -->
 <div id="dashboard">
   <div class="layout">
+
+    <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sb-logo">
-        <div>
-          <span class="sb-logo-text">Jain University</span>
-          <span class="sb-logo-sub">RIASEC Admin</span>
-        </div>
+        <div class="sb-logo-brand">Jain University</div>
+        <span class="sb-logo-sub">RIASEC Admin Panel</span>
       </div>
       <div class="sb-section">Navigation</div>
-      <button class="nav-item active" onclick="showSection('overview')" id="nav-overview"><span class="nav-icon">📊</span>Overview</button>
-      <button class="nav-item" onclick="showSection('responses')" id="nav-responses"><span class="nav-icon">📋</span>All Responses</button>
-      <button class="nav-item" onclick="showSection('traits')" id="nav-traits"><span class="nav-icon">🎯</span>Trait Analysis</button>
+      <button class="nav-item active" onclick="showSection('overview')" id="nav-overview">
+        <span class="nav-icon">📊</span>Overview
+      </button>
+      <button class="nav-item" onclick="showSection('responses')" id="nav-responses">
+        <span class="nav-icon">📋</span>All Responses
+      </button>
+      <button class="nav-item" onclick="showSection('traits')" id="nav-traits">
+        <span class="nav-icon">🎯</span>Trait Analysis
+      </button>
+      <button class="nav-item" onclick="showSection('courses')" id="nav-courses">
+        <span class="nav-icon">🎓</span>Course Matches
+      </button>
       <div class="sb-spacer"></div>
       <a href="/entry" class="nav-item"><span class="nav-icon">🏠</span>Back to Survey</a>
     </div>
+
+    <!-- MAIN -->
     <div class="main">
       <div class="main-topbar">
         <h1 id="main-title">Overview</h1>
         <div class="topbar-actions">
           <button class="action-btn btn-refresh" onclick="loadData()">↻ Refresh</button>
-          <button class="action-btn btn-csv" onclick="downloadAllCSV()">⬇ Export CSV</button>
-          <button class="action-btn btn-logout" onclick="logout()">Logout</button>
+          <button class="action-btn btn-csv" onclick="exportCSV()">⬇ Export CSV</button>
+          <button class="action-btn btn-logout" onclick="adminLogout()">Logout</button>
         </div>
       </div>
+
       <div class="error-banner" id="errorBanner"></div>
+
+      <!-- ── OVERVIEW ── -->
       <div id="sec-overview">
         <div class="stat-grid" id="stat-grid">
           <div class="stat-card"><div class="stat-val loading-shimmer">—</div><div class="stat-lbl">Total Responses</div></div>
           <div class="stat-card"><div class="stat-val loading-shimmer">—</div><div class="stat-lbl">Top Trait</div></div>
-          <div class="stat-card"><div class="stat-val loading-shimmer" style="font-size:18px;padding-top:8px">—</div><div class="stat-lbl">Latest Test</div></div>
+          <div class="stat-card"><div class="stat-val loading-shimmer" style="font-size:20px;padding-top:6px">—</div><div class="stat-lbl">Latest Test</div></div>
+          <div class="stat-card"><div class="stat-val loading-shimmer">—</div><div class="stat-lbl">Unique Emails</div></div>
         </div>
         <div class="sec-card">
-          <h3>Trait Distribution</h3>
+          <div class="sec-card-title">Trait Distribution (Top Trait per Student)</div>
           <div id="trait-dist"><div class="empty-state loading-shimmer">Loading data…</div></div>
         </div>
+        <div class="sec-card">
+          <div class="sec-card-title">Recent Submissions</div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>#1 Trait</th><th>#2 Trait</th><th>#3 Trait</th><th>Top Course Match</th><th>Date</th></tr></thead>
+              <tbody id="recent-body"><tr><td colspan="8" class="empty-state loading-shimmer">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
       </div>
+
+      <!-- ── ALL RESPONSES ── -->
       <div id="sec-responses" style="display:none">
         <div class="sec-card">
-          <div class="tab-bar" id="filter-tabs">
-            <button class="tab active" onclick="setTraitFilter('all')">All</button>
-            <button class="tab" onclick="setTraitFilter('R')">🔧 R</button>
-            <button class="tab" onclick="setTraitFilter('I')">🔬 I</button>
-            <button class="tab" onclick="setTraitFilter('A')">🎨 A</button>
-            <button class="tab" onclick="setTraitFilter('S')">🤝 S</button>
-            <button class="tab" onclick="setTraitFilter('E')">🚀 E</button>
-            <button class="tab" onclick="setTraitFilter('C')">📊 C</button>
+          <div class="search-row">
+            <input class="search-input" type="text" id="search-input" placeholder="Search name or email…" oninput="renderResponses()">
+            <div class="tab-bar" id="filter-tabs" style="margin-bottom:0;flex:1;min-width:0">
+              <button class="tab active" onclick="setTraitFilter('all',this)">All</button>
+              <button class="tab" onclick="setTraitFilter('R',this)">R</button>
+              <button class="tab" onclick="setTraitFilter('I',this)">I</button>
+              <button class="tab" onclick="setTraitFilter('A',this)">A</button>
+              <button class="tab" onclick="setTraitFilter('S',this)">S</button>
+              <button class="tab" onclick="setTraitFilter('E',this)">E</button>
+              <button class="tab" onclick="setTraitFilter('C',this)">C</button>
+            </div>
           </div>
           <div class="table-wrap">
             <table class="data-table">
-              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>#1</th><th>#2</th><th>#3</th><th>R</th><th>I</th><th>A</th><th>S</th><th>E</th><th>C</th><th>Date</th></tr></thead>
-              <tbody id="resp-body"><tr><td colspan="14" class="empty-state loading-shimmer">Loading…</td></tr></tbody>
+              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>#1</th><th>#2</th><th>#3</th><th>R</th><th>I</th><th>A</th><th>S</th><th>E</th><th>C</th><th>Top Course</th><th>Date</th><th>Action</th></tr></thead>
+              <tbody id="resp-body"><tr><td colspan="16" class="empty-state loading-shimmer">Loading…</td></tr></tbody>
             </table>
           </div>
           <div class="table-footer" id="resp-footer"></div>
         </div>
       </div>
+
+      <!-- ── TRAIT ANALYSIS ── -->
       <div id="sec-traits" style="display:none">
+        <div class="stat-grid" id="trait-stat-grid"></div>
         <div class="sec-card">
-          <h3>Trait Scores Summary</h3>
+          <div class="sec-card-title">All 6 Trait Scores — Averages and Top Counts</div>
           <div id="trait-summary"></div>
         </div>
+        <div class="sec-card">
+          <div class="sec-card-title">Top 3 Combinations</div>
+          <div id="combo-summary"></div>
+        </div>
       </div>
+
+      <!-- ── COURSE MATCHES ── -->
+      <div id="sec-courses" style="display:none">
+        <div class="sec-card">
+          <div class="sec-card-title">Course Match Distribution — How many students match each programme</div>
+          <div id="course-dist"></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card-title">Students by Recommended Course</div>
+          <div class="tab-bar" id="course-tabs" style="margin-bottom:16px">
+            <button class="tab active" onclick="setCourseFilter('all',this)">All</button>
+            <button class="tab" onclick="setCourseFilter('creative-tech',this)">Creative Tech</button>
+            <button class="tab" onclick="setCourseFilter('data-ai',this)">Data & AI</button>
+            <button class="tab" onclick="setCourseFilter('sports-science',this)">Sports Science</button>
+            <button class="tab" onclick="setCourseFilter('corporate-mgmt',this)">Corporate Mgmt</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>#1 Trait</th><th>#2 Trait</th><th>#3 Trait</th><th>Top Course</th><th>Match %</th><th>Date</th></tr></thead>
+              <tbody id="course-body"></tbody>
+            </table>
+          </div>
+          <div class="table-footer" id="course-footer"></div>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div>
+</div>
+
+<!-- ── USER DETAIL MODAL ── -->
+<div class="modal-ov" id="detail-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-bx">
+    <button class="modal-x" onclick="closeModal()">✕</button>
+    <div class="modal-name" id="m-name">—</div>
+    <div class="modal-email" id="m-email">—</div>
+
+    <div class="modal-section">Top 3 Personality Traits</div>
+    <div class="modal-trait-grid" id="m-traits"></div>
+
+    <div class="modal-section">All 6 Scores</div>
+    <div class="modal-score-row" id="m-scores"></div>
+
+    <div class="modal-section">Recommended Programmes</div>
+    <div class="modal-course-row" id="m-courses"></div>
+
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="modal-del-btn" id="m-del-btn" onclick="deleteCurrentUser()">🗑 Delete This User</button>
     </div>
   </div>
 </div>
+
 <script>
-const TRAIT_INFO={R:{name:"Realistic",icon:"🔧",color:"#e17055"},I:{name:"Investigative",icon:"🔬",color:"#0984e3"},A:{name:"Artistic",icon:"🎨",color:"#956afa"},S:{name:"Social",icon:"🤝",color:"#00b894"},E:{name:"Enterprising",icon:"🚀",color:"#f39c12"},C:{name:"Conventional",icon:"📊",color:"#636e72"}};
-const CREDS={u:'admin',p:'admin@2023'};
-let allData=[],activeTraitFilter='all',activeSection='overview';
+/* ── CONSTANTS ── */
+const CREDS = {u:'admin', p:'admin@123'};
 
-function getTop3(row){return(row.top3_codes||'').split(/\s*,\s*/).map(s=>s.trim()).filter(Boolean).slice(0,3)}
-function fmtDate(ts){if(!ts)return'—';try{return new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'2-digit'})}catch{return ts||'—'}}
-function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
-function csvQ(s){return'"'+String(s||'').replace(/"/g,'""')+'"'}
-function today(){return new Date().toISOString().slice(0,10)}
-function showErr(msg){const b=document.getElementById('errorBanner');b.innerHTML=msg;b.classList.add('show')}
-function hideErr(){document.getElementById('errorBanner').classList.remove('show')}
+const TRAIT_INFO = {
+  R:{name:'Realistic',    icon:'🔧', color:'#e17055', bg:'rgba(225,112,85,0.12)'},
+  I:{name:'Investigative',icon:'🔬', color:'#0984e3', bg:'rgba(9,132,227,0.12)'},
+  A:{name:'Artistic',     icon:'🎨', color:'#956afa', bg:'rgba(149,106,250,0.12)'},
+  S:{name:'Social',       icon:'🤝', color:'#00b894', bg:'rgba(0,184,148,0.12)'},
+  E:{name:'Enterprising', icon:'🚀', color:'#f39c12', bg:'rgba(243,156,18,0.12)'},
+  C:{name:'Conventional', icon:'📊', color:'#636e72', bg:'rgba(99,110,114,0.12)'}
+};
 
+const ALL_COURSES = [
+  {id:'creative-tech',  title:'BS (Hons) Creative Technology & Design',     matchTraits:['A','I','S']},
+  {id:'data-ai',        title:'BS (Hons) Data Analytics & Applied AI',       matchTraits:['I','C','R']},
+  {id:'sports-science', title:'MS High Performance Sports: S&C',              matchTraits:['R','I','S']},
+  {id:'corporate-mgmt', title:'MS Corporate Management & Lean Six Sigma',     matchTraits:['E','C','I']}
+];
+const WEIGHTS = [[15,10,5],[10,7,3],[5,3,1]];
+
+/* ── STATE ── */
+let allData = [];
+let activeTraitFilter = 'all';
+let activeCourseFilter = 'all';
+let currentModalUser = null;
+
+/* ── HELPERS ── */
+function getTop3(row){
+  return (row.top3_codes||'').split(/\s*,\s*/).map(s=>s.trim().toUpperCase()).filter(Boolean).slice(0,3);
+}
+function fmtDate(ts){
+  if(!ts) return '—';
+  try{return new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'2-digit'});}
+  catch{return ts||'—';}
+}
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function csvQ(s){return '"'+String(s||'').replace(/"/g,'""')+'"';}
+function today(){return new Date().toISOString().slice(0,10);}
+function showErr(msg){const b=document.getElementById('errorBanner');b.innerHTML=msg;b.classList.add('show');}
+function hideErr(){document.getElementById('errorBanner').classList.remove('show');}
+
+function calcCourseScore(courseTraits, studentTop3){
+  let score=0;
+  for(let si=0;si<studentTop3.length;si++)
+    for(let ci=0;ci<courseTraits.length;ci++)
+      if(studentTop3[si]===courseTraits[ci]) score+=WEIGHTS[si][ci];
+  return score;
+}
+
+function getTopCourse(top3){
+  if(!top3||!top3.length) return null;
+  let best=null, bestScore=0;
+  ALL_COURSES.forEach(c=>{
+    const s=calcCourseScore(c.matchTraits, top3);
+    if(s>bestScore){bestScore=s;best={...c,score:s,pct:Math.round((s/30)*100)};}
+  });
+  return best;
+}
+
+/* ── LOGIN ── */
 function adminLogin(){
   const u=document.getElementById('aUser').value.trim();
   const p=document.getElementById('aPass').value.trim();
-  if(u===CREDS.u&&p===CREDS.p){
+  if(u===CREDS.u && p===CREDS.p){
     document.getElementById('loginPage').style.display='none';
     document.getElementById('dashboard').style.display='block';
     loadData();
-  }else{
-    const e=document.getElementById('loginErr');e.classList.add('show');
+  } else {
+    const e=document.getElementById('loginErr');
+    e.classList.add('show');
     setTimeout(()=>e.classList.remove('show'),3000);
   }
 }
-function logout(){document.getElementById('loginPage').style.display='flex';document.getElementById('dashboard').style.display='none'}
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('loginPage').style.display!=='none')adminLogin();});
+function adminLogout(){
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('dashboard').style.display='none';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && document.getElementById('loginPage').style.display!=='none') adminLogin();
+  if(e.key==='Escape') closeModal();
+});
 
+/* ── DATA LOAD ── */
 async function loadData(){
   hideErr();
   try{
-    const res=await fetch('/api/admin-data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:'admin@2023'})});
-    if(!res.ok){const err=await res.json();throw new Error(err.error||'HTTP '+res.status)}
+    const res=await fetch('/api/admin-data',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:'admin@2023'})
+    });
+    if(!res.ok){const err=await res.json();throw new Error(err.error||'HTTP '+res.status);}
     const data=await res.json();
     allData=(data.rows||[]).filter(r=>r.name&&r.name.trim());
-    allData.forEach(r=>r._top3=getTop3(r));
+    allData.forEach(r=>{
+      r._top3=getTop3(r);
+      r._topCourse=getTopCourse(r._top3);
+    });
     renderAll();
-  }catch(e){showErr('Failed to load data. <code>'+e.message+'</code>')}
+  } catch(e){
+    showErr('Failed to load data: <strong>'+e.message+'</strong>. Make sure Flask is running.');
+  }
 }
 
-function renderAll(){renderOverview();renderResponses();if(activeSection==='traits')renderTraits()}
+function renderAll(){
+  renderOverview();
+  renderResponses();
+  renderTraits();
+  renderCourses();
+}
 
+/* ── SECTION SWITCH ── */
 function showSection(sec){
-  activeSection=sec;
-  ['overview','responses','traits'].forEach(s=>{
+  ['overview','responses','traits','courses'].forEach(s=>{
     document.getElementById('sec-'+s).style.display=s===sec?'block':'none';
-    document.getElementById('nav-'+s).classList.toggle('active',s===sec);
+    const nb=document.getElementById('nav-'+s);
+    if(nb)nb.classList.toggle('active',s===sec);
   });
-  const titles={overview:'Overview',responses:'All Responses',traits:'Trait Analysis'};
+  const titles={overview:'Overview',responses:'All Responses',traits:'Trait Analysis',courses:'Course Matches'};
   document.getElementById('main-title').textContent=titles[sec]||sec;
-  if(sec==='traits')renderTraits();
 }
 
+/* ── OVERVIEW ── */
 function renderOverview(){
   const total=allData.length;
+  const emails=new Set(allData.map(d=>d.email)).size;
   const tc={R:0,I:0,A:0,S:0,E:0,C:0};
-  allData.forEach(d=>{const t=d._top3[0];if(t&&tc[t]!==undefined)tc[t]++});
+  allData.forEach(d=>{const t=d._top3[0];if(t&&tc[t]!==undefined)tc[t]++;});
   const topEntry=Object.entries(tc).sort((a,b)=>b[1]-a[1])[0]||['—',0];
   const latest=allData.length?fmtDate(allData[allData.length-1].timestamp):'—';
+
   document.getElementById('stat-grid').innerHTML=`
     <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Total Responses</div></div>
     <div class="stat-card"><div class="stat-val">${TRAIT_INFO[topEntry[0]]?TRAIT_INFO[topEntry[0]].icon+' '+topEntry[0]:'—'}</div><div class="stat-lbl">Top Trait</div></div>
-    <div class="stat-card"><div class="stat-val" style="font-size:18px;padding-top:8px">${latest}</div><div class="stat-lbl">Latest Test</div></div>`;
+    <div class="stat-card"><div class="stat-val" style="font-size:18px;padding-top:6px">${latest}</div><div class="stat-lbl">Latest Test</div></div>
+    <div class="stat-card"><div class="stat-val">${emails}</div><div class="stat-lbl">Unique Emails</div></div>`;
+
   const max=Math.max(...Object.values(tc),1);
-  document.getElementById('trait-dist').innerHTML=Object.entries(tc).sort((a,b)=>b[1]-a[1]).map(([t,c])=>`
-    <div class="dist-row" onclick="showSection('responses');setTraitFilter('${t}')">
-      <div class="dist-label">${TRAIT_INFO[t].icon} ${TRAIT_INFO[t].name}</div>
-      <div class="dist-bar-bg"><div class="dist-bar" style="width:${(c/max)*100}%;background:${TRAIT_INFO[t].color}"></div></div>
-      <div class="dist-count">${c}</div>
-    </div>`).join('')||'<div class="empty-state">No data yet</div>';
-}
+  document.getElementById('trait-dist').innerHTML=
+    Object.entries(tc).sort((a,b)=>b[1]-a[1]).map(([t,c])=>`
+      <div class="dist-row" onclick="setTraitFilter('${t}',null);showSection('responses')">
+        <div class="dist-label">${TRAIT_INFO[t].icon} ${TRAIT_INFO[t].name}</div>
+        <div class="dist-bar-bg"><div class="dist-bar" style="width:${(c/max)*100}%;background:${TRAIT_INFO[t].color}"></div></div>
+        <div class="dist-count">${c}</div>
+      </div>`).join('')||'<div class="empty-state">No data yet</div>';
 
-function setTraitFilter(f){
-  activeTraitFilter=f;
-  document.querySelectorAll('#filter-tabs .tab').forEach((t,i)=>{const vals=['all','R','I','A','S','E','C'];t.classList.toggle('active',vals[i]===f)});
-  renderResponses();
-  if(activeSection!=='responses')showSection('responses');
-}
-
-function renderResponses(){
-  let data=[...allData];
-  if(activeTraitFilter!=='all')data=data.filter(r=>r._top3[0]===activeTraitFilter);
-  const tbody=document.getElementById('resp-body');
-  if(!data.length){tbody.innerHTML='<tr><td colspan="14" class="empty-state">No responses found.</td></tr>';document.getElementById('resp-footer').textContent='';return}
-  tbody.innerHTML=data.map((d,i)=>{
+  const recent=[...allData].reverse().slice(0,8);
+  document.getElementById('recent-body').innerHTML=recent.map((d,i)=>{
     const top3=d._top3;
-    const traitCell=(t,rank)=>{
-      if(!t||!TRAIT_INFO[t])return'<td>—</td>';
-      return`<td><span class="badge ${rank===0?'badge-t1':''}" style="color:${TRAIT_INFO[t].color};border-color:${TRAIT_INFO[t].color}44">${TRAIT_INFO[t].icon} ${t}</span></td>`;
-    };
-    return`<tr>
+    const tc_=top3.map(t=>TRAIT_INFO[t]?`<span class="badge" style="color:${TRAIT_INFO[t].color};border-color:${TRAIT_INFO[t].color}44">${TRAIT_INFO[t].icon} ${t}</span>`:'');
+    const course=d._topCourse;
+    return`<tr style="cursor:pointer" onclick="openModal(${allData.length-1-i})">
       <td style="color:#334155">${i+1}</td>
       <td style="font-weight:700;color:#f1f5f9">${esc(d.name)}</td>
       <td style="color:#475569">${esc(d.email)}</td>
-      <td style="color:#475569">${esc(d.phone)}</td>
-      ${traitCell(top3[0],0)}${traitCell(top3[1],1)}${traitCell(top3[2],2)}
-      <td>${d.R}</td><td>${d.I}</td><td>${d.A}</td><td>${d.S}</td><td>${d.E}</td><td>${d.C}</td>
+      <td>${tc_[0]||'—'}</td><td>${tc_[1]||'—'}</td><td>${tc_[2]||'—'}</td>
+      <td>${course?`<span class="badge badge-course">${course.title.split(' ').slice(0,4).join(' ')}… ${course.pct}%</span>`:'—'}</td>
       <td style="color:#334155;white-space:nowrap">${fmtDate(d.timestamp)}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="8" class="empty-state">No data yet</td></tr>';
+}
+
+/* ── RESPONSES ── */
+function setTraitFilter(f, btn){
+  activeTraitFilter=f;
+  document.querySelectorAll('#filter-tabs .tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderResponses();
+}
+
+function renderResponses(){
+  const q=(document.getElementById('search-input').value||'').toLowerCase();
+  let data=[...allData];
+  if(activeTraitFilter!=='all') data=data.filter(r=>r._top3[0]===activeTraitFilter);
+  if(q) data=data.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.email||'').toLowerCase().includes(q));
+
+  const tbody=document.getElementById('resp-body');
+  if(!data.length){
+    tbody.innerHTML='<tr><td colspan="16" class="empty-state">No responses found.</td></tr>';
+    document.getElementById('resp-footer').textContent='';
+    return;
+  }
+
+  tbody.innerHTML=data.map((d,i)=>{
+    const top3=d._top3;
+    const tc=(t,rank)=>TRAIT_INFO[t]?`<td><span class="badge ${rank===0?'badge-t1':rank===1?'badge-t2':''}" style="color:${TRAIT_INFO[t].color};border-color:${TRAIT_INFO[t].color}44">${TRAIT_INFO[t].icon} ${t}</span></td>`:'<td>—</td>';
+    const course=d._topCourse;
+    const origIdx=allData.indexOf(d);
+    return`<tr style="cursor:pointer" onclick="openModal(${origIdx})">
+      <td style="color:#334155">${i+1}</td>
+      <td style="font-weight:700;color:#f1f5f9">${esc(d.name)}</td>
+      <td style="color:#475569;font-size:11px">${esc(d.email)}</td>
+      <td style="color:#475569;font-size:11px">${esc(d.phone)}</td>
+      ${tc(top3[0],0)}${tc(top3[1],1)}${tc(top3[2],2)}
+      <td style="color:#94a3b8">${d.R||0}</td><td>${d.I||0}</td><td>${d.A||0}</td><td>${d.S||0}</td><td>${d.E||0}</td><td>${d.C||0}</td>
+      <td>${course?`<span class="badge badge-course" style="font-size:9px">${course.title.split(':')[0].trim()}</span>`:'—'}</td>
+      <td style="color:#334155">${fmtDate(d.timestamp)}</td>
+      <td><button class="action-btn btn-del" onclick="event.stopPropagation();deleteUser(${origIdx})">🗑</button></td>
     </tr>`;
   }).join('');
   document.getElementById('resp-footer').textContent=`Showing ${data.length} of ${allData.length} students`;
 }
 
+/* ── TRAIT ANALYSIS ── */
 function renderTraits(){
   const tc={R:0,I:0,A:0,S:0,E:0,C:0};
   const totals={R:0,I:0,A:0,S:0,E:0,C:0};
-  allData.forEach(d=>{const t=d._top3[0];if(t&&tc[t]!==undefined)tc[t]++;Object.keys(totals).forEach(k=>{totals[k]+=Number(d[k])||0})});
+  allData.forEach(d=>{
+    const t=d._top3[0];if(t&&tc[t]!==undefined)tc[t]++;
+    Object.keys(totals).forEach(k=>{totals[k]+=Number(d[k])||0;});
+  });
   const n=allData.length||1;
-  document.getElementById('trait-summary').innerHTML=Object.entries(TRAIT_INFO).map(([t,info])=>`
-    <div class="dist-row">
-      <div class="dist-label">${info.icon} ${info.name} (${t})</div>
-      <div class="dist-bar-bg" style="flex:1"><div class="dist-bar" style="width:${Math.round((tc[t]/(allData.length||1))*100)}%;background:${info.color}"></div></div>
-      <div class="dist-count">${tc[t]} top · avg ${(totals[t]/n).toFixed(1)}</div>
-    </div>`).join('');
+  const max=Math.max(...Object.values(tc),1);
+
+  document.getElementById('trait-stat-grid').innerHTML=
+    Object.entries(tc).sort((a,b)=>b[1]-a[1]).map(([t,c])=>`
+      <div class="stat-card">
+        <div style="font-size:24px;margin-bottom:4px">${TRAIT_INFO[t].icon}</div>
+        <div class="stat-val" style="font-size:28px">${c}</div>
+        <div class="stat-lbl">${TRAIT_INFO[t].name} — #1 Trait</div>
+      </div>`).join('');
+
+  document.getElementById('trait-summary').innerHTML=
+    Object.entries(TRAIT_INFO).map(([t,info])=>`
+      <div class="dist-row">
+        <div class="dist-label">${info.icon} ${info.name} (${t})</div>
+        <div class="dist-bar-bg" style="flex:1">
+          <div class="dist-bar" style="width:${Math.round((tc[t]/n)*100)}%;background:${info.color}"></div>
+        </div>
+        <div class="dist-count" style="width:130px;text-align:right;font-size:11px;color:#94a3b8">
+          ${tc[t]} top &nbsp;·&nbsp; avg ${(totals[t]/n).toFixed(1)}
+        </div>
+      </div>`).join('');
+
+  /* Top 3 code combinations */
+  const combos={};
+  allData.forEach(d=>{
+    const key=(d._top3||[]).join('-');
+    if(key) combos[key]=(combos[key]||0)+1;
+  });
+  const topCombos=Object.entries(combos).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  document.getElementById('combo-summary').innerHTML=
+    topCombos.map(([combo,cnt])=>`
+      <div class="dist-row">
+        <div class="dist-label" style="width:200px">
+          ${combo.split('-').map(t=>TRAIT_INFO[t]?`<span style="color:${TRAIT_INFO[t].color}">${TRAIT_INFO[t].icon}${t}</span>`:'').join(' › ')}
+        </div>
+        <div class="dist-bar-bg" style="flex:1">
+          <div class="dist-bar" style="width:${Math.round((cnt/allData.length)*100)}%;background:#667eea"></div>
+        </div>
+        <div class="dist-count">${cnt}</div>
+      </div>`).join('')||'<div class="empty-state">No data</div>';
 }
 
-function buildCSV(data){
-  const headers=['Name','Email','Phone','Date','#1','#2','#3','R','I','A','S','E','C'];
-  const rows=data.map(d=>{const top3=d._top3;return[csvQ(d.name),csvQ(d.email),csvQ(d.phone),csvQ(fmtDate(d.timestamp)),csvQ(top3[0]||''),csvQ(top3[1]||''),csvQ(top3[2]||''),d.R,d.I,d.A,d.S,d.E,d.C].join(',')});
-  return[headers.join(','),...rows].join('\n');
+/* ── COURSE MATCHES ── */
+function setCourseFilter(f, btn){
+  activeCourseFilter=f;
+  document.querySelectorAll('#course-tabs .tab').forEach(t=>t.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderCourseTable();
 }
-function triggerCSV(content,filename){
-  const blob=new Blob([content],{type:'text/csv'});
+
+function renderCourses(){
+  /* distribution */
+  const courseCounts={};
+  ALL_COURSES.forEach(c=>courseCounts[c.id]=0);
+  allData.forEach(d=>{if(d._topCourse)courseCounts[d._topCourse.id]=(courseCounts[d._topCourse.id]||0)+1;});
+  const maxC=Math.max(...Object.values(courseCounts),1);
+  document.getElementById('course-dist').innerHTML=
+    ALL_COURSES.map(c=>`
+      <div class="dist-row" onclick="setCourseFilter('${c.id}',null);showSection('courses')">
+        <div class="dist-label" style="width:300px;white-space:normal;font-size:12px">${c.title}</div>
+        <div class="dist-bar-bg" style="flex:1">
+          <div class="dist-bar" style="width:${(courseCounts[c.id]/maxC)*100}%;background:#10b981"></div>
+        </div>
+        <div class="dist-count">${courseCounts[c.id]}</div>
+      </div>`).join('');
+  renderCourseTable();
+}
+
+function renderCourseTable(){
+  let data=[...allData];
+  if(activeCourseFilter!=='all')
+    data=data.filter(d=>d._topCourse&&d._topCourse.id===activeCourseFilter);
+  data.sort((a,b)=>((b._topCourse||{}).score||0)-((a._topCourse||{}).score||0));
+
+  const tbody=document.getElementById('course-body');
+  tbody.innerHTML=data.map((d,i)=>{
+    const top3=d._top3;
+    const tc=(t)=>TRAIT_INFO[t]?`<span class="badge" style="color:${TRAIT_INFO[t].color};border-color:${TRAIT_INFO[t].color}44">${TRAIT_INFO[t].icon}${t}</span>`:'—';
+    const course=d._topCourse;
+    return`<tr>
+      <td style="color:#334155">${i+1}</td>
+      <td style="font-weight:700;color:#f1f5f9">${esc(d.name)}</td>
+      <td style="color:#475569;font-size:11px">${esc(d.email)}</td>
+      <td>${tc(top3[0])}</td><td>${tc(top3[1])}</td><td>${tc(top3[2])}</td>
+      <td style="font-size:11px;color:#e2e8f0;max-width:200px;white-space:normal">${course?course.title:'—'}</td>
+      <td>${course?`<span style="color:#10b981;font-weight:700">${course.pct}%</span>`:'—'}</td>
+      <td style="color:#334155">${fmtDate(d.timestamp)}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="9" class="empty-state">No data</td></tr>';
+  document.getElementById('course-footer').textContent=`Showing ${data.length} students`;
+}
+
+/* ── USER DETAIL MODAL ── */
+function openModal(idx){
+  const d=allData[idx];
+  if(!d)return;
+  currentModalUser={d,idx};
+
+  document.getElementById('m-name').textContent=d.name||'Unknown';
+  document.getElementById('m-email').textContent=(d.email||'')+(d.phone?'  ·  '+d.phone:'');
+
+  const top3=d._top3;
+  const rankLabels=['#1 Primary','#2 Secondary','#3 Tertiary'];
+  document.getElementById('m-traits').innerHTML=top3.map((t,i)=>{
+    const info=TRAIT_INFO[t];if(!info)return'';
+    return`<div class="modal-trait-card" style="background:${info.bg};border:1.5px solid ${info.color}33">
+      <div class="modal-trait-rank" style="color:${info.color}">${rankLabels[i]}</div>
+      <div style="font-size:24px">${info.icon}</div>
+      <div class="modal-trait-letter" style="color:${info.color}">${t}</div>
+      <div class="modal-trait-name" style="color:${info.color}">${info.name}</div>
+    </div>`;
+  }).join('');
+
+  const scores={R:Number(d.R||0),I:Number(d.I||0),A:Number(d.A||0),S:Number(d.S||0),E:Number(d.E||0),C:Number(d.C||0)};
+  const maxPT={R:7,I:7,A:6,S:6,E:7,C:7};
+  document.getElementById('m-scores').innerHTML=
+    Object.entries(scores).sort((a,b)=>b[1]-a[1]).map(([t,sc])=>{
+      const info=TRAIT_INFO[t],pct=Math.round((sc/(maxPT[t]||7))*100);
+      return`<div class="modal-score-cell">
+        <div class="modal-score-code" style="color:${info.color}">${t}</div>
+        <div class="modal-score-bar"><div class="modal-score-fill" style="width:${pct}%;background:${info.color}"></div></div>
+        <div class="modal-score-val">${sc}/${maxPT[t]||7}</div>
+      </div>`;
+    }).join('');
+
+  /* course recommendations */
+  const ranked=[...ALL_COURSES]
+    .map(c=>({...c,score:calcCourseScore(c.matchTraits,top3),pct:Math.round((calcCourseScore(c.matchTraits,top3)/30)*100)}))
+    .sort((a,b)=>b.score-a.score);
+  document.getElementById('m-courses').innerHTML=ranked.map((c,i)=>`
+    <div class="modal-course-item">
+      <div class="modal-course-title">${c.title}</div>
+      <span class="modal-course-match" style="background:${i===0?'rgba(16,185,129,0.15)':'rgba(99,110,114,0.15)'};color:${i===0?'#10b981':'#94a3b8'}">${c.pct}% match</span>
+    </div>`).join('');
+
+  document.getElementById('detail-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  document.getElementById('detail-modal').classList.remove('open');
+  document.body.style.overflow='';
+  currentModalUser=null;
+}
+
+/* ── DELETE ── */
+function deleteUser(idx){
+  const d=allData[idx];
+  if(!d)return;
+  if(!confirm(`Delete "${d.name}" (${d.email})?\n\nThis removes them from the local view only — it does not delete from Google Sheets.`)) return;
+  allData.splice(idx,1);
+  renderAll();
+}
+
+function deleteCurrentUser(){
+  if(!currentModalUser)return;
+  const {idx}=currentModalUser;
+  const d=allData[idx];
+  if(!confirm(`Delete "${d.name}" (${d.email})?\n\nThis removes them from the local view only.`)) return;
+  allData.splice(idx,1);
+  closeModal();
+  renderAll();
+}
+
+/* ── EXPORT CSV ── */
+function exportCSV(){
+  if(!allData.length){alert('No data to export.');return;}
+  const headers=['Name','Email','Phone','Date','#1 Trait','#2 Trait','#3 Trait','R','I','A','S','E','C','Top Course','Match %'];
+  const rows=allData.map(d=>{
+    const top3=d._top3;
+    const course=d._topCourse;
+    return[
+      csvQ(d.name),csvQ(d.email),csvQ(d.phone),csvQ(fmtDate(d.timestamp)),
+      csvQ(top3[0]||''),csvQ(top3[1]||''),csvQ(top3[2]||''),
+      d.R||0,d.I||0,d.A||0,d.S||0,d.E||0,d.C||0,
+      csvQ(course?course.title:''),course?course.pct:''
+    ].join(',');
+  });
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  a.href=url;a.download='jain-riasec-'+today()+'.csv';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
 }
-function downloadAllCSV(){triggerCSV(buildCSV(allData),'jain-riasec-all-'+today()+'.csv')}
 </script>
 </body>
 </html>

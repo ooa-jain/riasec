@@ -3,7 +3,7 @@
 
 {% block topbar_nav %}
 <a href="/home" class="nav-link">Dashboard</a>
-<a href="/programs" class="nav-link active nav-programs">🎓 All Programs</a>
+<a href="/programs" class="nav-link active nav-programs">All Programs</a>
 <div class="nav-divider"></div>
 <div class="nav-user-chip">
   <span class="nav-user-name" id="nav-user-name">Guest</span>
@@ -18,7 +18,7 @@
 </div>
 <div class="drawer-divider"></div>
 <a href="/home" class="mobile-nav-link">Dashboard</a>
-<a href="/programs" class="mobile-nav-link active">🎓 All Programs</a>
+<a href="/programs" class="mobile-nav-link active">All Programs</a>
 <a href="/survey" class="mobile-nav-link">Retake Survey</a>
 <div class="drawer-divider"></div>
 <button class="mobile-nav-link" onclick="logout()" style="color:#ef4444">Sign out</button>
@@ -27,69 +27,121 @@
 {% block head %}
 <style>
 .pw{max-width:1060px;margin:0 auto;padding:36px 24px 80px}
-@media(max-width:820px){.pw{padding:20px 14px 60px}}
+@media(max-width:820px){.pw{padding:16px 12px 60px}}
 
-/* PAGE HEADER */
-.pg-header{background:linear-gradient(160deg,#0b1120 0%,#1a2b4a 55%,#0a2540 100%);border-radius:20px;padding:36px 40px;margin-bottom:32px;position:relative;overflow:hidden}
-@media(max-width:600px){.pg-header{padding:24px 18px;border-radius:14px}}
-.pg-orb1{position:absolute;width:240px;height:240px;background:rgba(37,99,235,0.18);border-radius:50%;filter:blur(60px);top:-60px;right:-40px;pointer-events:none}
-.pg-orb2{position:absolute;width:180px;height:180px;background:rgba(124,58,237,0.14);border-radius:50%;filter:blur(60px);bottom:-30px;left:-30px;pointer-events:none}
-.pg-inner{position:relative;z-index:1}
-.pg-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:4px 14px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
-.pg-title{font-family:'DM Serif Display',serif;font-size:28px;color:#fff;margin-bottom:6px}
-@media(max-width:500px){.pg-title{font-size:22px}}
-.pg-sub{font-size:13px;color:rgba(255,255,255,0.45);line-height:1.7}
+/* ── PLAIN PAGE HEADER matching home style ── */
+.pg-header{
+  text-align:center;
+  padding:40px 24px 32px;
+  margin-bottom:28px;
+  border-bottom:1px solid var(--line);
+}
+.pg-eyebrow{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:12px}
+.pg-title{font-family:'DM Serif Display',serif;font-size:36px;color:var(--ink);line-height:1.2;margin-bottom:8px;letter-spacing:-0.4px}
+@media(max-width:500px){.pg-title{font-size:26px}}
+.pg-sub{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* PERSONALISED MATCH BANNER */
+.match-banner{
+  background:linear-gradient(135deg,rgba(37,99,235,0.05),rgba(124,58,237,0.05));
+  border:1.5px solid rgba(37,99,235,0.15);
+  border-radius:14px;padding:16px 20px;margin-bottom:20px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap
+}
+.match-banner-text{flex:1;min-width:160px}
+.match-banner-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.match-banner-sub{font-size:12px;color:var(--muted)}
+.match-btn{padding:9px 20px;border-radius:9px;background:var(--grad);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.18s;white-space:nowrap;text-decoration:none;display:inline-flex}
+.match-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(37,99,235,0.3);color:#fff}
 
 /* FILTER TABS */
-.prog-filter-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
-.pft{padding:8px 16px;border-radius:20px;border:1.5px solid var(--line);background:#fff;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.18s;font-family:'DM Sans',sans-serif}
+.prog-filter-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.pft{padding:7px 14px;border-radius:20px;border:1.5px solid var(--line);background:#fff;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.18s;font-family:'DM Sans',sans-serif}
 .pft:hover{border-color:rgba(37,99,235,0.3);color:var(--accent)}
 .pft.active{background:rgba(37,99,235,0.07);border-color:rgba(37,99,235,0.3);color:var(--accent)}
 
-/* PROGRAM CARDS (accordion) */
-.prog-item{margin-bottom:12px}
-.prog-header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:#fff;border-radius:16px;border:1.5px solid var(--line);cursor:pointer;user-select:none;transition:all 0.18s;gap:12px}
+/* ── PROGRAM ACCORDION ITEMS ── */
+.prog-item{margin-bottom:10px}
+
+/* Program header — KEY FIX: prevent text overflow on mobile */
+.prog-header{
+  display:flex;align-items:center;
+  padding:14px 18px;
+  background:#fff;border-radius:14px;border:1.5px solid var(--line);
+  cursor:pointer;user-select:none;transition:all 0.18s;
+  gap:12px;
+  min-width:0; /* critical for flex overflow */
+}
 .prog-header:hover{border-color:rgba(37,99,235,0.25);background:#fafbff}
-.prog-header.open-state{border-color:rgba(37,99,235,0.3);background:#f0f6ff;border-radius:16px 16px 0 0}
-.ph-left{display:flex;align-items:center;gap:14px;flex:1;min-width:0}
-.ph-icon{width:44px;height:44px;border-radius:12px;overflow:hidden;flex-shrink:0;position:relative}
-.ph-icon img{width:100%;height:100%;object-fit:cover}
-.ph-icon-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:16px;color:#fff}
-.ph-text{flex:1;min-width:0}
-.ph-name{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-0.1px;margin-bottom:2px;line-height:1.3}
-.ph-sub{font-size:12px;color:var(--muted)}
-.ph-badges{display:flex;gap:5px;align-items:center;flex-wrap:wrap;flex-shrink:0}
+.prog-header.open-state{border-color:rgba(37,99,235,0.3);background:#f0f6ff;border-radius:14px 14px 0 0}
+.prog-header.non-expand{cursor:default;opacity:0.7}
+.prog-header.non-expand:hover{border-color:var(--line);background:#fff}
+
+.ph-thumb{
+  width:48px;height:48px;border-radius:10px;overflow:hidden;
+  flex-shrink:0;position:relative;
+}
+.ph-thumb img{width:100%;height:100%;object-fit:cover}
+.ph-thumb-fb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
+
+/* Text block — must have min-width:0 and overflow:hidden to truncate properly */
+.ph-text{
+  flex:1;
+  min-width:0; /* critical */
+  overflow:hidden;
+}
+.ph-name{
+  font-size:14px;font-weight:700;color:var(--ink);
+  line-height:1.35;margin-bottom:3px;
+  /* Prevent overflow on narrow screens */
+  word-break:break-word;
+}
+@media(max-width:480px){.ph-name{font-size:13px}}
+.ph-sub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph-chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.ph-chip{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600}
+
+/* Badges + arrow — right side, flex-shrink:0 so it stays right */
+.ph-right{
+  display:flex;align-items:center;gap:6px;
+  flex-shrink:0;
+  margin-left:auto;
+}
 .ph-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
 .ph-schol-badge{background:rgba(16,185,129,0.1);color:#059669;border:1px solid rgba(16,185,129,0.2)}
 .ph-rec-badge{background:rgba(37,99,235,0.1);color:#2563eb;border:1px solid rgba(37,99,235,0.2)}
 .ph-soon-badge{background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb}
-.ph-arrow{color:var(--muted);font-size:16px;transition:transform 0.26s;flex-shrink:0}
+/* Hide match% badge on very small screens to save space */
+@media(max-width:380px){.ph-rec-badge{display:none}}
+.ph-arrow{color:var(--muted);font-size:14px;transition:transform 0.26s;flex-shrink:0}
 .ph-arrow.open{transform:rotate(180deg);color:var(--accent)}
 
-.prog-body{display:none;border:1.5px solid rgba(37,99,235,0.2);border-top:0;border-radius:0 0 16px 16px;background:#fff;padding:0}
+/* Accordion body */
+.prog-body{display:none;border:1.5px solid rgba(37,99,235,0.2);border-top:0;border-radius:0 0 14px 14px;background:#fff}
 .prog-body.open{display:block}
 
-/* Course detail inside accordion */
-.prog-detail{padding:20px 22px}
-.pd-img{width:100%;height:200px;object-fit:cover;border-radius:10px;margin-bottom:16px}
-.pd-about{font-size:15px;color:var(--ink2);line-height:1.75;margin-bottom:18px}
-.pd-pathway{background:#f0f7ff;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12px;color:var(--accent);margin-bottom:18px;line-height:1.6}
+/* Course detail */
+.prog-detail{padding:18px 20px}
+@media(max-width:480px){.prog-detail{padding:14px 12px}}
+.pd-img{width:100%;height:160px;object-fit:cover;border-radius:10px;margin-bottom:14px}
+.pd-about{font-size:14px;color:var(--ink2);line-height:1.75;margin-bottom:16px}
+.pd-pathway{background:#f0f7ff;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 13px;font-size:12px;color:var(--accent);margin-bottom:16px;line-height:1.6}
 .pd-pathway strong{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;color:#1d4ed8}
-.pd-btns{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.pd-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.18s;font-family:'DM Sans',sans-serif;text-decoration:none;border:none;min-width:120px}
+.pd-btns{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.pd-btn{flex:1;display:flex;align-items:center;justify-content:center;padding:11px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.18s;font-family:'DM Sans',sans-serif;text-decoration:none;border:none;min-width:100px}
 .pd-btn-view{background:var(--ink);color:#fff}
 .pd-btn-view:hover{background:var(--accent);color:#fff}
 .pd-btn-schol{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
 .pd-btn-schol:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(16,185,129,0.3);color:#fff}
 
-/* Curriculum accordion inside program */
-.curr-h{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+/* Curriculum */
+.curr-h{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
 .sem-item{border:1px solid var(--line);border-radius:10px;margin-bottom:6px;overflow:hidden;background:#f9fafb}
-.sem-head{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer;user-select:none;transition:background 0.14s;gap:10px}
+.sem-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;transition:background 0.14s;gap:8px}
 .sem-head:hover{background:#f0f6ff}
 .sem-head.open-s{background:#eff6ff}
 .sem-badge{background:var(--grad);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
-.sem-count{font-size:11px;color:var(--muted);flex:1;margin-left:7px}
+.sem-count{font-size:11px;color:var(--muted);flex:1;margin-left:6px}
 .sem-chev{font-size:12px;color:var(--muted);transition:transform 0.24s;flex-shrink:0}
 .sem-chev.open{transform:rotate(180deg);color:var(--accent)}
 .sem-body{display:none;border-top:1px solid #f3f4f6}
@@ -98,61 +150,52 @@
 .sem-table tr{border-bottom:1px solid #f9fafb}
 .sem-table tr:last-child{border-bottom:none}
 .sem-table tr:hover{background:#fafbff}
-.sem-table td:first-child{width:34px;padding:9px 6px 9px 16px;font-size:11px;font-weight:600;color:#c4cad4;text-align:center}
-.sem-table td:last-child{padding:9px 16px 9px 4px;font-size:14px;color:var(--ink2);line-height:1.5}
+.sem-table td:first-child{width:32px;padding:8px 4px 8px 12px;font-size:11px;font-weight:600;color:#c4cad4;text-align:center}
+.sem-table td:last-child{padding:8px 12px 8px 4px;font-size:13px;color:var(--ink2);line-height:1.5}
 .hon-sep{display:flex;align-items:center;gap:10px;margin:8px 0 4px}
 .hon-line{flex:1;height:1px;background:var(--line)}
 .hon-tag{font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px;background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.15);padding:3px 13px;border-radius:20px;white-space:nowrap}
-.coming-soon-body{padding:28px 22px;text-align:center}
-.coming-soon-icon{font-size:40px;margin-bottom:12px}
-.coming-soon-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px}
-.coming-soon-sub{font-size:12px;color:var(--muted);line-height:1.7;max-width:360px;margin:0 auto 14px}
-.trait-chips-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:4px}
-.trait-chip{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1.5px solid transparent}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="pw">
 
-  <!-- PAGE HEADER -->
+  <!-- PLAIN PAGE HEADER -->
   <div class="pg-header">
-    <div class="pg-orb1"></div><div class="pg-orb2"></div>
-    <div class="pg-inner">
-      <div class="pg-tag">🎓 Course Catalogue</div>
-      <div class="pg-title">All Programmes</div>
-      <div class="pg-sub">7 programmes total · 4 with JAIN × UCAM Scholarship · 3 coming soon<br>Click any programme to expand and view the full curriculum.</div>
-    </div>
+    <div class="pg-eyebrow">Course Catalogue</div>
+    <div class="pg-title">All Programmes</div>
+    <div class="pg-sub">7 programmes total &middot; 4 with JAIN &times; UCAM Scholarship<br>Click any programme to expand and view the full curriculum.</div>
   </div>
 
-  <!-- PERSONALISED COURSES GATE -->
-  <div id="personalized-gate" style="display:none;background:#fff;border:1.5px solid rgba(37,99,235,0.2);border-radius:16px;padding:24px 28px;margin-bottom:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 2px 12px rgba(37,99,235,0.07)">
-    <div style="font-size:36px;flex-shrink:0">🔒</div>
-    <div style="flex:1;min-width:200px">
-      <div style="font-size:16px;font-weight:800;color:#1e293b;margin-bottom:4px">See Your Personalised Programme Suggestions</div>
-      <div style="font-size:14px;color:#64748b;line-height:1.6">Take the 5-minute RIASEC survey to unlock course recommendations tailored to your personality.</div>
-    </div>
-    <a href="/survey" class="btn" style="width:auto;white-space:nowrap;font-size:14px;padding:12px 22px">Take Survey → Unlock Recommendations</a>
-  </div>
-  <div id="personalized-match" style="display:none;background:linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.06));border:1.5px solid rgba(37,99,235,0.18);border-radius:16px;padding:20px 28px;margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <div style="font-size:30px;flex-shrink:0">⭐</div>
+  <!-- PERSONALISED GATE (no survey taken) -->
+  <div id="personalized-gate" style="display:none;background:#fff;border:1.5px solid rgba(37,99,235,0.2);border-radius:14px;padding:18px 20px;margin-bottom:18px;align-items:center;gap:14px;flex-wrap:wrap">
     <div style="flex:1;min-width:180px">
-      <div style="font-size:15px;font-weight:800;color:#1e293b;margin-bottom:3px" id="gate-match-title">Your Top Recommended Programmes</div>
-      <div style="font-size:13px;color:#64748b" id="gate-match-sub">Based on your RIASEC profile — click <strong>⭐ Recommended for Me</strong> to filter</div>
+      <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:3px">See Your Personalised Programme Suggestions</div>
+      <div style="font-size:12px;color:#64748b">Take the 5-minute RIASEC survey to unlock course recommendations.</div>
     </div>
-    <button class="btn" onclick="filterPrograms('recommended',document.querySelector('.pft:last-child'))" style="width:auto;font-size:13px;padding:10px 20px">⭐ Show My Matches</button>
+    <a href="/survey" class="match-btn">Take Survey</a>
+  </div>
+
+  <!-- MATCH BANNER (survey done) -->
+  <div id="personalized-match" class="match-banner" style="display:none">
+    <div class="match-banner-text">
+      <div class="match-banner-title" id="gate-match-title">Your Top Recommended Programmes</div>
+      <div class="match-banner-sub" id="gate-match-sub">Based on your RIASEC profile</div>
+    </div>
+    <button class="match-btn" onclick="filterPrograms('recommended',document.querySelectorAll('.pft')[4])">Show My Matches</button>
   </div>
 
   <!-- FILTER TABS -->
   <div class="prog-filter-tabs">
     <button class="pft active" onclick="filterPrograms('all',this)">All 7</button>
-    <button class="pft" onclick="filterPrograms('scholarship',this)">🎓 Scholarship Available</button>
+    <button class="pft" onclick="filterPrograms('scholarship',this)">Scholarship</button>
     <button class="pft" onclick="filterPrograms('ug',this)">UG (BS Hons)</button>
     <button class="pft" onclick="filterPrograms('pg',this)">PG (MS / MBA)</button>
-    <button class="pft" onclick="filterPrograms('recommended',this)">⭐ Recommended for Me</button>
+    <button class="pft" onclick="filterPrograms('recommended',this)">Recommended for Me</button>
   </div>
 
-  <!-- ALL 7 PROGRAMS LIST -->
+  <!-- PROGRAMS LIST -->
   <div id="programs-list"></div>
 
 </div>
@@ -160,7 +203,6 @@
 
 {% block scripts %}
 <script>
-/* ── GUARD ── */
 var user=getUser();
 if(!user||!user.name){window.location.replace('/entry');}
 
@@ -170,7 +212,6 @@ var fn=String(user.name||'Guest').trim().split(' ')[0];
 
 var top3=user.top3||[];
 
-/* Show personalised gate or match banner */
 (function(){
   var gate=document.getElementById('personalized-gate');
   var match=document.getElementById('personalized-match');
@@ -181,20 +222,18 @@ var top3=user.top3||[];
     if(gate)gate.style.display='none';
     if(match){
       match.style.display='flex';
-      var names=top3.map(function(t){return(TRAIT_INFO[t]||{}).name||t;}).join(' › ');
+      var names=top3.map(function(t){return(TRAIT_INFO[t]||{}).name||t;}).join(' > ');
       var el=document.getElementById('gate-match-sub');
-      if(el)el.innerHTML='Your profile: <strong>'+names+'</strong> — click the button to see your matches';
+      if(el)el.innerHTML='Your profile: <strong>'+names+'</strong>';
     }
   }
 })();
 
-/* ALL 7 PROGRAMS */
 var ALL_PROGRAMS=[
   {
     id:'creative-tech',hasScholarship:true,dummy:false,
     matchTraits:['A','I','S'],level:'BS (Hons)',levelGroup:'ug',
     title:'BS (Hons) in Creative Technology and Design',
-    shortTitle:'Creative Technology and Design',
     university:'JAIN (Deemed-to-be University)',duration:'3 Years + 1 Year Honours',
     image:'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&q=80',
     about:'The BS (Hons) in Creative Technology and Design bridges art, design, and emerging technology. Students create immersive digital experiences, interactive media, and innovative design solutions at the intersection of creativity and code.',
@@ -217,7 +256,6 @@ var ALL_PROGRAMS=[
     id:'data-ai',hasScholarship:true,dummy:false,
     matchTraits:['I','C','R'],level:'BS (Hons)',levelGroup:'ug',
     title:'BS (Hons) in Data Analytics and Applied Artificial Intelligence',
-    shortTitle:'Data Analytics and Applied AI',
     university:'JAIN (Deemed-to-be University)',duration:'3 Years + 1 Year Honours',
     image:'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&q=80',
     about:'The BS (Hons) in Data Analytics and Applied Artificial Intelligence equips students with mathematics, programming, and domain expertise to build intelligent systems and drive data-informed decisions across every industry.',
@@ -240,7 +278,6 @@ var ALL_PROGRAMS=[
     id:'corporate-mgmt',hasScholarship:true,dummy:false,
     matchTraits:['E','C','I'],level:'MS',levelGroup:'pg',
     title:'MS in Corporate Management and Lean Six Sigma',
-    shortTitle:'Corporate Management and Lean Six Sigma',
     university:'JAIN (Deemed-to-be University)',duration:'2 Years',
     image:'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80',
     about:'The MS in Corporate Management and Lean Six Sigma combines strategic business leadership with operational excellence methodologies. Graduates drive measurable transformation and deliver sustained competitive advantage.',
@@ -258,7 +295,6 @@ var ALL_PROGRAMS=[
     id:'sports-science',hasScholarship:true,dummy:false,
     matchTraits:['R','I','S'],level:'MS',levelGroup:'pg',
     title:'MS in High Performance Sports: Strength and Conditioning',
-    shortTitle:'High Performance Sports',
     university:'JAIN (Deemed-to-be University)',duration:'2 Years',
     image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&q=80',
     about:'The MS in High Performance Sports: Strength and Conditioning trains sports scientists and conditioning coaches for elite environments. Students master human performance science, training periodisation, injury prevention, and evidence-based conditioning methodologies.',
@@ -276,28 +312,22 @@ var ALL_PROGRAMS=[
     id:'global-business',hasScholarship:false,dummy:true,
     matchTraits:['E','S','C'],level:'MBA',levelGroup:'pg',
     title:'MBA in Global Business and International Management',
-    shortTitle:'Global Business and International Management',
     university:'JAIN (Deemed-to-be University)',duration:'2 Years',
-    image:'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80',
-    about:'',pathway:'',scholarshipLink:'',courseLink:'',curriculum:[]
+    image:'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80',curriculum:[]
   },
   {
     id:'health-sciences',hasScholarship:false,dummy:true,
     matchTraits:['S','I','R'],level:'MS',levelGroup:'pg',
     title:'MS in Health Sciences and Public Health Management',
-    shortTitle:'Health Sciences and Public Health',
     university:'JAIN (Deemed-to-be University)',duration:'2 Years',
-    image:'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&q=80',
-    about:'',pathway:'',scholarshipLink:'',courseLink:'',curriculum:[]
+    image:'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&q=80',curriculum:[]
   },
   {
     id:'digital-marketing',hasScholarship:false,dummy:true,
     matchTraits:['E','A','S'],level:'PG Diploma',levelGroup:'pg',
     title:'PG Diploma in Digital Marketing and Communication Strategy',
-    shortTitle:'Digital Marketing and Communication',
     university:'JAIN (Deemed-to-be University)',duration:'1 Year',
-    image:'https://images.unsplash.com/photo-1432888622747-4eb9a8f2c293?w=1200&q=80',
-    about:'',pathway:'',scholarshipLink:'',courseLink:'',curriculum:[]
+    image:'https://images.unsplash.com/photo-1432888622747-4eb9a8f2c293?w=1200&q=80',curriculum:[]
   }
 ];
 
@@ -306,117 +336,119 @@ var activeFilter='all';
 function filterPrograms(f,btn){
   activeFilter=f;
   document.querySelectorAll('.pft').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
+  if(btn)btn.classList.add('active');
   buildList();
 }
 
-function getFilteredPrograms(){
+function getFiltered(){
   return ALL_PROGRAMS.filter(function(p){
     if(activeFilter==='all')return true;
     if(activeFilter==='scholarship')return p.hasScholarship;
     if(activeFilter==='ug')return p.levelGroup==='ug';
     if(activeFilter==='pg')return p.levelGroup==='pg';
-    if(activeFilter==='recommended'){
-      /* only the 2 webinar courses, check if in top match */
-      if(p.id!=='creative-tech'&&p.id!=='data-ai')return false;
-      return true;
-    }
+    if(activeFilter==='recommended')return p.id==='creative-tech'||p.id==='data-ai';
     return true;
   });
 }
 
 function buildList(){
-  var programs=getFilteredPrograms();
-  var top3=user.top3||[];
-
-  /* compute scores for recommended ordering */
-  var scored=ALL_PROGRAMS.map(function(p){
-    return {id:p.id,score:calcCourseScore(p.matchTraits,top3)};
-  });
+  var programs=getFiltered();
   var scoreMap={};
-  scored.forEach(function(s){scoreMap[s.id]=s.score;});
+  ALL_PROGRAMS.forEach(function(p){scoreMap[p.id]=calcCourseScore(p.matchTraits,top3);});
 
   var html='';
   programs.forEach(function(p,ci){
     var score=scoreMap[p.id]||0;
     var matchPct=Math.round((score/30)*100);
     var isRec=(p.id==='creative-tech'||p.id==='data-ai')&&top3.length>0;
+    var firstTrait=TRAIT_INFO[p.matchTraits[0]]||{color:'#2563eb'};
+
+    /* trait chips */
+    var traitChips=p.matchTraits.map(function(t){
+      var info=TRAIT_INFO[t];
+      return '<span class="ph-chip" style="background:'+info.bg+';color:'+info.color+'">'+info.name+'</span>';
+    }).join('');
 
     /* badges */
     var badges='';
     if(isRec&&top3.length){
       var recRank=WEBINAR_COURSES.map(function(c){return{id:c.id,score:calcCourseScore(c.matchTraits,top3)};}).sort(function(a,b){return b.score-a.score;});
       var rank=recRank.findIndex(function(r){return r.id===p.id;});
-      badges+='<span class="ph-badge ph-rec-badge">'+(rank===0?'⭐ #1 Match':'✨ #2 Match')+' &middot; '+matchPct+'%</span>';
+      badges+='<span class="ph-badge ph-rec-badge">'+(rank===0?'#1':'#2')+' Match &middot; '+matchPct+'%</span>';
     }
-    if(p.hasScholarship)badges+='<span class="ph-badge ph-schol-badge">🎓 Scholarship</span>';
-    else badges+='<span class="ph-badge ph-soon-badge">Coming Soon</span>';
+    if(p.hasScholarship)badges+='<span class="ph-badge ph-schol-badge">Scholarship</span>';
+    if(p.dummy)badges='<span class="ph-badge ph-soon-badge">Coming Soon</span>';
 
-    /* trait chips for header */
-    var traitChips=p.matchTraits.map(function(t){
-      var info=TRAIT_INFO[t];
-      return '<span style="font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600;background:'+info.bg+';color:'+info.color+'">'+info.icon+' '+info.name+'</span>';
-    }).join('');
-
-    /* color for fallback icon */
-    var firstTrait=TRAIT_INFO[p.matchTraits[0]]||{color:'#2563eb',icon:'🎓'};
-
-    /* program body */
-    var bodyHtml='';
+    /* ── DUMMY: plain non-clickable row ── */
     if(p.dummy){
-      bodyHtml='<div class="coming-soon-body">'+
-        '<div class="coming-soon-icon">🔜</div>'+
-        '<div class="coming-soon-title">'+p.title+'</div>'+
-        '<div class="coming-soon-sub">Programme details and curriculum coming soon. This programme will be available for enrollment in the upcoming academic year.</div>'+
-        '<div class="trait-chips-row">'+p.matchTraits.map(function(t){var info=TRAIT_INFO[t];return'<span class="trait-chip" style="background:'+info.bg+';color:'+info.color+';border-color:'+info.color+'44">'+info.icon+' '+info.name+'</span>';}).join('')+'</div>'+
-        '<div style="margin-top:14px"><a href="https://jainsogs.com/gfs/" target="_blank" class="btn btn-sm" style="display:inline-flex;width:auto">Learn more at Jain SoGS →</a></div>'+
-      '</div>';
-    }else{
-      /* curriculum html */
-      var currHtml='';
-      p.curriculum.forEach(function(block,bi){
-        if(block.type==='sep'){
-          currHtml+='<div class="hon-sep"><div class="hon-line"></div><div class="hon-tag">'+block.label+'</div><div class="hon-line"></div></div>';
-          return;
-        }
-        var sid='sem-'+ci+'-'+bi;
-        var rows=block.courses.map(function(t,i){return'<tr><td>'+(i+1)+'</td><td>'+t+'</td></tr>';}).join('');
-        currHtml+='<div class="sem-item"><div class="sem-head" onclick="toggleSem(\''+sid+'\',this)"><span class="sem-badge">'+block.sem+'</span><span class="sem-count">'+block.courses.length+' subjects</span><span class="sem-chev" id="sc-'+sid+'">▾</span></div><div class="sem-body" id="'+sid+'"><table class="sem-table">'+rows+'</table></div></div>';
-      });
-      bodyHtml='<div class="prog-detail">'+
-        '<img class="pd-img" src="'+p.image+'" alt="'+p.shortTitle+'" loading="lazy">'+
-        '<p class="pd-about">'+p.about+'</p>'+
-        '<div class="pd-pathway"><strong>International Pathway</strong>'+p.pathway+'</div>'+
-        '<div class="pd-btns">'+
-          '<a href="'+p.courseLink+'" class="pd-btn pd-btn-view">📋 View Course &amp; Enroll</a>'+
-          '<a href="'+p.scholarshipLink+'" target="_blank" class="pd-btn pd-btn-schol">🎓 Apply for Scholarship</a>'+
-        '</div>'+
-        '<div class="curr-h">Curriculum — click a semester to expand</div>'+
-        currHtml+
-      '</div>';
+      html+=
+        '<div class="prog-item">'+
+          '<div class="prog-header non-expand" style="cursor:default">'+
+            '<div class="ph-thumb">'+
+              '<img src="'+p.image+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'+
+            '</div>'+
+            '<div class="ph-text">'+
+              '<div class="ph-name">'+p.title+'</div>'+
+              '<div class="ph-sub">'+p.level+' &middot; '+p.university+' &middot; '+p.duration+'</div>'+
+              '<div class="ph-chips">'+traitChips+'</div>'+
+            '</div>'+
+            '<div class="ph-right">'+badges+'</div>'+
+          '</div>'+
+        '</div>';
+      return;
     }
 
-    html+='<div class="prog-item" data-id="'+p.id+'" data-has-scholarship="'+p.hasScholarship+'" data-level-group="'+p.levelGroup+'">'+
-      '<div class="prog-header" id="ph-'+ci+'" onclick="toggleProg('+ci+')">'+
-        '<div class="ph-left">'+
-          '<div class="ph-icon">'+
-            '<img src="'+p.image+'" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+
-            '<div class="ph-icon-fallback" style="background:'+firstTrait.color+';display:none">'+firstTrait.icon+'</div>'+
+    /* ── REAL: expandable accordion ── */
+    var currHtml='';
+    p.curriculum.forEach(function(block,bi){
+      if(block.type==='sep'){
+        currHtml+='<div class="hon-sep"><div class="hon-line"></div><div class="hon-tag">'+block.label+'</div><div class="hon-line"></div></div>';
+        return;
+      }
+      var sid='sem-'+ci+'-'+bi;
+      var rows=block.courses.map(function(t,i){return'<tr><td>'+(i+1)+'</td><td>'+t+'</td></tr>';}).join('');
+      currHtml+=
+        '<div class="sem-item">'+
+          '<div class="sem-head" onclick="toggleSem(\''+sid+'\',this)">'+
+            '<span class="sem-badge">'+block.sem+'</span>'+
+            '<span class="sem-count">'+block.courses.length+' subjects</span>'+
+            '<span class="sem-chev" id="sc-'+sid+'">&#9660;</span>'+
+          '</div>'+
+          '<div class="sem-body" id="'+sid+'"><table class="sem-table">'+rows+'</table></div>'+
+        '</div>';
+    });
+
+    html+=
+      '<div class="prog-item">'+
+        '<div class="prog-header" id="ph-'+ci+'" onclick="toggleProg('+ci+')">'+
+          '<div class="ph-thumb">'+
+            '<img src="'+p.image+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'+
           '</div>'+
           '<div class="ph-text">'+
             '<div class="ph-name">'+p.title+'</div>'+
             '<div class="ph-sub">'+p.level+' &middot; '+p.university+' &middot; '+p.duration+'</div>'+
-            '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px">'+traitChips+'</div>'+
+            '<div class="ph-chips">'+traitChips+'</div>'+
+          '</div>'+
+          '<div class="ph-right">'+badges+'<span class="ph-arrow" id="ca-'+ci+'">&#9660;</span></div>'+
+        '</div>'+
+        '<div class="prog-body" id="cb-'+ci+'">'+
+          '<div class="prog-detail">'+
+            '<img class="pd-img" src="'+p.image+'" alt="" loading="lazy">'+
+            '<p class="pd-about">'+p.about+'</p>'+
+            '<div class="pd-pathway"><strong>International Pathway</strong>'+p.pathway+'</div>'+
+            '<div class="pd-btns">'+
+              '<a href="'+p.courseLink+'" class="pd-btn pd-btn-view">View Courses</a>'+
+              '<a href="'+p.scholarshipLink+'" target="_blank" class="pd-btn pd-btn-schol">Apply for Scholarship</a>'+
+            '</div>'+
+            '<div class="curr-h">Curriculum — click a semester to expand</div>'+
+            currHtml+
           '</div>'+
         '</div>'+
-        '<div class="ph-badges">'+badges+'<span class="ph-arrow" id="ca-'+ci+'">▾</span></div>'+
-      '</div>'+
-      '<div class="prog-body" id="cb-'+ci+'">'+bodyHtml+'</div>'+
-    '</div>';
+      '</div>';
   });
 
   if(!programs.length){
-    html='<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-size:14px;font-weight:600">No programmes match this filter</div><div style="font-size:12px;margin-top:6px">Try a different filter tab above</div></div>';
+    html='<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:14px;font-weight:600">No programmes match this filter</div></div>';
   }
 
   document.getElementById('programs-list').innerHTML=html;
@@ -426,10 +458,12 @@ function toggleProg(ci){
   var body=document.getElementById('cb-'+ci);
   var arr=document.getElementById('ca-'+ci);
   var ph=document.getElementById('ph-'+ci);
+  if(!body)return;
   var open=body.classList.toggle('open');
-  arr.classList.toggle('open',open);
-  ph.classList.toggle('open-state',open);
+  if(arr)arr.classList.toggle('open',open);
+  if(ph)ph.classList.toggle('open-state',open);
 }
+
 function toggleSem(sid,headEl){
   var body=document.getElementById(sid);
   var chev=document.getElementById('sc-'+sid);

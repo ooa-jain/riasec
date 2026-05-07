@@ -8,7 +8,7 @@
 <style>
 :root{
   --ink:#0f1623;--ink2:#374151;--muted:#6b7280;--line:#e5e7eb;
-  --bg:#f7f8fc;--white:#ffffff;
+  --bg:#F3F3F3;--white:#ffffff;
   --accent:#2563eb;--accent2:#7c3aed;
   --grad:linear-gradient(135deg,#2563eb,#7c3aed);
   --radius:14px;
@@ -17,12 +17,25 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;font-size:16px}
+body{
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  font-size:16px;
+  /* ── Subtle grid background ── */
+  --grid-color:rgba(0,0,0,0.06);
+  background-color:#F3F3F3;
+  background-image:
+    linear-gradient(0deg, transparent 24%, var(--grid-color) 25%, var(--grid-color) 26%, transparent 27%, transparent 74%, var(--grid-color) 75%, var(--grid-color) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, var(--grid-color) 25%, var(--grid-color) 26%, transparent 27%, transparent 74%, var(--grid-color) 75%, var(--grid-color) 76%, transparent 77%, transparent);
+  background-size:55px 55px;
+}
 
 /* TOPBAR */
 .topbar{
   position:fixed;top:0;left:0;right:0;height:68px;
-  background:rgba(255,255,255,0.95);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  background:rgba(255,255,255,0.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
   border-bottom:1px solid var(--line);z-index:200;
   display:flex;align-items:center;padding:0 36px;gap:0
 }
@@ -106,7 +119,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;colo
 .alert-info{background:rgba(37,99,235,0.07);color:var(--accent);border-left:3px solid var(--accent)}
 
 /* LOADING */
-.loading-overlay{display:none;position:fixed;inset:0;background:rgba(247,248,252,0.95);z-index:9999;
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(243,243,243,0.96);z-index:9999;
   align-items:center;justify-content:center;flex-direction:column;backdrop-filter:blur(8px)}
 .loading-overlay.active{display:flex}
 .loader-card{background:#0f1623;padding:1rem 2.2rem;border-radius:1.3rem;margin-bottom:14px}
@@ -151,7 +164,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;colo
 <!-- Topbar -->
 <div class="topbar">
   <a href="/" class="topbar-logo">
-    <!-- JAIN Logo -->
     <img class="topbar-logo-jain" src="/static/images/jain.png" alt="JAIN School of Global Studies"
          onerror="this.style.display='none';document.getElementById('jain-fb').style.display='flex'">
     <div id="jain-fb" class="topbar-logo-fallback-wrap">
@@ -160,9 +172,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;colo
         <span class="topbar-logo-fallback-sub">School of Global Studies</span>
       </div>
     </div>
-    <!-- Divider -->
     <div class="topbar-logo-divider"></div>
-    <!-- UCAM Logo -->
     <img class="topbar-logo-ucam" src="/static/images/ucam.png" alt="UCAM Universidad"
          onerror="this.style.display='none';document.getElementById('ucam-fb').style.display='flex'">
     <div id="ucam-fb" class="topbar-logo-ucam-fallback">
@@ -236,7 +246,6 @@ const TRAIT_INFO={
      careers:["Data & Business Analyst","Process Excellence Manager","Financial Analyst","Quality & Compliance Manager","Database & Systems Administrator"]}
 };
 
-/* EXACT 41 QUESTIONS from original */
 const QUESTIONS=[
   {text:"I like to work on cars",trait:"R"},
   {text:"I like to build things",trait:"R"},
@@ -284,7 +293,6 @@ const QUESTIONS=[
 const maxPT={R:0,I:0,A:0,S:0,E:0,C:0};
 QUESTIONS.forEach(function(q){maxPT[q.trait]++;});
 
-/* Course scoring weights */
 const COURSE_MATCH_WEIGHTS=[[15,10,5],[10,7,3],[5,3,1]];
 function calcCourseScore(courseTraits,studentTop3){
   var score=0;
@@ -296,7 +304,6 @@ function calcCourseScore(courseTraits,studentTop3){
   return score;
 }
 
-/* ONLY 2 RECOMMENDABLE COURSES (webinar logic) */
 const WEBINAR_COURSES=[
   {
     id:'creative-tech',
