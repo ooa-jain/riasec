@@ -1,25 +1,43 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-import requests, json, csv, io, smtplib, threading, os, re
+import requests, json, csv, io, smtplib, threading, os, re, time, logging
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 
 load_dotenv()
 
+# ── Logging ────────────────────────────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# ── Email validation ───────────────────────────────────────────────────────────
 _EMAIL_RE = re.compile(r'^[a-zA-Z0-9._%+\-]{2,}@[a-zA-Z0-9\-]{2,}(\.[a-zA-Z0-9\-]{1,})*\.[a-zA-Z]{2,}$')
 
 def is_valid_email(email: str) -> bool:
     return bool(_EMAIL_RE.match(email))
 
+# ── App setup ──────────────────────────────────────────────────────────────────
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'jain_riasec_secret_2024')
+app.secret_key = os.getenv('SECRET_KEY', os.urandom(32))
 
 SHEET_ID      = os.getenv('SHEET_ID', '')
 SCRIPT_URL    = os.getenv('SCRIPT_URL', '')
 SMTP_EMAIL    = os.getenv('SMTP_EMAIL', '')
 SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'admin@2023')
 SMTP_SERVER   = 'smtp.gmail.com'
 SMTP_PORT     = 587
+
+# ── Sheet cache (avoids hammering Google on every login) ───────────────────────
+_sheet_cache = {
+    'data': [],
+    'ts': 0,
+    'lock': threading.Lock()
+}
+CACHE_TTL = 60  # seconds — all users share a 60-second-old snapshot
 
 # ── Trait meta ─────────────────────────────────────────────────────────────────
 TRAIT_INFO = {
@@ -67,61 +85,63 @@ COURSES = {
 # ── Apps Script POST ───────────────────────────────────────────────────────────
 def post_to_script(row, sheet_name='Sheet1'):
     if not SCRIPT_URL:
-        print('⚠️  SCRIPT_URL not set')
+        logger.warning('SCRIPT_URL not set — skipping sheet write')
         return False
     try:
         resp = requests.post(
             SCRIPT_URL,
             json={'row': row, 'sheet': sheet_name},
-            timeout=15,
+            timeout=20,
             allow_redirects=True,
             headers={'Content-Type': 'application/json'}
         )
-        print(f'📋 Script [{resp.status_code}]: {resp.text[:200]}')
+        logger.info(f'Sheet write [{resp.status_code}]: {resp.text[:120]}')
         return resp.status_code in (200, 201, 302)
     except Exception as e:
-        print(f'❌ post_to_script error: {e}')
+        logger.error(f'post_to_script error: {e}')
         return False
 
 
 # ── Sheet readers ──────────────────────────────────────────────────────────────
-def fetch_sheet_data():
+def _raw_fetch_sheet_data():
+    """Actually fetch from Google — called only when cache is stale."""
     if not SHEET_ID:
-        print('⚠️  SHEET_ID not set')
+        logger.warning('SHEET_ID not set')
         return []
     try:
         url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&sheet=Sheet1'
-        r = requests.get(url, timeout=20, allow_redirects=True)
+        r = requests.get(url, timeout=15, allow_redirects=True)
         r.raise_for_status()
         reader = csv.reader(io.StringIO(r.text))
         rows = list(reader)
         if len(rows) < 2:
             return []
         result = []
-        for i, row in enumerate(rows[1:], start=2):  # row index for deletion (1-based, skip header)
+        for i, row in enumerate(rows[1:], start=2):
             if len(row) < 2 or not row[1].strip():
                 continue
-            def safe(idx, r=row): return r[idx].strip() if idx < len(r) else ''
+            def safe(idx, r=row):
+                return r[idx].strip() if idx < len(r) else ''
             result.append({
-                'row_index': i,  # actual sheet row number for deletion
+                'row_index': i,
                 'timestamp': safe(0), 'name': safe(1), 'email': safe(2), 'phone': safe(3),
                 'R': safe(4) or '0', 'I': safe(5) or '0', 'A': safe(6) or '0',
                 'S': safe(7) or '0', 'E': safe(8) or '0', 'C': safe(9) or '0',
                 'top3_codes': safe(10), 'top3_names': safe(11)
             })
-        print(f'📊 Fetched {len(result)} rows')
+        logger.info(f'Fetched {len(result)} rows from Google Sheets')
         return result
     except Exception as e:
-        print(f'❌ CSV fetch error: {e}')
-        return fetch_sheet_gviz()
+        logger.error(f'CSV fetch error: {e}')
+        return _fetch_sheet_gviz()
 
 
-def fetch_sheet_gviz():
+def _fetch_sheet_gviz():
     if not SHEET_ID:
         return []
     try:
         url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1'
-        r = requests.get(url, timeout=15)
+        r = requests.get(url, timeout=12)
         text = r.text
         start = text.index('(') + 1
         end   = text.rindex(')')
@@ -143,29 +163,49 @@ def fetch_sheet_gviz():
                 'S': val(7) or '0', 'E': val(8) or '0', 'C': val(9) or '0',
                 'top3_codes': val(10), 'top3_names': val(11)
             })
-        print(f'📊 gviz fallback: {len(result)} rows')
+        logger.info(f'gviz fallback: {len(result)} rows')
         return result
     except Exception as e:
-        print(f'❌ gviz error: {e}')
+        logger.error(f'gviz error: {e}')
         return []
 
 
+def fetch_sheet_data(force_refresh=False):
+    """
+    Return cached sheet data. Refreshes if cache is older than CACHE_TTL seconds.
+    Thread-safe via a lock so only one thread fetches at a time.
+    """
+    now = time.time()
+    with _sheet_cache['lock']:
+        if not force_refresh and _sheet_cache['data'] and (now - _sheet_cache['ts']) < CACHE_TTL:
+            return _sheet_cache['data']
+        data = _raw_fetch_sheet_data()
+        _sheet_cache['data'] = data
+        _sheet_cache['ts'] = now
+        return data
+
+
+def invalidate_cache():
+    """Call after a write so the next read is fresh."""
+    with _sheet_cache['lock']:
+        _sheet_cache['ts'] = 0
+
+
 def delete_sheet_row(row_index):
-    """Delete a row from Google Sheet via Apps Script."""
     if not SCRIPT_URL:
         return False
     try:
         resp = requests.post(
             SCRIPT_URL,
             json={'action': 'delete', 'rowIndex': row_index, 'sheet': 'Sheet1'},
-            timeout=15,
+            timeout=20,
             allow_redirects=True,
             headers={'Content-Type': 'application/json'}
         )
-        print(f'🗑 Delete row {row_index}: [{resp.status_code}] {resp.text[:200]}')
+        logger.info(f'Delete row {row_index}: [{resp.status_code}] {resp.text[:120]}')
         return resp.status_code in (200, 201, 302)
     except Exception as e:
-        print(f'❌ delete_sheet_row error: {e}')
+        logger.error(f'delete_sheet_row error: {e}')
         return False
 
 
@@ -350,6 +390,7 @@ def build_enrollment_email_html(name, email, phone, course_title, top3, message=
 
 def send_result_email(to_email, name, top3, scores):
     if not SMTP_EMAIL or not SMTP_PASSWORD:
+        logger.warning('SMTP not configured — skipping result email')
         return
     try:
         msg = MIMEMultipart('alternative')
@@ -369,13 +410,14 @@ def send_result_email(to_email, name, top3, scores):
             server.ehlo(); server.starttls(); server.ehlo()
             server.login(SMTP_EMAIL, SMTP_PASSWORD)
             server.sendmail(SMTP_EMAIL, to_email, msg.as_string())
-        print(f'✅ Result email → {to_email}')
+        logger.info(f'Result email sent → {to_email}')
     except Exception as e:
-        print(f'❌ Result email failed: {e}')
+        logger.error(f'Result email failed: {e}')
 
 
 def send_enrollment_notification(enroll_data):
     if not SMTP_EMAIL or not SMTP_PASSWORD:
+        logger.warning('SMTP not configured — skipping enrollment email')
         return
     try:
         name         = enroll_data.get('name', '')
@@ -428,9 +470,9 @@ def send_enrollment_notification(enroll_data):
             server.sendmail(SMTP_EMAIL, SMTP_EMAIL, admin_msg.as_string())
             if email:
                 server.sendmail(SMTP_EMAIL, email, student_msg.as_string())
-        print(f'✅ Enrollment emails sent for {name}')
+        logger.info(f'Enrollment emails sent for {name}')
     except Exception as e:
-        print(f'❌ Enrollment email error: {e}')
+        logger.error(f'Enrollment email error: {e}')
 
 
 def save_enrollment_to_sheet(enroll_data):
@@ -489,22 +531,23 @@ def course(course_id):
 # ── API ────────────────────────────────────────────────────────────────────────
 @app.route('/api/lookup-email', methods=['POST'])
 def lookup_email():
-    email = (request.json or {}).get('email', '').strip().lower()
+    data = request.get_json(silent=True) or {}
+    email = data.get('email', '').strip().lower()
     if not email or not is_valid_email(email):
         return jsonify({'found': False, 'error': 'Invalid email address'})
     rows    = fetch_sheet_data()
     matches = [r for r in rows if r.get('email', '').strip().lower() == email]
     if matches:
         user = matches[-1]
-        print(f'✅ Login: {user["name"]} ({email})')
+        logger.info(f'Login: {user["name"]} ({email})')
         return jsonify({'found': True, 'user': user})
-    print(f'ℹ️  No record for {email}')
+    logger.info(f'No record for {email}')
     return jsonify({'found': False})
 
 
 @app.route('/api/submit-results', methods=['POST'])
 def submit_results():
-    body   = request.json or {}
+    body   = request.get_json(silent=True) or {}
     name   = body.get('name', '').strip()
     email  = body.get('email', '').strip()
     phone  = body.get('phone', '').strip()
@@ -523,14 +566,15 @@ def submit_results():
            ', '.join(top3),
            ', '.join(TRAIT_INFO[t]['name'] for t in top3 if t in TRAIT_INFO)]
 
-    threading.Thread(target=post_to_script, args=(row, 'Sheet1'), daemon=True).start()
+    # Invalidate cache so next admin load sees the new row
+    threading.Thread(target=lambda: (post_to_script(row, 'Sheet1'), invalidate_cache()), daemon=True).start()
     threading.Thread(target=send_result_email, args=(email, name, top3, scores), daemon=True).start()
     return jsonify({'success': True})
 
 
 @app.route('/api/enroll', methods=['POST'])
 def enroll():
-    body      = request.json or {}
+    body      = request.get_json(silent=True) or {}
     name      = body.get('name', '').strip()
     email     = body.get('email', '').strip()
     phone     = body.get('phone', '').strip()
@@ -555,18 +599,18 @@ def enroll():
 
 @app.route('/api/admin-data', methods=['POST'])
 def admin_data():
-    body = request.json or {}
-    if body.get('password') != 'admin@2023':
+    body = request.get_json(silent=True) or {}
+    if body.get('password') != ADMIN_PASSWORD:
         return jsonify({'error': 'Unauthorized'}), 401
-    rows = fetch_sheet_data()
+    # Admin always gets a fresh fetch
+    rows = fetch_sheet_data(force_refresh=True)
     return jsonify({'rows': rows, 'count': len(rows)})
 
 
 @app.route('/api/delete-user', methods=['POST'])
 def delete_user():
-    """Delete a user row from Google Sheet by row_index."""
-    body = request.json or {}
-    if body.get('password') != 'admin@2023':
+    body = request.get_json(silent=True) or {}
+    if body.get('password') != ADMIN_PASSWORD:
         return jsonify({'error': 'Unauthorized'}), 401
 
     row_index = body.get('row_index')
@@ -575,16 +619,24 @@ def delete_user():
     if not row_index:
         return jsonify({'success': False, 'error': 'row_index required'}), 400
 
-    print(f'🗑 Admin delete: row {row_index} ({email})')
-
-    # Delete via Apps Script
+    logger.info(f'Admin delete: row {row_index} ({email})')
     ok = delete_sheet_row(int(row_index))
+    if ok:
+        invalidate_cache()
     return jsonify({'success': ok, 'row_index': row_index, 'email': email})
 
 
+# ── Health check (useful for Hostinger / uptime monitors) ─────────────────────
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok', 'cached_rows': len(_sheet_cache['data'])}), 200
+
+
+# ── Entry point (only used for local dev — Gunicorn ignores this block) ────────
 if __name__ == '__main__':
-    print(f'🚀 JAIN RIASEC Server')
-    print(f'   SHEET_ID:   {"✅" if SHEET_ID else "❌ NOT SET"}')
-    print(f'   SCRIPT_URL: {"✅" if SCRIPT_URL else "❌ NOT SET"}')
-    print(f'   SMTP_EMAIL: {"✅" if SMTP_EMAIL else "❌ NOT SET"}')
-    app.run(debug=True, port=8015)
+    logger.info('Starting JAIN RIASEC in DEVELOPMENT mode')
+    logger.info(f'  SHEET_ID:   {"SET" if SHEET_ID else "NOT SET"}')
+    logger.info(f'  SCRIPT_URL: {"SET" if SCRIPT_URL else "NOT SET"}')
+    logger.info(f'  SMTP_EMAIL: {"SET" if SMTP_EMAIL else "NOT SET"}')
+    # debug=False in all cases. Use Gunicorn for production.
+    app.run(debug=False, host='0.0.0.0', port=8015)
