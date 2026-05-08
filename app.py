@@ -98,11 +98,12 @@ def fetch_sheet_data():
         if len(rows) < 2:
             return []
         result = []
-        for row in rows[1:]:
+        for i, row in enumerate(rows[1:], start=2):  # row index for deletion (1-based, skip header)
             if len(row) < 2 or not row[1].strip():
                 continue
-            def safe(i): return row[i].strip() if i < len(row) else ''
+            def safe(idx, r=row): return r[idx].strip() if idx < len(r) else ''
             result.append({
+                'row_index': i,  # actual sheet row number for deletion
                 'timestamp': safe(0), 'name': safe(1), 'email': safe(2), 'phone': safe(3),
                 'R': safe(4) or '0', 'I': safe(5) or '0', 'A': safe(6) or '0',
                 'S': safe(7) or '0', 'E': safe(8) or '0', 'C': safe(9) or '0',
@@ -127,15 +128,16 @@ def fetch_sheet_gviz():
         data  = json.loads(text[start:end])
         rows  = data['table']['rows']
         result = []
-        for row in rows[1:]:
+        for i, row in enumerate(rows[1:], start=2):
             c = row.get('c', [])
-            def val(i):
-                if i < len(c) and c[i] and c[i].get('v') is not None:
-                    return str(c[i]['v'])
+            def val(idx, c=c):
+                if idx < len(c) and c[idx] and c[idx].get('v') is not None:
+                    return str(c[idx]['v'])
                 return ''
             if not val(1):
                 continue
             result.append({
+                'row_index': i,
                 'timestamp': val(0), 'name': val(1), 'email': val(2), 'phone': val(3),
                 'R': val(4) or '0', 'I': val(5) or '0', 'A': val(6) or '0',
                 'S': val(7) or '0', 'E': val(8) or '0', 'C': val(9) or '0',
@@ -146,6 +148,25 @@ def fetch_sheet_gviz():
     except Exception as e:
         print(f'❌ gviz error: {e}')
         return []
+
+
+def delete_sheet_row(row_index):
+    """Delete a row from Google Sheet via Apps Script."""
+    if not SCRIPT_URL:
+        return False
+    try:
+        resp = requests.post(
+            SCRIPT_URL,
+            json={'action': 'delete', 'rowIndex': row_index, 'sheet': 'Sheet1'},
+            timeout=15,
+            allow_redirects=True,
+            headers={'Content-Type': 'application/json'}
+        )
+        print(f'🗑 Delete row {row_index}: [{resp.status_code}] {resp.text[:200]}')
+        return resp.status_code in (200, 201, 302)
+    except Exception as e:
+        print(f'❌ delete_sheet_row error: {e}')
+        return False
 
 
 # ── Email builders ─────────────────────────────────────────────────────────────
@@ -187,7 +208,6 @@ def build_email_html(name, top3, scores):
           </td></tr>
         </table>"""
 
-    # Compute recommended courses based on top3
     WEBINAR_COURSES_EMAIL = [
         {'id': 'creative-tech', 'matchTraits': ['A','I','S'],
          'title': 'BS (Hons) in Creative Technology and Design',
@@ -249,7 +269,6 @@ def build_email_html(name, top3, scores):
         </table>"""
 
     courses_html = ''.join(course_card_email(c, i) for i, c in enumerate(ranked))
-
     cards_html = ''.join(trait_card(code, i) for i, code in enumerate(top3))
     return f"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#f0f2f8;font-family:'Segoe UI',Arial,sans-serif;">
@@ -331,7 +350,6 @@ def build_enrollment_email_html(name, email, phone, course_title, top3, message=
 
 def send_result_email(to_email, name, top3, scores):
     if not SMTP_EMAIL or not SMTP_PASSWORD:
-        print('⚠️  SMTP not configured')
         return
     try:
         msg = MIMEMultipart('alternative')
@@ -358,7 +376,6 @@ def send_result_email(to_email, name, top3, scores):
 
 def send_enrollment_notification(enroll_data):
     if not SMTP_EMAIL or not SMTP_PASSWORD:
-        print('⚠️  SMTP not configured')
         return
     try:
         name         = enroll_data.get('name', '')
@@ -432,7 +449,6 @@ def save_enrollment_to_sheet(enroll_data):
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
 def ctx():
-    """Common template context."""
     return {'script_url': SCRIPT_URL}
 
 @app.route('/')
@@ -546,9 +562,29 @@ def admin_data():
     return jsonify({'rows': rows, 'count': len(rows)})
 
 
+@app.route('/api/delete-user', methods=['POST'])
+def delete_user():
+    """Delete a user row from Google Sheet by row_index."""
+    body = request.json or {}
+    if body.get('password') != 'admin@2023':
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    row_index = body.get('row_index')
+    email     = body.get('email', '')
+
+    if not row_index:
+        return jsonify({'success': False, 'error': 'row_index required'}), 400
+
+    print(f'🗑 Admin delete: row {row_index} ({email})')
+
+    # Delete via Apps Script
+    ok = delete_sheet_row(int(row_index))
+    return jsonify({'success': ok, 'row_index': row_index, 'email': email})
+
+
 if __name__ == '__main__':
     print(f'🚀 JAIN RIASEC Server')
     print(f'   SHEET_ID:   {"✅" if SHEET_ID else "❌ NOT SET"}')
     print(f'   SCRIPT_URL: {"✅" if SCRIPT_URL else "❌ NOT SET"}')
     print(f'   SMTP_EMAIL: {"✅" if SMTP_EMAIL else "❌ NOT SET"}')
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=8015)

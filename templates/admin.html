@@ -7,12 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-
-/* ── Same grid background as main app ── */
 body{
-  font-family:'Poppins',sans-serif;
-  color:#e2e8f0;
-  min-height:100vh;
+  font-family:'Poppins',sans-serif;color:#e2e8f0;min-height:100vh;
   --grid-color:rgba(255,255,255,0.04);
   background-color:#080d1a;
   background-image:
@@ -21,13 +17,9 @@ body{
   background-size:55px 55px;
 }
 
-/* ── LOGIN ── */
+/* LOGIN */
 .login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.login-card{
-  background:#0d1530;border:1px solid #1e2d50;border-radius:22px;
-  padding:44px 40px;width:100%;max-width:380px;
-  box-shadow:0 24px 60px rgba(0,0,0,0.6);position:relative;overflow:hidden
-}
+.login-card{background:#0d1530;border:1px solid #1e2d50;border-radius:22px;padding:44px 40px;width:100%;max-width:380px;box-shadow:0 24px 60px rgba(0,0,0,0.6);position:relative;overflow:hidden}
 .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#667eea,#956afa,#764ba2)}
 .login-logo{text-align:center;margin-bottom:28px}
 .login-logo-icon{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:22px;color:#fff}
@@ -42,17 +34,12 @@ body{
 .back-link{display:block;text-align:center;margin-top:16px;color:#475569;font-size:12px;text-decoration:none;transition:color 0.2s}
 .back-link:hover{color:#667eea}
 
-/* ── DASHBOARD LAYOUT ── */
+/* DASHBOARD */
 #dashboard{display:none;min-height:100vh}
 .layout{display:flex;min-height:100vh}
 
-/* ── SIDEBAR ── */
-.sidebar{
-  width:230px;flex-shrink:0;
-  background:#0a0f22;border-right:1px solid #1a2540;
-  padding:24px 14px;position:fixed;top:0;bottom:0;left:0;
-  display:flex;flex-direction:column;z-index:10;overflow-y:auto
-}
+/* SIDEBAR */
+.sidebar{width:230px;flex-shrink:0;background:#0a0f22;border-right:1px solid #1a2540;padding:24px 14px;position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column;z-index:10;overflow-y:auto;transition:transform 0.28s}
 .sb-logo{margin-bottom:30px;padding:0 6px}
 .sb-logo-brand{font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.3px}
 .sb-logo-sub{font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-top:2px;display:block}
@@ -63,11 +50,24 @@ body{
 .nav-icon{width:22px;text-align:center;font-size:14px;flex-shrink:0}
 .sb-spacer{flex:1}
 
-/* ── MAIN CONTENT ── */
-.main{margin-left:230px;padding:28px 32px;flex:1;min-height:100vh}
-@media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:16px 12px}}
+/* MOBILE HAMBURGER */
+.admin-hamburger{display:none;position:fixed;top:14px;left:14px;z-index:200;background:#1a2540;border:none;border-radius:8px;width:36px;height:36px;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#818cf8}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);z-index:150}
+  .sidebar.open{transform:translateX(0)}
+  .admin-hamburger{display:flex}
+  .main{margin-left:0!important}
+  .main-topbar{padding-left:52px}
+}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:140}
+.sidebar-overlay.show{display:block}
 
-/* ── TOPBAR ── */
+/* MAIN */
+.main{margin-left:230px;padding:28px 32px;flex:1;min-height:100vh}
+@media(max-width:1024px){.main{padding:20px 20px}}
+@media(max-width:600px){.main{padding:14px 12px}}
+
+/* TOPBAR */
 .main-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;padding-bottom:20px;border-bottom:1px solid #1a2540}
 .main-topbar h1{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.3px}
 .topbar-actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -80,35 +80,39 @@ body{
 .btn-logout:hover{background:rgba(239,68,68,0.18)}
 .btn-del{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);color:#f87171;font-size:11px;padding:5px 10px}
 .btn-del:hover{background:rgba(239,68,68,0.2)}
+@media(max-width:500px){
+  .action-btn{padding:7px 10px;font-size:11px}
+  .main-topbar h1{font-size:16px}
+}
 
-/* ── STAT CARDS ── */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:24px}
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px}
 .stat-card{background:#0d1530;border:1px solid #1a2540;border-radius:16px;padding:20px 22px;position:relative;overflow:hidden}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#667eea,#764ba2)}
 .stat-val{font-size:32px;font-weight:800;background:linear-gradient(135deg,#667eea,#956afa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
 .stat-lbl{font-size:10px;color:#334155;margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px}
 
-/* ── SECTION CARDS ── */
+/* SECTION CARDS */
 .sec-card{background:#0d1530;border:1px solid #1a2540;border-radius:16px;padding:22px;margin-bottom:18px}
 .sec-card-title{font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #1a2540}
 
-/* ── TRAIT DIST ── */
-.dist-row{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:10px;cursor:pointer;margin-bottom:4px;transition:background 0.18s}
+/* DIST ROWS */
+.dist-row{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:10px;cursor:pointer;margin-bottom:4px;transition:background 0.18s;flex-wrap:wrap}
 .dist-row:hover{background:#1a2540}
 .dist-label{width:155px;font-size:13px;color:#e2e8f0;font-weight:600;flex-shrink:0;display:flex;align-items:center;gap:7px}
-.dist-bar-bg{flex:1;height:8px;background:#0a1020;border-radius:10px;overflow:hidden}
+.dist-bar-bg{flex:1;min-width:80px;height:8px;background:#0a1020;border-radius:10px;overflow:hidden}
 .dist-bar{height:100%;border-radius:10px;transition:width 0.9s ease}
 .dist-count{width:35px;text-align:right;font-size:13px;font-weight:800;color:#818cf8}
 
-/* ── FILTER TABS ── */
+/* TABS */
 .tab-bar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;background:#0a1020;padding:4px;border-radius:11px}
 .tab{background:transparent;border:none;color:#475569;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;transition:all 0.18s;white-space:nowrap}
 .tab:hover{color:#94a3b8;background:#1a2540}
 .tab.active{background:#1e2d50;color:#818cf8}
 
-/* ── DATA TABLE ── */
-.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid #1a2540}
-.data-table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid #1a2540;-webkit-overflow-scrolling:touch}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;min-width:700px}
 .data-table th{background:#070c1a;color:#475569;font-size:10px;padding:12px 14px;text-align:left;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;position:sticky;top:0;z-index:2;border-bottom:1px solid #1a2540}
 .data-table td{padding:11px 14px;border-bottom:1px solid rgba(26,37,64,0.6);color:#cbd5e1;vertical-align:middle;white-space:nowrap}
 .data-table tr:last-child td{border-bottom:none}
@@ -119,7 +123,7 @@ body{
 .badge-course{background:rgba(16,185,129,0.1);color:#34d399;border-color:rgba(16,185,129,0.25);font-size:9px}
 .table-footer{font-size:11px;color:#334155;margin-top:10px;padding:0 4px}
 
-/* ── USER DETAIL MODAL ── */
+/* MODAL */
 .modal-ov{position:fixed;inset:0;background:rgba(5,8,20,0.85);z-index:400;display:none;align-items:center;justify-content:center;padding:60px 16px 16px;backdrop-filter:blur(10px);overflow-y:auto}
 .modal-ov.open{display:flex}
 .modal-bx{background:#0d1530;border:1px solid #1e2d50;border-radius:20px;padding:28px;max-width:620px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,0.6);position:relative;animation:mIn 0.24s ease;flex-shrink:0;margin:auto}
@@ -130,11 +134,13 @@ body{
 .modal-email{font-size:13px;color:#475569;margin-bottom:20px}
 .modal-section{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #1a2540}
 .modal-trait-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+@media(max-width:480px){.modal-trait-grid{grid-template-columns:repeat(3,1fr)}}
 .modal-trait-card{border-radius:12px;padding:14px;text-align:center}
 .modal-trait-rank{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;opacity:0.7;margin-bottom:4px}
 .modal-trait-letter{font-size:28px;font-weight:800;line-height:1;margin-bottom:2px}
 .modal-trait-name{font-size:11px;font-weight:600;opacity:0.8}
 .modal-score-row{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:20px}
+@media(max-width:480px){.modal-score-row{grid-template-columns:repeat(3,1fr)}}
 .modal-score-cell{background:#070c1a;border-radius:8px;padding:8px 4px;text-align:center}
 .modal-score-code{font-size:14px;font-weight:800;line-height:1;margin-bottom:3px}
 .modal-score-bar{height:4px;background:#1a2540;border-radius:10px;overflow:hidden;margin-bottom:3px}
@@ -146,8 +152,9 @@ body{
 .modal-course-match{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
 .modal-del-btn{width:100%;padding:11px;background:rgba(239,68,68,0.12);border:1.5px solid rgba(239,68,68,0.3);color:#f87171;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.18s;margin-top:4px}
 .modal-del-btn:hover{background:rgba(239,68,68,0.22);transform:translateY(-1px)}
+.modal-del-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 
-/* ── MISC ── */
+/* MISC */
 .empty-state{text-align:center;padding:40px;color:#334155;font-size:13px}
 .loading-shimmer{animation:shimmer 1.5s infinite}
 @keyframes shimmer{0%,100%{opacity:0.4}50%{opacity:1}}
@@ -156,11 +163,36 @@ body{
 .search-input{background:#070c1a;border:1.5px solid #1e2d50;border-radius:10px;padding:9px 14px;color:#e2e8f0;font-size:13px;font-family:'Poppins',sans-serif;outline:none;transition:border-color 0.18s;width:220px}
 .search-input:focus{border-color:#667eea}
 .search-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+@media(max-width:500px){.search-input{width:100%}}
+
+/* TOAST */
+.admin-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);transition:opacity 0.3s;pointer-events:none}
+.admin-toast.success{background:#10b981;color:#fff}
+.admin-toast.error{background:#ef4444;color:#fff}
+
+/* BULK SELECT BAR */
+.bulk-bar{display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:10px;margin-bottom:12px;flex-wrap:wrap}
+.bulk-bar.show{display:flex}
+.bulk-count{font-size:13px;font-weight:700;color:#f87171;flex:1}
+.btn-bulk-del{padding:8px 18px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;background:rgba(239,68,68,0.85);border:none;color:#fff;transition:all 0.18s}
+.btn-bulk-del:hover{background:#ef4444;transform:translateY(-1px)}
+.btn-bulk-del:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.btn-bulk-cancel{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;background:transparent;border:1px solid #334155;color:#94a3b8;transition:all 0.18s}
+.btn-bulk-cancel:hover{border-color:#475569;color:#e2e8f0}
+
+/* CHECKBOX */
+.row-cb{width:16px;height:16px;cursor:pointer;accent-color:#667eea}
+.th-cb{width:40px}
+.data-table tbody tr.selected td{background:rgba(102,126,234,0.1)!important}
 </style>
 </head>
 <body>
 
-<!-- ── LOGIN PAGE ── -->
+<!-- MOBILE SIDEBAR TOGGLE -->
+<button class="admin-hamburger" onclick="toggleSidebar()" id="admin-ham">☰</button>
+<div class="sidebar-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
+
+<!-- LOGIN -->
 <div id="loginPage" class="login-page">
   <div class="login-card">
     <div class="login-logo">
@@ -176,12 +208,11 @@ body{
   </div>
 </div>
 
-<!-- ── DASHBOARD ── -->
+<!-- DASHBOARD -->
 <div id="dashboard">
   <div class="layout">
-
     <!-- SIDEBAR -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
       <div class="sb-logo">
         <div class="sb-logo-brand">Jain University</div>
         <span class="sb-logo-sub">RIASEC Admin Panel</span>
@@ -216,7 +247,7 @@ body{
 
       <div class="error-banner" id="errorBanner"></div>
 
-      <!-- ── OVERVIEW ── -->
+      <!-- OVERVIEW -->
       <div id="sec-overview">
         <div class="stat-grid" id="stat-grid">
           <div class="stat-card"><div class="stat-val loading-shimmer">—</div><div class="stat-lbl">Total Responses</div></div>
@@ -239,7 +270,7 @@ body{
         </div>
       </div>
 
-      <!-- ── ALL RESPONSES ── -->
+      <!-- ALL RESPONSES -->
       <div id="sec-responses" style="display:none">
         <div class="sec-card">
           <div class="search-row">
@@ -254,17 +285,26 @@ body{
               <button class="tab" onclick="setTraitFilter('C',this)">C</button>
             </div>
           </div>
+          <!-- BULK ACTION BAR -->
+          <div class="bulk-bar" id="bulk-bar">
+            <span class="bulk-count" id="bulk-count">0 selected</span>
+            <button class="btn-bulk-del" id="bulk-del-btn" onclick="bulkDelete()">&#128465; Delete Selected</button>
+            <button class="btn-bulk-cancel" onclick="clearSelection()">&#10005; Cancel</button>
+          </div>
           <div class="table-wrap">
             <table class="data-table">
-              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>#1</th><th>#2</th><th>#3</th><th>R</th><th>I</th><th>A</th><th>S</th><th>E</th><th>C</th><th>Top Course</th><th>Date</th><th>Action</th></tr></thead>
-              <tbody id="resp-body"><tr><td colspan="16" class="empty-state loading-shimmer">Loading…</td></tr></tbody>
+              <thead><tr>
+                <th class="th-cb"><input type="checkbox" class="row-cb" id="select-all-cb" onclick="toggleSelectAll(this)" title="Select all"></th>
+                <th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>#1</th><th>#2</th><th>#3</th><th>R</th><th>I</th><th>A</th><th>S</th><th>E</th><th>C</th><th>Top Course</th><th>Date</th><th>Del</th>
+              </tr></thead>
+              <tbody id="resp-body"><tr><td colspan="17" class="empty-state loading-shimmer">Loading…</td></tr></tbody>
             </table>
           </div>
           <div class="table-footer" id="resp-footer"></div>
         </div>
       </div>
 
-      <!-- ── TRAIT ANALYSIS ── -->
+      <!-- TRAIT ANALYSIS -->
       <div id="sec-traits" style="display:none">
         <div class="stat-grid" id="trait-stat-grid"></div>
         <div class="sec-card">
@@ -277,10 +317,10 @@ body{
         </div>
       </div>
 
-      <!-- ── COURSE MATCHES ── -->
+      <!-- COURSE MATCHES -->
       <div id="sec-courses" style="display:none">
         <div class="sec-card">
-          <div class="sec-card-title">Course Match Distribution — How many students match each programme</div>
+          <div class="sec-card-title">Course Match Distribution</div>
           <div id="course-dist"></div>
         </div>
         <div class="sec-card">
@@ -301,36 +341,31 @@ body{
           <div class="table-footer" id="course-footer"></div>
         </div>
       </div>
-
-    </div><!-- /main -->
+    </div>
   </div>
 </div>
 
-<!-- ── USER DETAIL MODAL ── -->
+<!-- USER DETAIL MODAL -->
 <div class="modal-ov" id="detail-modal" onclick="if(event.target===this)closeModal()">
   <div class="modal-bx">
     <button class="modal-x" onclick="closeModal()">✕</button>
     <div class="modal-name" id="m-name">—</div>
     <div class="modal-email" id="m-email">—</div>
-
     <div class="modal-section">Top 3 Personality Traits</div>
     <div class="modal-trait-grid" id="m-traits"></div>
-
     <div class="modal-section">All 6 Scores</div>
     <div class="modal-score-row" id="m-scores"></div>
-
     <div class="modal-section">Recommended Programmes</div>
     <div class="modal-course-row" id="m-courses"></div>
-
     <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="modal-del-btn" id="m-del-btn" onclick="deleteCurrentUser()">🗑 Delete This User</button>
+      <button class="modal-del-btn" id="m-del-btn" onclick="deleteCurrentUser()">🗑 Delete This User Permanently</button>
     </div>
   </div>
 </div>
 
 <script>
 /* ── CONSTANTS ── */
-const CREDS = {u:'admin', p:'admin@123'};
+const CREDS = {u:'admin', p:'admin@2023'};
 
 const TRAIT_INFO = {
   R:{name:'Realistic',    icon:'🔧', color:'#e17055', bg:'rgba(225,112,85,0.12)'},
@@ -342,10 +377,10 @@ const TRAIT_INFO = {
 };
 
 const ALL_COURSES = [
-  {id:'creative-tech',  title:'BS (Hons) Creative Technology & Design',     matchTraits:['A','I','S']},
-  {id:'data-ai',        title:'BS (Hons) Data Analytics & Applied AI',       matchTraits:['I','C','R']},
-  {id:'sports-science', title:'MS High Performance Sports: S&C',              matchTraits:['R','I','S']},
-  {id:'corporate-mgmt', title:'MS Corporate Management & Lean Six Sigma',     matchTraits:['E','C','I']}
+  {id:'creative-tech',  title:'BS (Hons) Creative Technology & Design',    matchTraits:['A','I','S']},
+  {id:'data-ai',        title:'BS (Hons) Data Analytics & Applied AI',      matchTraits:['I','C','R']},
+  {id:'sports-science', title:'MS High Performance Sports: S&C',             matchTraits:['R','I','S']},
+  {id:'corporate-mgmt', title:'MS Corporate Management & Lean Six Sigma',    matchTraits:['E','C','I']}
 ];
 const WEIGHTS = [[15,10,5],[10,7,3],[5,3,1]];
 
@@ -356,36 +391,33 @@ let activeCourseFilter = 'all';
 let currentModalUser = null;
 
 /* ── HELPERS ── */
-function getTop3(row){
-  return (row.top3_codes||'').split(/\s*,\s*/).map(s=>s.trim().toUpperCase()).filter(Boolean).slice(0,3);
-}
-function fmtDate(ts){
-  if(!ts) return '—';
-  try{return new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'2-digit'});}
-  catch{return ts||'—';}
-}
+function getTop3(row){return (row.top3_codes||'').split(/\s*,\s*/).map(s=>s.trim().toUpperCase()).filter(Boolean).slice(0,3);}
+function fmtDate(ts){if(!ts)return'—';try{return new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'2-digit'});}catch{return ts||'—';}}
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function csvQ(s){return '"'+String(s||'').replace(/"/g,'""')+'"';}
+function csvQ(s){return'"'+String(s||'').replace(/"/g,'""')+'"';}
 function today(){return new Date().toISOString().slice(0,10);}
 function showErr(msg){const b=document.getElementById('errorBanner');b.innerHTML=msg;b.classList.add('show');}
 function hideErr(){document.getElementById('errorBanner').classList.remove('show');}
+function calcCourseScore(courseTraits,studentTop3){let score=0;for(let si=0;si<studentTop3.length;si++)for(let ci=0;ci<courseTraits.length;ci++)if(studentTop3[si]===courseTraits[ci])score+=WEIGHTS[si][ci];return score;}
+function getTopCourse(top3){if(!top3||!top3.length)return null;let best=null,bestScore=0;ALL_COURSES.forEach(c=>{const s=calcCourseScore(c.matchTraits,top3);if(s>bestScore){bestScore=s;best={...c,score:s,pct:Math.round((s/30)*100)};}});return best;}
 
-function calcCourseScore(courseTraits, studentTop3){
-  let score=0;
-  for(let si=0;si<studentTop3.length;si++)
-    for(let ci=0;ci<courseTraits.length;ci++)
-      if(studentTop3[si]===courseTraits[ci]) score+=WEIGHTS[si][ci];
-  return score;
+/* TOAST */
+function showToast(msg, type='success'){
+  const t=document.createElement('div');
+  t.className='admin-toast '+type;
+  t.textContent=(type==='success'?'✅ ':'❌ ')+msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>document.body.removeChild(t),400);},2800);
 }
 
-function getTopCourse(top3){
-  if(!top3||!top3.length) return null;
-  let best=null, bestScore=0;
-  ALL_COURSES.forEach(c=>{
-    const s=calcCourseScore(c.matchTraits, top3);
-    if(s>bestScore){bestScore=s;best={...c,score:s,pct:Math.round((s/30)*100)};}
-  });
-  return best;
+/* SIDEBAR MOBILE */
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sb-overlay').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('show');
 }
 
 /* ── LOGIN ── */
@@ -407,40 +439,28 @@ function adminLogout(){
   document.getElementById('dashboard').style.display='none';
 }
 document.addEventListener('keydown',e=>{
-  if(e.key==='Enter' && document.getElementById('loginPage').style.display!=='none') adminLogin();
-  if(e.key==='Escape') closeModal();
+  if(e.key==='Enter'&&document.getElementById('loginPage').style.display!=='none')adminLogin();
+  if(e.key==='Escape')closeModal();
 });
 
 /* ── DATA LOAD ── */
 async function loadData(){
   hideErr();
   try{
-    const res=await fetch('/api/admin-data',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({password:'admin@2023'})
-    });
+    const res=await fetch('/api/admin-data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:'admin@2023'})});
     if(!res.ok){const err=await res.json();throw new Error(err.error||'HTTP '+res.status);}
     const data=await res.json();
     allData=(data.rows||[]).filter(r=>r.name&&r.name.trim());
-    allData.forEach(r=>{
-      r._top3=getTop3(r);
-      r._topCourse=getTopCourse(r._top3);
-    });
+    allData.forEach(r=>{r._top3=getTop3(r);r._topCourse=getTopCourse(r._top3);});
     renderAll();
   } catch(e){
-    showErr('Failed to load data: <strong>'+e.message+'</strong>. Make sure Flask is running.');
+    showErr('Failed to load data: <strong>'+e.message+'</strong>');
   }
 }
 
-function renderAll(){
-  renderOverview();
-  renderResponses();
-  renderTraits();
-  renderCourses();
-}
+function renderAll(){renderOverview();renderResponses();renderTraits();renderCourses();}
 
-/* ── SECTION SWITCH ── */
+/* SECTION SWITCH */
 function showSection(sec){
   ['overview','responses','traits','courses'].forEach(s=>{
     document.getElementById('sec-'+s).style.display=s===sec?'block':'none';
@@ -449,9 +469,10 @@ function showSection(sec){
   });
   const titles={overview:'Overview',responses:'All Responses',traits:'Trait Analysis',courses:'Course Matches'};
   document.getElementById('main-title').textContent=titles[sec]||sec;
+  closeSidebar();
 }
 
-/* ── OVERVIEW ── */
+/* OVERVIEW */
 function renderOverview(){
   const total=allData.length;
   const emails=new Set(allData.map(d=>d.email)).size;
@@ -491,24 +512,107 @@ function renderOverview(){
   }).join('')||'<tr><td colspan="8" class="empty-state">No data yet</td></tr>';
 }
 
-/* ── RESPONSES ── */
-function setTraitFilter(f, btn){
+/* RESPONSES */
+function setTraitFilter(f,btn){
   activeTraitFilter=f;
   document.querySelectorAll('#filter-tabs .tab').forEach(t=>t.classList.remove('active'));
-  if(btn) btn.classList.add('active');
+  if(btn)btn.classList.add('active');
   renderResponses();
+}
+
+/* Track selected indices (allData indices) */
+let selectedIndices = new Set();
+
+function updateBulkBar(){
+  const bar=document.getElementById('bulk-bar');
+  const cnt=document.getElementById('bulk-count');
+  const n=selectedIndices.size;
+  if(n>0){bar.classList.add('show');cnt.textContent=n+' selected';}
+  else{bar.classList.remove('show');}
+  // sync select-all checkbox
+  const allCb=document.getElementById('select-all-cb');
+  if(allCb){
+    const visibleRows=document.querySelectorAll('#resp-body .row-cb');
+    const checkedRows=document.querySelectorAll('#resp-body .row-cb:checked');
+    allCb.indeterminate=checkedRows.length>0&&checkedRows.length<visibleRows.length;
+    allCb.checked=visibleRows.length>0&&checkedRows.length===visibleRows.length;
+  }
+}
+
+function toggleSelectAll(cb){
+  const rows=document.querySelectorAll('#resp-body .row-cb');
+  rows.forEach(r=>{
+    r.checked=cb.checked;
+    const idx=parseInt(r.dataset.idx);
+    if(cb.checked)selectedIndices.add(idx);
+    else selectedIndices.delete(idx);
+    r.closest('tr').classList.toggle('selected',cb.checked);
+  });
+  updateBulkBar();
+}
+
+function toggleRowSelect(cb, idx){
+  if(cb.checked)selectedIndices.add(idx);
+  else selectedIndices.delete(idx);
+  cb.closest('tr').classList.toggle('selected',cb.checked);
+  updateBulkBar();
+}
+
+function clearSelection(){
+  selectedIndices.clear();
+  document.querySelectorAll('#resp-body .row-cb').forEach(r=>{r.checked=false;r.closest('tr').classList.remove('selected');});
+  const allCb=document.getElementById('select-all-cb');
+  if(allCb){allCb.checked=false;allCb.indeterminate=false;}
+  updateBulkBar();
+}
+
+async function bulkDelete(){
+  if(selectedIndices.size===0)return;
+  const toDelete=[...selectedIndices].map(idx=>allData[idx]).filter(Boolean);
+  if(!toDelete.length)return;
+  if(!confirm(`⚠️ Permanently delete ${toDelete.length} user(s) from Google Sheets?\n\nThis cannot be undone.`))return;
+
+  const btn=document.getElementById('bulk-del-btn');
+  btn.textContent='Deleting…';btn.disabled=true;
+
+  let successCount=0, failCount=0;
+  // Sort descending by row_index so deleting higher rows first doesn't shift lower ones
+  const sorted=toDelete.slice().sort((a,b)=>b.row_index-a.row_index);
+
+  for(const d of sorted){
+    try{
+      const res=await fetch('/api/delete-user',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({password:'admin@2023',row_index:d.row_index,email:d.email})});
+      const data=await res.json();
+      if(data.success){
+        const idx=allData.indexOf(d);
+        if(idx>=0)allData.splice(idx,1);
+        successCount++;
+      } else {failCount++;}
+    } catch(e){failCount++;}
+  }
+
+  selectedIndices.clear();
+  renderAll();
+  btn.textContent='🗑 Delete Selected';btn.disabled=false;
+  const allCb=document.getElementById('select-all-cb');
+  if(allCb){allCb.checked=false;allCb.indeterminate=false;}
+
+  if(failCount===0)showToast(`Deleted ${successCount} user(s)`,'success');
+  else showToast(`Deleted ${successCount}, failed ${failCount}`,'error');
 }
 
 function renderResponses(){
   const q=(document.getElementById('search-input').value||'').toLowerCase();
   let data=[...allData];
-  if(activeTraitFilter!=='all') data=data.filter(r=>r._top3[0]===activeTraitFilter);
-  if(q) data=data.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.email||'').toLowerCase().includes(q));
+  if(activeTraitFilter!=='all')data=data.filter(r=>r._top3[0]===activeTraitFilter);
+  if(q)data=data.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.email||'').toLowerCase().includes(q));
 
   const tbody=document.getElementById('resp-body');
   if(!data.length){
-    tbody.innerHTML='<tr><td colspan="16" class="empty-state">No responses found.</td></tr>';
+    tbody.innerHTML='<tr><td colspan="17" class="empty-state">No responses found.</td></tr>';
     document.getElementById('resp-footer').textContent='';
+    selectedIndices.clear();updateBulkBar();
     return;
   }
 
@@ -517,7 +621,9 @@ function renderResponses(){
     const tc=(t,rank)=>TRAIT_INFO[t]?`<td><span class="badge ${rank===0?'badge-t1':rank===1?'badge-t2':''}" style="color:${TRAIT_INFO[t].color};border-color:${TRAIT_INFO[t].color}44">${TRAIT_INFO[t].icon} ${t}</span></td>`:'<td>—</td>';
     const course=d._topCourse;
     const origIdx=allData.indexOf(d);
-    return`<tr style="cursor:pointer" onclick="openModal(${origIdx})">
+    const isSelected=selectedIndices.has(origIdx);
+    return`<tr class="${isSelected?'selected':''}" onclick="openModal(${origIdx})">
+      <td onclick="event.stopPropagation()"><input type="checkbox" class="row-cb" data-idx="${origIdx}" ${isSelected?'checked':''} onclick="toggleRowSelect(this,${origIdx})"></td>
       <td style="color:#334155">${i+1}</td>
       <td style="font-weight:700;color:#f1f5f9">${esc(d.name)}</td>
       <td style="color:#475569;font-size:11px">${esc(d.email)}</td>
@@ -526,13 +632,14 @@ function renderResponses(){
       <td style="color:#94a3b8">${d.R||0}</td><td>${d.I||0}</td><td>${d.A||0}</td><td>${d.S||0}</td><td>${d.E||0}</td><td>${d.C||0}</td>
       <td>${course?`<span class="badge badge-course" style="font-size:9px">${course.title.split(':')[0].trim()}</span>`:'—'}</td>
       <td style="color:#334155">${fmtDate(d.timestamp)}</td>
-      <td><button class="action-btn btn-del" onclick="event.stopPropagation();deleteUser(${origIdx})">🗑</button></td>
+      <td onclick="event.stopPropagation()"><button class="action-btn btn-del" onclick="deleteUser(${origIdx})" title="Delete permanently">&#128465;</button></td>
     </tr>`;
   }).join('');
   document.getElementById('resp-footer').textContent=`Showing ${data.length} of ${allData.length} students`;
+  updateBulkBar();
 }
 
-/* ── TRAIT ANALYSIS ── */
+/* TRAIT ANALYSIS */
 function renderTraits(){
   const tc={R:0,I:0,A:0,S:0,E:0,C:0};
   const totals={R:0,I:0,A:0,S:0,E:0,C:0};
@@ -541,8 +648,6 @@ function renderTraits(){
     Object.keys(totals).forEach(k=>{totals[k]+=Number(d[k])||0;});
   });
   const n=allData.length||1;
-  const max=Math.max(...Object.values(tc),1);
-
   document.getElementById('trait-stat-grid').innerHTML=
     Object.entries(tc).sort((a,b)=>b[1]-a[1]).map(([t,c])=>`
       <div class="stat-card">
@@ -551,6 +656,7 @@ function renderTraits(){
         <div class="stat-lbl">${TRAIT_INFO[t].name} — #1 Trait</div>
       </div>`).join('');
 
+  const max=Math.max(...Object.values(tc),1);
   document.getElementById('trait-summary').innerHTML=
     Object.entries(TRAIT_INFO).map(([t,info])=>`
       <div class="dist-row">
@@ -563,12 +669,8 @@ function renderTraits(){
         </div>
       </div>`).join('');
 
-  /* Top 3 code combinations */
   const combos={};
-  allData.forEach(d=>{
-    const key=(d._top3||[]).join('-');
-    if(key) combos[key]=(combos[key]||0)+1;
-  });
+  allData.forEach(d=>{const key=(d._top3||[]).join('-');if(key)combos[key]=(combos[key]||0)+1;});
   const topCombos=Object.entries(combos).sort((a,b)=>b[1]-a[1]).slice(0,8);
   document.getElementById('combo-summary').innerHTML=
     topCombos.map(([combo,cnt])=>`
@@ -583,8 +685,8 @@ function renderTraits(){
       </div>`).join('')||'<div class="empty-state">No data</div>';
 }
 
-/* ── COURSE MATCHES ── */
-function setCourseFilter(f, btn){
+/* COURSE MATCHES */
+function setCourseFilter(f,btn){
   activeCourseFilter=f;
   document.querySelectorAll('#course-tabs .tab').forEach(t=>t.classList.remove('active'));
   if(btn)btn.classList.add('active');
@@ -592,15 +694,14 @@ function setCourseFilter(f, btn){
 }
 
 function renderCourses(){
-  /* distribution */
   const courseCounts={};
   ALL_COURSES.forEach(c=>courseCounts[c.id]=0);
   allData.forEach(d=>{if(d._topCourse)courseCounts[d._topCourse.id]=(courseCounts[d._topCourse.id]||0)+1;});
   const maxC=Math.max(...Object.values(courseCounts),1);
   document.getElementById('course-dist').innerHTML=
     ALL_COURSES.map(c=>`
-      <div class="dist-row" onclick="setCourseFilter('${c.id}',null);showSection('courses')">
-        <div class="dist-label" style="width:300px;white-space:normal;font-size:12px">${c.title}</div>
+      <div class="dist-row" onclick="setCourseFilter('${c.id}',null)">
+        <div class="dist-label" style="width:280px;white-space:normal;font-size:12px">${c.title}</div>
         <div class="dist-bar-bg" style="flex:1">
           <div class="dist-bar" style="width:${(courseCounts[c.id]/maxC)*100}%;background:#10b981"></div>
         </div>
@@ -611,8 +712,7 @@ function renderCourses(){
 
 function renderCourseTable(){
   let data=[...allData];
-  if(activeCourseFilter!=='all')
-    data=data.filter(d=>d._topCourse&&d._topCourse.id===activeCourseFilter);
+  if(activeCourseFilter!=='all')data=data.filter(d=>d._topCourse&&d._topCourse.id===activeCourseFilter);
   data.sort((a,b)=>((b._topCourse||{}).score||0)-((a._topCourse||{}).score||0));
 
   const tbody=document.getElementById('course-body');
@@ -633,12 +733,11 @@ function renderCourseTable(){
   document.getElementById('course-footer').textContent=`Showing ${data.length} students`;
 }
 
-/* ── USER DETAIL MODAL ── */
+/* USER DETAIL MODAL */
 function openModal(idx){
   const d=allData[idx];
   if(!d)return;
   currentModalUser={d,idx};
-
   document.getElementById('m-name').textContent=d.name||'Unknown';
   document.getElementById('m-email').textContent=(d.email||'')+(d.phone?'  ·  '+d.phone:'');
 
@@ -666,7 +765,6 @@ function openModal(idx){
       </div>`;
     }).join('');
 
-  /* course recommendations */
   const ranked=[...ALL_COURSES]
     .map(c=>({...c,score:calcCourseScore(c.matchTraits,top3),pct:Math.round((calcCourseScore(c.matchTraits,top3)/30)*100)}))
     .sort((a,b)=>b.score-a.score);
@@ -675,6 +773,11 @@ function openModal(idx){
       <div class="modal-course-title">${c.title}</div>
       <span class="modal-course-match" style="background:${i===0?'rgba(16,185,129,0.15)':'rgba(99,110,114,0.15)'};color:${i===0?'#10b981':'#94a3b8'}">${c.pct}% match</span>
     </div>`).join('');
+
+  // Reset delete button
+  const btn=document.getElementById('m-del-btn');
+  btn.textContent='🗑 Delete This User Permanently';
+  btn.disabled=false;
 
   document.getElementById('detail-modal').classList.add('open');
   document.body.style.overflow='hidden';
@@ -686,46 +789,74 @@ function closeModal(){
   currentModalUser=null;
 }
 
-/* ── DELETE ── */
-function deleteUser(idx){
+/* ── DELETE — calls real /api/delete-user backend ── */
+async function deleteUser(idx){
   const d=allData[idx];
   if(!d)return;
-  if(!confirm(`Delete "${d.name}" (${d.email})?\n\nThis removes them from the local view only — it does not delete from Google Sheets.`)) return;
-  allData.splice(idx,1);
-  renderAll();
+  if(!confirm(`⚠️ Permanently delete "${d.name}" (${d.email})?\n\nThis will remove them from Google Sheets and cannot be undone.`)) return;
+
+  try{
+    const res = await fetch('/api/delete-user',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:'admin@2023', row_index: d.row_index, email: d.email})
+    });
+    const data = await res.json();
+    if(data.success){
+      allData.splice(idx,1);
+      renderAll();
+      showToast(`Deleted: ${d.name}`,'success');
+    } else {
+      showToast('Delete failed: '+(data.error||'Unknown error'),'error');
+    }
+  } catch(e){
+    showToast('Network error: '+e.message,'error');
+  }
 }
 
-function deleteCurrentUser(){
+async function deleteCurrentUser(){
   if(!currentModalUser)return;
-  const {idx}=currentModalUser;
-  const d=allData[idx];
-  if(!confirm(`Delete "${d.name}" (${d.email})?\n\nThis removes them from the local view only.`)) return;
-  allData.splice(idx,1);
-  closeModal();
-  renderAll();
+  const {d,idx}=currentModalUser;
+  if(!confirm(`⚠️ Permanently delete "${d.name}" (${d.email})?\n\nThis will remove them from Google Sheets and cannot be undone.`)) return;
+
+  const btn=document.getElementById('m-del-btn');
+  btn.textContent='Deleting…';btn.disabled=true;
+
+  try{
+    const res = await fetch('/api/delete-user',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:'admin@2023', row_index: d.row_index, email: d.email})
+    });
+    const data = await res.json();
+    if(data.success){
+      allData.splice(idx,1);
+      closeModal();
+      renderAll();
+      showToast(`Deleted: ${d.name}`,'success');
+    } else {
+      showToast('Delete failed: '+(data.error||'Unknown error'),'error');
+      btn.textContent='🗑 Delete This User Permanently';btn.disabled=false;
+    }
+  } catch(e){
+    showToast('Network error: '+e.message,'error');
+    btn.textContent='🗑 Delete This User Permanently';btn.disabled=false;
+  }
 }
 
-/* ── EXPORT CSV ── */
+/* EXPORT CSV */
 function exportCSV(){
   if(!allData.length){alert('No data to export.');return;}
   const headers=['Name','Email','Phone','Date','#1 Trait','#2 Trait','#3 Trait','R','I','A','S','E','C','Top Course','Match %'];
   const rows=allData.map(d=>{
-    const top3=d._top3;
-    const course=d._topCourse;
-    return[
-      csvQ(d.name),csvQ(d.email),csvQ(d.phone),csvQ(fmtDate(d.timestamp)),
-      csvQ(top3[0]||''),csvQ(top3[1]||''),csvQ(top3[2]||''),
-      d.R||0,d.I||0,d.A||0,d.S||0,d.E||0,d.C||0,
-      csvQ(course?course.title:''),course?course.pct:''
-    ].join(',');
+    const top3=d._top3;const course=d._topCourse;
+    return[csvQ(d.name),csvQ(d.email),csvQ(d.phone),csvQ(fmtDate(d.timestamp)),csvQ(top3[0]||''),csvQ(top3[1]||''),csvQ(top3[2]||''),d.R||0,d.I||0,d.A||0,d.S||0,d.E||0,d.C||0,csvQ(course?course.title:''),course?course.pct:''].join(',');
   });
   const csv=[headers.join(','),...rows].join('\n');
   const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download='jain-riasec-'+today()+'.csv';
-  document.body.appendChild(a);a.click();
-  document.body.removeChild(a);URL.revokeObjectURL(url);
+  const a=document.createElement('a');a.href=url;a.download='jain-riasec-'+today()+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 </script>
 </body>
